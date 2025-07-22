@@ -4,9 +4,9 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Data.SqlClient;
 using System.Security.Authentication;
 using Amazon.S3;
+using ICEDT_TamilApp.Application.Exceptions;
 
 namespace ICEDT_TamilApp.Web.Middlewares
 {
@@ -102,11 +102,7 @@ namespace ICEDT_TamilApp.Web.Middlewares
                     exception.GetType().Name,
                     StatusCodes.Status400BadRequest
                 ),
-                DbUpdateException dbEx when dbEx.InnerException is SqlException sqlEx && sqlEx.Number == 2601 => (
-                    "Duplicate sequence order detected.",
-                    "DuplicateSequenceOrderException",
-                    StatusCodes.Status400BadRequest
-                ),
+            
                 DbUpdateException => (
                     "A database update error occurred.",
                     "DbUpdateException",

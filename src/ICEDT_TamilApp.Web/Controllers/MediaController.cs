@@ -1,5 +1,5 @@
-using ICEDT.API.Services.Interfaces;
-using ICEDT.API.DTO.Requst;
+using ICEDT_TamilApp.Application.DTOs.Requst;
+using ICEDT_TamilApp.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ICEDT_TamilApp.Web.Controllers

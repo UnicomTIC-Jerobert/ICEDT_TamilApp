@@ -1,6 +1,5 @@
-// TamilApp.Api/Controllers/AuthController.cs
-using ICEDT.API.DTO.Request;
-using ICEDT.API.Services.Interfaces;
+using ICEDT_TamilApp.Application.DTOs.Request;
+using ICEDT_TamilApp.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]

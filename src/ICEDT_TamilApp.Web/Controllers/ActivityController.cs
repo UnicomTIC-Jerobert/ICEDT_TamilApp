@@ -1,7 +1,9 @@
-using ICEDT.API.DTO.Request;
-using ICEDT.API.Services.Interfaces;
+
 using Microsoft.AspNetCore.Mvc;
 using ICEDT_TamilApp.Web.Middlewares;
+using ICEDT_TamilApp.Application.Services.Interfaces;
+using ICEDT_TamilApp.Application.Exceptions;
+using ICEDT_TamilApp.Application.DTOs.Request;
 
 
 namespace ICEDT_TamilApp.Web.Controllers
@@ -35,14 +37,14 @@ namespace ICEDT_TamilApp.Web.Controllers
         {
             if (lessonId <= 0)
                 throw new BadRequestException("Invalid Lesson ID.");
-            var activities = await _service.GetActivitiesByLessonIdAsync(lessonId, activityTypeId, mainActivityTypeId);
+            var activities = await _service.GetActivitiesByLessonIdAsync(lessonId);
             return Ok(activities);
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] ActivityRequestDto dto)
         {
-            var activity = await _service.AddActivityAsync(dto);
+            var activity = await _service.CreateActivityAsync(dto);
             return CreatedAtAction(nameof(Get), new { id = activity.ActivityId }, activity);
         }
 
@@ -64,47 +66,6 @@ namespace ICEDT_TamilApp.Web.Controllers
             return NoContent();
         }
 
-        // ActivityType CRUD
 
-        [HttpGet("types/{id:int}")]
-        public async Task<IActionResult> GetType(int id)
-        {
-            if (id <= 0)
-                throw new BadRequestException("Invalid ActivityType ID.");
-            var type = await _service.GetActivityTypeAsync(id);
-            return Ok(type);
-        }
-
-        [HttpGet("types")]
-        public async Task<IActionResult> GetAllTypes()
-        {
-            var types = await _service.GetAllActivityTypesAsync();
-            return Ok(types);
-        }
-
-        [HttpPost("types")]
-        public async Task<IActionResult> CreateType([FromBody] ActivityTypeRequestDto dto)
-        {
-            var type = await _service.AddActivityTypeAsync(dto);
-            return CreatedAtAction(nameof(GetType), new { id = type.ActivityTypeId }, type);
-        }
-
-        [HttpPut("types/{id:int}")]
-        public async Task<IActionResult> UpdateType(int id, [FromBody] ActivityTypeRequestDto dto)
-        {
-            if (id <= 0)
-                throw new BadRequestException("Invalid ActivityType ID.");
-            await _service.UpdateActivityTypeAsync(id, dto);
-            return NoContent();
-        }
-
-        [HttpDelete("types/{id:int}")]
-        public async Task<IActionResult> DeleteType(int id)
-        {
-            if (id <= 0)
-                throw new BadRequestException("Invalid ActivityType ID.");
-            await _service.DeleteActivityTypeAsync(id);
-            return NoContent();
-        }
     }
 }

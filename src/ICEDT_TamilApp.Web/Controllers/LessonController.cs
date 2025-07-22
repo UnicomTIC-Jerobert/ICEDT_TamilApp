@@ -1,8 +1,6 @@
 
-
-using ICEDT.API.DTO.Request;
-using ICEDT.API.Models;
-using ICEDT.API.Services.Interfaces;
+using ICEDT_TamilApp.Application.DTOs.Request;
+using ICEDT_TamilApp.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ICEDT_TamilApp.Web.Controllers
@@ -20,7 +18,7 @@ namespace ICEDT_TamilApp.Web.Controllers
         {
             if (levelId <= 0)
                 return BadRequest(new { message = "Invalid Level ID." });
-            var lesson = await _service.AddLessonToLevelAsync(levelId, dto);
+            var lesson = await _service.CreateLessonToLevelAsync(levelId, dto);
             return CreatedAtAction(nameof(GetLevelWithLessons), new { levelId }, lesson);
         }
 
