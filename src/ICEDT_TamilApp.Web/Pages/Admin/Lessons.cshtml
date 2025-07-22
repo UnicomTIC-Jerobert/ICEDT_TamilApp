@@ -1,0 +1,41 @@
+@page
+@{
+    ViewData["Title"] = "Manage Lessons";
+}
+
+<h1>Manage Lessons</h1>
+
+<div class="form-group mb-3">
+    <label for="levelSelector">Select a Level:</label>
+    <select class="form-control" id="levelSelector">
+        <option value="">-- Loading Levels --</option>
+    </select>
+</div>
+
+<table class="table table-bordered" id="lessonsTable">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Lesson Name</th>
+            <th>Description</th>
+            <th>Order</th>
+        </tr>
+    </thead>
+    <tbody id="lessonsTableBody">
+        <!-- Lesson rows will be inserted here -->
+    </tbody>
+    <tfoot>
+        <!-- Row for adding a new lesson -->
+        <tr id="addLessonRow">
+            <td></td>
+            <td><input type="text" id="newLessonName" class="form-control" placeholder="New Lesson Name"></td>
+            <td><input type="text" id="newLessonDesc" class="form-control" placeholder="Description"></td>
+            <td><input type="number" id="newLessonOrder" class="form-control" placeholder="Order"></td>
+            <td><button class="btn btn-success" id="btnAddLesson">Add New Lesson</button></td>
+        </tr>
+    </tfoot>
+</table>
+
+@section Scripts {
+    <script src="~/js/admin/lessons.js"></script>
+}

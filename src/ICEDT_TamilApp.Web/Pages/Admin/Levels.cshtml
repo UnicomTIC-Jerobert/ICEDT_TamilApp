@@ -1,0 +1,25 @@
+@page
+@{
+    ViewData["Title"] = "Manage Levels";
+}
+
+<h1>Manage Levels</h1>
+<p>Click "Edit" to make a row editable. Click "Save" to commit changes.</p>
+
+<table class="table table-bordered table-striped" id="levelsTable">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Level Name</th>
+            <th>Sequence Order</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="levelsTableBody">
+        <!-- Rows will be dynamically inserted here by JavaScript -->
+    </tbody>
+</table>
+
+@section Scripts {
+    <script src="~/js/admin/levels.js"></script>
+}
