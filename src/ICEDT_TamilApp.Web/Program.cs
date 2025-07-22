@@ -1,14 +1,30 @@
 using Amazon.S3;
+using ICEDT_TamilApp.Application;
+using ICEDT_TamilApp.Infrastructure;
 using ICEDT_TamilApp.Application.Common;
 using Microsoft.Extensions.Options;
+using ICEDT_TamilApp.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
+// =================================================================
+// 1. Configure Services by calling Extension Methods
+// =================================================================
+
+// Add services from the Application layer
+builder.Services.AddApplicationServices();
+
+// Add services from the Infrastructure layer
+builder.Services.AddInfrastructureServices(builder.Configuration);
+
 // Add services to the container.
-// This is for Razor Pages
-builder.Services.AddRazorPages();
+
 
 // This is for API Controllers
 builder.Services.AddControllers();
+// This is for Razor Pages
+builder.Services.AddRazorPages();
 
 // ... DI registration, DbContext, JWT Auth, etc.
 // To-do
@@ -31,15 +47,49 @@ builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
 //    credentials and region from the AWSOptions.
 builder.Services.AddAWSService<IAmazonS3>();
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+else
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+// =================================================================
+// 3. SEED THE DATABASE (Crucial Step)
+// =================================================================
+// This block will create a scope, get the DbContext, and run your seeder.
+// It's wrapped in a try-catch to log any errors during startup.
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        
+        // Ensure migrations are applied (best practice for production)
+        await context.Database.MigrateAsync();
+        
+        // Call your DbInitializer to seed the data
+        await DbInitializer.Initialize(context);
+    }
+    catch (Exception ex)
+    {
+        // Get a logger and log the error
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred during database initialization/seeding.");
+    }
+}
+// =================================================================
 
 app.UseHttpsRedirection();
 app.UseStaticFiles(); // Serves your wwwroot folder (JS, CSS)

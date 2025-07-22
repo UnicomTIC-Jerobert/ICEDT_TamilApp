@@ -8,5 +8,7 @@ namespace ICEDT_TamilApp.Domain.Entities
         public string? Email { get; set; }
         public string? PasswordHash { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public virtual UserCurrentProgress? UserCurrentProgress { get; set; }
     }
 }

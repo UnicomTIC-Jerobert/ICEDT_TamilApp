@@ -13,9 +13,9 @@ ICEDT_TamilApp.Infrastructure.Repositories
 {
     public class LessonRepository : ILessonRepository
     {
-        private readonly IApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public LessonRepository(IApplicationDbContext context) => _context = context;
+        public LessonRepository(ApplicationDbContext context) => _context = context;
 
         public async Task<Lesson> GetByIdAsync(int lessonId)
         {

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using ICEDT_TamilApp.Domain.Entities;
 
@@ -5,6 +6,7 @@ namespace ICEDT_TamilApp.Domain.Entities
 {
     public class UserProgress
     {
+        [Key]
         public long ProgressId { get; set; }
 
 

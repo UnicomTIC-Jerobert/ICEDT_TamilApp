@@ -13,9 +13,9 @@ ICEDT_TamilApp.Infrastructure.Repositories
 {
     public class LevelRepository : ILevelRepository
     {
-        private readonly IApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public LevelRepository(IApplicationDbContext context) => _context = context;
+        public LevelRepository(ApplicationDbContext context) => _context = context;
 
         public async Task<Level> GetByIdAsync(int id) =>
             await _context.Levels

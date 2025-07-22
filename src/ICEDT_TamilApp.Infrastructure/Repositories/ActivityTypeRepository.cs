@@ -10,9 +10,9 @@ ICEDT_TamilApp.Infrastructure.Repositories
 {
     public class ActivityTypeRepository : IActivityTypeRepository
     {
-        private readonly IApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public ActivityTypeRepository(IApplicationDbContext context) => _context = context;
+        public ActivityTypeRepository(ApplicationDbContext context) => _context = context;
 
         public async Task<ActivityType> GetByIdAsync(int id) =>
             await _context.ActivityTypes.FindAsync(id);

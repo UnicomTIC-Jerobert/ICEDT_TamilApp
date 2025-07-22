@@ -22,8 +22,9 @@ namespace ICEDT_TamilApp.Domain.Entities
         [ForeignKey("LevelId")]
         public virtual Level? Level { get; set; }
 
-        public ICollection<Activity> ?Activities { get; set; }
+        public virtual ICollection<Activity>? Activities { get; set; }
         
+         public virtual ICollection<UserCurrentProgress> ?UserCurrentProgress { get; set; }
 
     }
 }

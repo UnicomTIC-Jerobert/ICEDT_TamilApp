@@ -1,10 +1,11 @@
-﻿using ICEDT_TamilApp.Domain.Entities;
+﻿using System.Reflection;
+using ICEDT_TamilApp.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace 
+namespace
 ICEDT_TamilApp.Infrastructure.Data
 {
-    public class ApplicationDbContext : DbContext, IApplicationDbContext
+    public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -24,16 +25,13 @@ ICEDT_TamilApp.Infrastructure.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            // ... existing configurations
 
-            // Configure one-to-one relationship for UserCurrentProgress
-            modelBuilder.Entity<UserCurrentProgress>()
-                .HasKey(ucp => ucp.UserId); // UserId is both PK and FK
+            // This one line automatically finds all your IEntityTypeConfiguration classes
+            // from the same assembly (Infrastructure project) and applies them.
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
-            // modelBuilder.Entity<User>()
-            //     .HasOne(u => u.UserCurrentProgress) // Add navigation property to User model
-            //     .WithOne(ucp => ucp.User)
-            //     .HasForeignKey<UserCurrentProgress>(ucp => ucp.UserId);
+            // That's it! This method is now clean and will never need to be changed
+            // when you add a new entity. You just add a new configuration file.
         }
     }
 }
