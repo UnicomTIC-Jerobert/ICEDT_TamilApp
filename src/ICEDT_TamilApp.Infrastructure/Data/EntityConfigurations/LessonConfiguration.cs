@@ -1,4 +1,4 @@
-using ICEDT.API.Models;
+using ICEDT_TamilApp.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

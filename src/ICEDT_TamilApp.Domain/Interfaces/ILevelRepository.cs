@@ -8,11 +8,10 @@ namespace ICEDT_TamilApp.Domain.Interfaces
     {
         Task<Level> GetByIdAsync(int id);
         Task<List<Level>> GetAllAsync();
-        Task AddAsync(Level level);
+        Task CreateAsync(Level level);
         Task UpdateAsync(Level level);
         Task DeleteAsync(int id);
-        Task<Level> GetByIdWithLessonsAsync(int id);
-        Task<List<Level>> GetAllWithLessonsAsync();
+
         Task<bool> SequenceOrderExistsAsync(int sequenceOrder);
     }
 }

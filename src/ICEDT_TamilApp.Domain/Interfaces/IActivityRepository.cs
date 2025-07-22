@@ -4,10 +4,10 @@ namespace ICEDT_TamilApp.Domain.Interfaces
 {
     public interface IActivityRepository
     {
-        Task<Activity> GetByIdAsync(int id);
+        Task<Activity> GetByIdAsync(int activityId);
         Task<List<Activity>> GetAllAsync();
-        Task<List<Activity>> GetByLessonIdAsync(int lessonId, int? activitytypeid, int? mainactivitytypeid);
-        Task AddAsync(Activity activity);
+        Task<List<Activity>> GetByLessonIdAsync(int lessonId);
+        Task CreateAsync(Activity activity);
         Task UpdateAsync(Activity activity);
         Task DeleteAsync(int id);
         Task<bool> SequenceOrderExistsAsync(int sequenceOrder);

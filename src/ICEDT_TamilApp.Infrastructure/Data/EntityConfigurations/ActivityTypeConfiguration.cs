@@ -1,8 +1,8 @@
-using ICEDT.API.Models;
+using ICEDT_TamilApp.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace 
+namespace
 ICEDT_TamilApp.Infrastructure.Data.EntityConfigurations
 {
     public class ActivityTypeConfiguration : IEntityTypeConfiguration<ActivityType>
@@ -11,12 +11,8 @@ ICEDT_TamilApp.Infrastructure.Data.EntityConfigurations
         {
             builder.HasKey(t => t.ActivityTypeId);
             builder.Property(t => t.Name).IsRequired().HasMaxLength(50);
-            builder.Property(t => t.MainActivityTypeId).IsRequired();
 
-            builder.HasOne(t => t.MainActivityType)
-                   .WithMany(m => m.ActivityTypes)
-                   .HasForeignKey(t => t.MainActivityTypeId)
-                   .OnDelete(DeleteBehavior.Restrict);
+
 
             builder.HasMany(t => t.Activities)
                    .WithOne(a => a.ActivityType)

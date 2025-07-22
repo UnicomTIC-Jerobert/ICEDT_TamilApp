@@ -1,8 +1,8 @@
-using ICEDT.API.Models;
+using ICEDT_TamilApp.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace 
+namespace
 ICEDT_TamilApp.Infrastructure.Data.EntityConfigurations
 {
     public class ActivityConfiguration : IEntityTypeConfiguration<Activity>

@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using ICEDT.API.Models;
-using 
-ICEDT_TamilApp.Infrastructure.Data;
-using ICEDT.API.Repositories.Interfaces;
 
-namespace 
+using
+ICEDT_TamilApp.Infrastructure.Data;
+using ICEDT_TamilApp.Domain.Interfaces;
+using ICEDT_TamilApp.Domain.Entities;
+
+
+namespace
 ICEDT_TamilApp.Infrastructure.Repositories
 {
     public class LevelRepository : ILevelRepository
@@ -26,7 +28,7 @@ ICEDT_TamilApp.Infrastructure.Repositories
                 .OrderBy(l => l.SequenceOrder)
                 .ToListAsync();
 
-        public async Task AddAsync(Level level)
+        public async Task CreateAsync(Level level)
         {
             _context.Levels.Add(level);
             await _context.SaveChangesAsync();

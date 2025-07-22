@@ -19,7 +19,7 @@ ICEDT_TamilApp.Infrastructure.Data
 
         public DbSet<User> Users { get; set; }
         public DbSet<UserCurrentProgress> UserCurrentProgress { get; set; }
-        public DbSet<UserProgress> UserProgress { get; set; }
+        public DbSet<UserProgress> UserProgresses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -30,10 +30,10 @@ ICEDT_TamilApp.Infrastructure.Data
             modelBuilder.Entity<UserCurrentProgress>()
                 .HasKey(ucp => ucp.UserId); // UserId is both PK and FK
 
-            modelBuilder.Entity<User>()
-                .HasOne(u => u.UserCurrentProgress) // Add navigation property to User model
-                .WithOne(ucp => ucp.User)
-                .HasForeignKey<UserCurrentProgress>(ucp => ucp.UserId);
+            // modelBuilder.Entity<User>()
+            //     .HasOne(u => u.UserCurrentProgress) // Add navigation property to User model
+            //     .WithOne(ucp => ucp.User)
+            //     .HasForeignKey<UserCurrentProgress>(ucp => ucp.UserId);
         }
     }
 }

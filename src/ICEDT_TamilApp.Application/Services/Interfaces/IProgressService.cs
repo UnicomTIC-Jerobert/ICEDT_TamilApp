@@ -1,7 +1,12 @@
+using ICEDT_TamilApp.Application.DTOs.Request;
 using ICEDT_TamilApp.Application.DTOs.Response;
+using System.Threading.Tasks;
 
-public interface IProgressService
+namespace ICEDT_TamilApp.Application.Services.Interfaces
 {
-    Task<LessonResponseDto> GetCurrentLessonForUserAsync(int userId);
-    Task<bool> CompleteActivityAsync(int userId, int activityId, int? score);
+    public interface IProgressService
+    {
+        Task<CurrentLessonResponseDto?> GetCurrentLessonForUserAsync(int userId);
+        Task<ActivityCompletionResponseDto> CompleteActivityAsync(int userId, ActivityCompletionRequestDto request);
+    }
 }

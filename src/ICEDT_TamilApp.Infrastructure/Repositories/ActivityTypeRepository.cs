@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using ICEDT.API.Models;
-using 
-ICEDT_TamilApp.Infrastructure.Data;
-using ICEDT.API.Repositories.Interfaces;
 
-namespace 
+using ICEDT_TamilApp.Infrastructure.Data;
+using ICEDT_TamilApp.Domain.Interfaces;
+using ICEDT_TamilApp.Domain.Entities;
+
+
+namespace
 ICEDT_TamilApp.Infrastructure.Repositories
 {
     public class ActivityTypeRepository : IActivityTypeRepository
@@ -19,7 +20,7 @@ ICEDT_TamilApp.Infrastructure.Repositories
         public async Task<List<ActivityType>> GetAllAsync() =>
             await _context.ActivityTypes.ToListAsync();
 
-        public async Task AddAsync(ActivityType activityType)
+        public async Task CreateAsync(ActivityType activityType)
         {
             _context.ActivityTypes.Add(activityType);
             await _context.SaveChangesAsync();

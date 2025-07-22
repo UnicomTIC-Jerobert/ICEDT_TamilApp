@@ -34,23 +34,17 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
         }
 
         public async Task<List<ActivityResponseDto>> GetActivitiesByLessonIdAsync(
-            int lessonId,
-            int? activitytypeid,
-            int? mainactivitytypeid
+            int lessonId
         )
         {
             var lessonExists = await _activityRepo.LessonExistsAsync(lessonId);
             if (!lessonExists)
                 throw new NotFoundException("Lesson not found.");
-            var activities = await _activityRepo.GetByLessonIdAsync(
-                lessonId,
-                activitytypeid,
-                mainactivitytypeid
-            );
+            var activities = await _activityRepo.GetByLessonIdAsync(lessonId);
             return activities.Select(MapToActivityResponseDto).ToList();
         }
 
-        public async Task<ActivityResponseDto> AddActivityAsync(ActivityRequestDto dto)
+        public async Task<ActivityResponseDto> CreateActivityAsync(ActivityRequestDto dto)
         {
             var lessonExists = await _activityRepo.LessonExistsAsync(dto.LessonId);
             if (!lessonExists)
@@ -84,7 +78,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 SequenceOrder = dto.SequenceOrder,
                 ContentJson = dto.ContentJson,
             };
-            await _activityRepo.AddAsync(activity);
+            await _activityRepo.CreateAsync(activity);
             return MapToActivityResponseDto(activity);
         }
 
@@ -140,57 +134,6 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             await _activityRepo.DeleteAsync(id);
         }
 
-        // ActivityType CRUD
-        public async Task<ActivityTypeResponseDto> GetActivityTypeAsync(int id)
-        {
-            var type = await _typeRepo.GetByIdAsync(id);
-            if (type == null)
-                throw new NotFoundException("ActivityType not found.");
-            return MapToActivityTypeResponseDto(type);
-        }
-
-        public async Task<List<ActivityTypeResponseDto>> GetAllActivityTypesAsync()
-        {
-            var types = await _typeRepo.GetAllAsync();
-            return types.Select(MapToActivityTypeResponseDto).ToList();
-        }
-
-        public async Task<ActivityTypeResponseDto> AddActivityTypeAsync(ActivityTypeRequestDto dto)
-        {
-            var type = new ActivityType
-            {
-                Name = dto.ActivityName,
-                MainActivityTypeId = dto.MainActivityTypeId,
-            };
-            await _typeRepo.AddAsync(type);
-            return MapToActivityTypeResponseDto(type);
-        }
-
-        public async Task UpdateActivityTypeAsync(int id, ActivityTypeRequestDto dto)
-        {
-            var type = await _typeRepo.GetByIdAsync(id);
-            if (type == null)
-                throw new NotFoundException("ActivityType not found.");
-            type.Name = dto.ActivityName;
-            await _typeRepo.UpdateAsync(type);
-        }
-
-        public async Task DeleteActivityTypeAsync(int id)
-        {
-            var type = await _typeRepo.GetByIdAsync(id);
-            if (type == null)
-                throw new NotFoundException("ActivityType not found.");
-            var hasActivities = await _activityRepo
-                .GetAllAsync()
-                .ContinueWith(t => t.Result.Any(a => a.ActivityTypeId == id));
-            if (hasActivities)
-                throw new BadRequestException(
-                    "Cannot delete ActivityType with associated Activities."
-                );
-            await _typeRepo.DeleteAsync(id);
-        }
-
-        // Mapping helpers
         private ActivityResponseDto MapToActivityResponseDto(Activity activity)
         {
             return new ActivityResponseDto
@@ -198,21 +141,10 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 ActivityId = activity.ActivityId,
                 LessonId = activity.LessonId,
                 ActivityTypeId = activity.ActivityTypeId,
-                MainActivityTypeId =
-                    activity.ActivityType != null ? activity.ActivityType.MainActivityTypeId : 0,
+                MainActivityTypeId = activity.MainActivityTypeId,
                 Title = activity.Title,
                 SequenceOrder = activity.SequenceOrder,
                 ContentJson = activity.ContentJson,
-            };
-        }
-
-        private ActivityTypeResponseDto MapToActivityTypeResponseDto(ActivityType type)
-        {
-            return new ActivityTypeResponseDto
-            {
-                ActivityTypeId = type.ActivityTypeId,
-                ActivityName = type.Name,
-                MainActivityTypeId = type.MainActivityTypeId,
             };
         }
     }

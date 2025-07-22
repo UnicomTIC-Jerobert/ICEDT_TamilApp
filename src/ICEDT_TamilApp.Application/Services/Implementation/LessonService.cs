@@ -9,15 +9,19 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
 {
     public class LessonService : ILessonService
     {
-        private readonly ILevelRepository _repo;
+        private readonly ILessonRepository _lessonRepo;
+        private readonly ILevelRepository _levelRepo;
 
-        public LessonService(ILevelRepository repo) => _repo = repo;
+        public LessonService(ILessonRepository lessonRepo, ILevelRepository levelRepo)
+        {
+            this._lessonRepo = lessonRepo;
+            this._levelRepo = levelRepo;
+        }
 
-
-        public async Task<LessonResponseDto> AddLessonToLevelAsync(int levelId, LessonRequestDto dto)
+        public async Task<LessonResponseDto> CreateLessonToLevelAsync(int levelId, LessonRequestDto dto)
         {
 
-            var level = await _repo.GetByIdWithLessonsAsync(levelId);
+            var level = await _levelRepo.GetByIdAsync(levelId);
             if (level == null) throw new NotFoundException("Level not found.");
 
             if (level.Lessons?.Any(l => l.LessonName == dto.LessonName) == true)
@@ -35,7 +39,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
 
             level.Lessons ??= new List<Lesson>();
             level.Lessons.Add(lesson);
-            await _repo.UpdateAsync(level);
+            await _levelRepo.UpdateAsync(level);
 
             return new LessonResponseDto
             {
@@ -51,18 +55,18 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
         public async Task RemoveLessonFromLevelAsync(int levelId, int lessonId)
         {
 
-            var level = await _repo.GetByIdWithLessonsAsync(levelId);
+            var level = await this._levelRepo.GetByIdAsync(levelId);
             if (level == null) throw new NotFoundException("Level not found.");
             var lesson = level.Lessons?.FirstOrDefault(l => l.LessonId == lessonId);
             if (lesson == null) throw new NotFoundException("Lesson not found in this level.");
             level.Lessons.Remove(lesson);
-            await _repo.UpdateAsync(level);
+            await this._levelRepo.UpdateAsync(level);
         }
 
         public async Task<LevelWithLessonsResponseDto> GetLevelWithLessonsAsync(int levelId)
         {
 
-            var level = await _repo.GetByIdWithLessonsAsync(levelId);
+            var level = await this._levelRepo.GetByIdAsync(levelId);
             if (level == null) throw new NotFoundException("Level not found.");
             return new LevelWithLessonsResponseDto
             {
@@ -82,6 +86,8 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
 
 
 
+
+
         public Task<LessonRequestDto?> GetLessonByIdAsync(int lessonId)
         {
             throw new NotImplementedException();
@@ -93,6 +99,11 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
         }
 
         public Task<bool> DeleteLessonAsync(int lessonId)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<LessonResponseDto?> ILessonService.GetLessonByIdAsync(int lessonId)
         {
             throw new NotImplementedException();
         }

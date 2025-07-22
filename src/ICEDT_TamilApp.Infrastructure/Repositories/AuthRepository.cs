@@ -1,10 +1,10 @@
-using 
-ICEDT_TamilApp.Infrastructure.Data;
-using ICEDT.API.Models;
-using ICEDT.API.Repositories.Interfaces;
+using ICEDT_TamilApp.Domain.Entities;
+using ICEDT_TamilApp.Domain.Interfaces;
+using ICEDT_TamilApp.Infrastructure.Data;
+
 using Microsoft.EntityFrameworkCore;
 
-namespace 
+namespace
 ICEDT_TamilApp.Infrastructure.Repositories
 {
     public class AuthRepository : IAuthRepository

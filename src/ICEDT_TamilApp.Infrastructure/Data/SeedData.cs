@@ -37,22 +37,22 @@ ICEDT_TamilApp.Infrastructure.Data
                     new ActivityType
                     {
                         Name = "Quiz",
-                        MainActivityTypeId = mainActivityTypes.First(m => m.Name == "Primary Type").MainActivityTypeId
+                       
                     },
                     new ActivityType
                     {
                         Name = "Video",
-                        MainActivityTypeId = mainActivityTypes.First(m => m.Name == "Primary Type").MainActivityTypeId
+                        
                     },
                     new ActivityType
                     {
                         Name = "Assignment",
-                        MainActivityTypeId = mainActivityTypes.First(m => m.Name == "Secondary Type").MainActivityTypeId
+                        
                     },
                     new ActivityType
                     {
                         Name = "Discussion",
-                        MainActivityTypeId = mainActivityTypes.First(m => m.Name == "Interactive Type").MainActivityTypeId
+                        
                     }
                 };
                 context.ActivityTypes.AddRange(activityTypes);

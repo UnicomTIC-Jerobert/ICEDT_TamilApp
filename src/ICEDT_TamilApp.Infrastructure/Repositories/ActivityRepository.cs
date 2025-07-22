@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using ICEDT.API.Models;
-using 
-ICEDT_TamilApp.Infrastructure.Data;
-using ICEDT.API.Repositories.Interfaces;
+
+using ICEDT_TamilApp.Infrastructure.Data;
+using ICEDT_TamilApp.Domain.Interfaces;
+using ICEDT_TamilApp.Domain.Entities;
+
 
 namespace 
 ICEDT_TamilApp.Infrastructure.Repositories
@@ -26,22 +27,16 @@ ICEDT_TamilApp.Infrastructure.Repositories
                 .OrderBy(a => a.SequenceOrder)
                 .ToListAsync();
 
-        public async Task<List<Activity>> GetByLessonIdAsync(int lessonId, int? activitytypeid, int? mainactivitytypeid)
+        public async Task<List<Activity>> GetByLessonIdAsync(int lessonId)
         {
             var query = _context.Activities
                 .Include(a => a.ActivityType)
                 .Where(a => a.LessonId == lessonId);
 
-            if (activitytypeid.HasValue)
-                query = query.Where(a => a.ActivityTypeId == activitytypeid.Value);
-
-            if (mainactivitytypeid.HasValue)
-                query = query.Where(a => a.ActivityType.MainActivityTypeId == mainactivitytypeid.Value);
-
             return await query.OrderBy(a => a.SequenceOrder).ToListAsync();
         }
 
-        public async Task AddAsync(Activity activity)
+        public async Task CreateAsync(Activity activity)
         {
             _context.Activities.Add(activity);
             await _context.SaveChangesAsync();
@@ -68,5 +63,7 @@ ICEDT_TamilApp.Infrastructure.Repositories
 
         public async Task<bool> LessonExistsAsync(int lessonId) =>
             await _context.Lessons.AnyAsync(l => l.LessonId == lessonId);
+
+        
     }
 }

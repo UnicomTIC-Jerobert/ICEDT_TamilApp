@@ -21,6 +21,8 @@ namespace ICEDT_TamilApp.Domain.Entities
         public int LevelId { get; set; }
         [ForeignKey("LevelId")]
         public virtual Level? Level { get; set; }
+
+        public ICollection<Activity> ?Activities { get; set; }
         
 
     }
