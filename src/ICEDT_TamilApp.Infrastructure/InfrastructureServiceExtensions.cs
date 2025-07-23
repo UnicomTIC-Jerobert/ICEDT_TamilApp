@@ -15,6 +15,7 @@ namespace ICEDT_TamilApp.Infrastructure
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(configuration.GetConnectionString("DefaultConnection"))); // Or UseSqlServer, etc.
 
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // Register all your repositories here
             services.AddScoped<IActivityRepository, ActivityRepository>();
@@ -23,8 +24,8 @@ namespace ICEDT_TamilApp.Infrastructure
             services.AddScoped<ILessonRepository, LessonRepository>();
             services.AddScoped<ILevelRepository, LevelRepository>();
             services.AddScoped<IProgressRepository, ProgressRepository>();
-            
-            
+
+
             return services;
         }
     }
