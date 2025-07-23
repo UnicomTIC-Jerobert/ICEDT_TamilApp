@@ -27,9 +27,10 @@ namespace ICEDT_TamilApp.Domain.Entities
         public virtual ActivityType? ActivityType { get; set; }
 
         [Required]
-        public int MainActivityTypeId { get; set; }
+        public int MainActivityId { get; set; }
         [ForeignKey("MainActivityTypeId")]
-        public virtual MainActivityType? MainActivityType { get; set; }
+        public virtual MainActivity? MainActivity { get; set; }
+
 
 
     }

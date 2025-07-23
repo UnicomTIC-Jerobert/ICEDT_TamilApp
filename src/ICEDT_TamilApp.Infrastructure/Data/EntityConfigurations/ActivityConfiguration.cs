@@ -26,6 +26,11 @@ ICEDT_TamilApp.Infrastructure.Data.EntityConfigurations
                    .HasForeignKey(a => a.ActivityTypeId)
                    .OnDelete(DeleteBehavior.Restrict);
 
+            builder.HasOne(a => a.MainActivity)
+                    .WithMany() // A MainActivity can be linked to many Activities
+                    .HasForeignKey(a => a.MainActivityId)
+                    .IsRequired();
+
             builder.HasIndex(a => a.SequenceOrder).IsUnique();
         }
     }

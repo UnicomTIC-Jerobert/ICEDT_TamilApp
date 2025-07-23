@@ -141,7 +141,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 ActivityId = activity.ActivityId,
                 LessonId = activity.LessonId,
                 ActivityTypeId = activity.ActivityTypeId,
-                MainActivityTypeId = activity.MainActivityTypeId,
+                MainActivityTypeId = activity.MainActivityId,
                 Title = activity.Title,
                 SequenceOrder = activity.SequenceOrder,
                 ContentJson = activity.ContentJson,

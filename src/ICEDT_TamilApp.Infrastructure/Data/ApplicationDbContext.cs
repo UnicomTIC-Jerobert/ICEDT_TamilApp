@@ -16,7 +16,7 @@ ICEDT_TamilApp.Infrastructure.Data
         public DbSet<Lesson> Lessons { get; set; }
         public DbSet<Activity> Activities { get; set; }
         public DbSet<ActivityType> ActivityTypes { get; set; }
-        public DbSet<MainActivityType> MainActivityTypes { get; set; }
+        public DbSet<MainActivity> MainActivities { get; set; }
 
         public DbSet<User> Users { get; set; }
         public DbSet<UserCurrentProgress> UserCurrentProgress { get; set; }

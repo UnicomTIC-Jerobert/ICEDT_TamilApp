@@ -49,14 +49,47 @@ namespace ICEDT_TamilApp.Infrastructure.Data
             await context.Lessons.AddRangeAsync(lessons);
             await context.SaveChangesAsync();
 
+            // --- Seed MainActivities ---
+            if (!await context.MainActivities.AnyAsync())
+            {
+                var mainActivities = new MainActivity[]
+                {
+                    new MainActivity { Name = "Video" },
+                    new MainActivity { Name = "Sounds" },
+                    new MainActivity { Name = "Learning" },
+                    new MainActivity { Name = "Exercises" }
+                };
+                await context.MainActivities.AddRangeAsync(mainActivities);
+                await context.SaveChangesAsync();
+            }
+
             // --- Seed ActivityTypes ---
             if (!await context.ActivityTypes.AnyAsync())
             {
-                // Your activity type seeding logic here...
+                var activityTypes = new ActivityType[]
+                {
+                    new ActivityType { Name = "PronunciationPractice" },
+                    new ActivityType { Name = "AudioImageRecognition" },
+                    new ActivityType { Name = "Dictation" },
+                    new ActivityType { Name = "Matching" },
+                    new ActivityType { Name = "SortingAndClassification" },
+                    new ActivityType { Name = "OddOneOut" },
+                    new ActivityType { Name = "FillInTheBlanks" },
+                    new ActivityType { Name = "WordScramble" },
+                    new ActivityType { Name = "SentenceScramble" },
+                    new ActivityType { Name = "WordFormation" },
+                    new ActivityType { Name = "SentenceBuilding" },
+                    new ActivityType { Name = "GrammarPuzzle" },
+                    new ActivityType { Name = "MultipleChoiceQuestion" },
+                    new ActivityType { Name = "TrueOrFalse" },
+                    new ActivityType { Name = "ReadingComprehension" },
+                    new ActivityType { Name = "StorySequencing" },
+                    new ActivityType { Name = "TimedChallenge" },
+                    new ActivityType { Name = "InteractiveDialogue" }
+                };
+                await context.ActivityTypes.AddRangeAsync(activityTypes);
+                await context.SaveChangesAsync();
             }
-            
-            // --- Seed placeholder Activities ---
-            // Your activity seeding logic here...
         }
     }
 }
