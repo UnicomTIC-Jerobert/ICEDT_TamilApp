@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
+﻿using System;
 using System.Net;
-using System.Threading.Tasks;
-using System.Text.Json;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Authentication;
+using System.Text.Json;
+using System.Threading.Tasks;
 using Amazon.S3;
 using ICEDT_TamilApp.Application.Exceptions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace ICEDT_TamilApp.Web.Middlewares
 {
@@ -55,7 +55,9 @@ namespace ICEDT_TamilApp.Web.Middlewares
 
                 try
                 {
-                    response.Result = string.IsNullOrEmpty(responseBody) ? null : JsonSerializer.Deserialize<object>(responseBody);
+                    response.Result = string.IsNullOrEmpty(responseBody)
+                        ? null
+                        : JsonSerializer.Deserialize<object>(responseBody);
                 }
                 catch
                 {
@@ -68,7 +70,11 @@ namespace ICEDT_TamilApp.Web.Middlewares
             }
         }
 
-        private async Task HandleExceptionAsync(HttpContext context, Exception exception, Stream originalBodyStream)
+        private async Task HandleExceptionAsync(
+            HttpContext context,
+            Exception exception,
+            Stream originalBodyStream
+        )
         {
             (string Detail, string Title, int StatusCode) details = exception switch
             {
@@ -102,7 +108,7 @@ namespace ICEDT_TamilApp.Web.Middlewares
                     exception.GetType().Name,
                     StatusCodes.Status400BadRequest
                 ),
-            
+
                 DbUpdateException => (
                     "A database update error occurred.",
                     "DbUpdateException",
@@ -122,12 +128,12 @@ namespace ICEDT_TamilApp.Web.Middlewares
                     exception.Message ?? "An error occurred while processing your request.",
                     exception.GetType().Name,
                     StatusCodes.Status500InternalServerError
-                )
+                ),
             };
 
             var extensions = new Dictionary<string, object?>
             {
-                { "traceId", context.TraceIdentifier }
+                { "traceId", context.TraceIdentifier },
             };
 
             if (exception is ValidationException validationException)
@@ -137,7 +143,7 @@ namespace ICEDT_TamilApp.Web.Middlewares
 
             var error = new Error(details.Title, details.Detail, details.StatusCode)
             {
-                Extensions = extensions
+                Extensions = extensions,
             };
 
             context.Response.Body = originalBodyStream;
@@ -146,7 +152,6 @@ namespace ICEDT_TamilApp.Web.Middlewares
             context.Response.StatusCode = details.StatusCode;
             await context.Response.WriteAsync(wrappedResponseBody);
         }
-
 
         private bool IsFileType(string? contentType)
         {
@@ -158,15 +163,18 @@ namespace ICEDT_TamilApp.Web.Middlewares
                 "application/pdf",
                 "image/jpeg",
                 "image/png",
-                "image/gif"
+                "image/gif",
             };
 
             return fileTypes.Contains(contentType);
         }
     }
+
     public static class WrapResponseMiddlewareExtensions
     {
-        public static IApplicationBuilder UseWrapResponseMiddleware(this IApplicationBuilder builder)
+        public static IApplicationBuilder UseWrapResponseMiddleware(
+            this IApplicationBuilder builder
+        )
         {
             return builder.UseMiddleware<WrapResponseMiddleware>();
         }

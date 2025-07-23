@@ -15,7 +15,8 @@ namespace ICEDT_TamilApp.Application
             services.AddScoped<ILessonService, LessonService>();
             services.AddScoped<ILevelService, LevelService>();
             services.AddScoped<IProgressService, ProgressService>();
-            services.AddScoped<IMediaService, MediaService>(); // Assuming you add this back
+            services.AddScoped<IMediaService, MediaService>();
+            services.AddScoped<IMainActivityService, MainActivityService>(); // Assuming you add this back
 
             // If you have AutoMapper or MediatR, you would register them here too.
 

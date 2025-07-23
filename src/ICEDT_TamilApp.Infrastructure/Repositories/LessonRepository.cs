@@ -1,15 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-
-using
-ICEDT_TamilApp.Infrastructure.Data;
-
 using ICEDT_TamilApp.Domain.Entities;
 using ICEDT_TamilApp.Domain.Interfaces;
+using ICEDT_TamilApp.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
-namespace
-ICEDT_TamilApp.Infrastructure.Repositories
+namespace ICEDT_TamilApp.Infrastructure.Repositories
 {
     public class LessonRepository : ILessonRepository
     {
@@ -19,25 +15,21 @@ ICEDT_TamilApp.Infrastructure.Repositories
 
         public async Task<Lesson> GetByIdAsync(int lessonId)
         {
-            return await _context.Lessons
-                .Where(l => l.LessonId == lessonId)
+            return await _context
+                .Lessons.Where(l => l.LessonId == lessonId)
                 .OrderBy(l => l.SequenceOrder)
                 .FirstOrDefaultAsync();
         }
 
         public async Task<List<Lesson>> GetAllAsync()
         {
-            var lessons = await _context.Lessons
-                .OrderBy(l => l.SequenceOrder)
-                .ToListAsync();
+            var lessons = await _context.Lessons.OrderBy(l => l.SequenceOrder).ToListAsync();
 
             return lessons;
         }
 
         public async Task<bool> SequenceOrderExistsAsync(int sequenceOrder) =>
             await _context.Levels.AnyAsync(l => l.SequenceOrder == sequenceOrder);
-
-
 
         public Task<Lesson> CreateAsync(Lesson lesson)
         {
@@ -54,15 +46,14 @@ ICEDT_TamilApp.Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
-
         public async Task<List<Lesson>> GetAllLessonsByLevelIdAsync(int levelId)
         {
-            var lessons = await _context.Lessons
-               .Where(l => l.LevelId == levelId)
-               .OrderBy(l => l.SequenceOrder).ToListAsync();
+            var lessons = await _context
+                .Lessons.Where(l => l.LevelId == levelId)
+                .OrderBy(l => l.SequenceOrder)
+                .ToListAsync();
 
             return lessons;
         }
-
     }
 }

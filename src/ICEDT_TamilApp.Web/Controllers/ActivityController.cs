@@ -1,10 +1,8 @@
-
-using Microsoft.AspNetCore.Mvc;
-using ICEDT_TamilApp.Web.Middlewares;
-using ICEDT_TamilApp.Application.Services.Interfaces;
-using ICEDT_TamilApp.Application.Exceptions;
 using ICEDT_TamilApp.Application.DTOs.Request;
-
+using ICEDT_TamilApp.Application.Exceptions;
+using ICEDT_TamilApp.Application.Services.Interfaces;
+using ICEDT_TamilApp.Web.Middlewares;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ICEDT_TamilApp.Web.Controllers
 {
@@ -26,14 +24,14 @@ namespace ICEDT_TamilApp.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
-            => Ok(await _service.GetAllActivitiesAsync());
+        public async Task<IActionResult> GetAll() => Ok(await _service.GetAllActivitiesAsync());
 
         [HttpGet("by-lesson")]
         public async Task<IActionResult> GetActivitiesByLessonId(
             [FromQuery] int lessonId,
             [FromQuery] int? activityTypeId,
-            [FromQuery] int? mainActivityTypeId)
+            [FromQuery] int? mainActivityTypeId
+        )
         {
             if (lessonId <= 0)
                 throw new BadRequestException("Invalid Lesson ID.");
@@ -65,7 +63,5 @@ namespace ICEDT_TamilApp.Web.Controllers
             await _service.DeleteActivityAsync(id);
             return NoContent();
         }
-
-
     }
 }

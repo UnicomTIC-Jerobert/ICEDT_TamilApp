@@ -1,10 +1,8 @@
-
-using Microsoft.AspNetCore.Mvc;
-using ICEDT_TamilApp.Web.Middlewares;
-using ICEDT_TamilApp.Application.Services.Interfaces;
-using ICEDT_TamilApp.Application.Exceptions;
 using ICEDT_TamilApp.Application.DTOs.Request;
-
+using ICEDT_TamilApp.Application.Exceptions;
+using ICEDT_TamilApp.Application.Services.Interfaces;
+using ICEDT_TamilApp.Web.Middlewares;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ICEDT_TamilApp.Web.Controllers
 {
@@ -16,10 +14,6 @@ namespace ICEDT_TamilApp.Web.Controllers
 
         public ActivityTypeController(IActivityTypeService service) => _service = service;
 
-      
-
-
-      
         // ActivityType CRUD
 
         [HttpGet("types/{id:int}")]

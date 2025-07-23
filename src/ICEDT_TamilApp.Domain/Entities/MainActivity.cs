@@ -7,10 +7,10 @@ namespace ICEDT_TamilApp.Domain.Entities
     {
         [Key]
         public int Id { get; set; }
+
         [Required]
         public required string Name { get; set; }
-        
 
-        public ICollection<Activity> ?Activities { get; set; }
+        public ICollection<Activity>? Activities { get; set; }
     }
 }

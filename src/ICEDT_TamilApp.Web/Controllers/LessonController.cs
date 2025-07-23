@@ -1,4 +1,3 @@
-
 using ICEDT_TamilApp.Application.DTOs.Request;
 using ICEDT_TamilApp.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -41,7 +40,10 @@ namespace ICEDT_TamilApp.Web.Controllers
         }
 
         [HttpPut("lessons/{id}")]
-        public async Task<IActionResult> UpdateLesson(int id, [FromBody] LessonRequestDto updateLessonDto) // You'll need to create UpdateLessonDto
+        public async Task<IActionResult> UpdateLesson(
+            int id,
+            [FromBody] LessonRequestDto updateLessonDto
+        ) // You'll need to create UpdateLessonDto
         {
             var success = await _service.UpdateLessonAsync(id, updateLessonDto);
             if (!success)
@@ -50,6 +52,7 @@ namespace ICEDT_TamilApp.Web.Controllers
             }
             return NoContent(); // Standard 204 response for a successful update
         }
+
         [HttpDelete("lessons/{id}")]
         public async Task<IActionResult> DeleteLesson(int id)
         {

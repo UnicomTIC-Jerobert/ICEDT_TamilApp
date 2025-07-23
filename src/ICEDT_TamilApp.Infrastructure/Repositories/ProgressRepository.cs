@@ -1,8 +1,8 @@
+using System.Threading.Tasks;
 using ICEDT_TamilApp.Domain.Entities;
 using ICEDT_TamilApp.Domain.Interfaces;
 using ICEDT_TamilApp.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 
 namespace ICEDT_TamilApp.Infrastructure.Repositories
 {
@@ -24,7 +24,7 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
             {
                 UserId = userId,
                 CurrentLessonId = firstLessonId,
-                LastActivityAt = DateTime.UtcNow
+                LastActivityAt = DateTime.UtcNow,
             };
             await _context.UserCurrentProgress.AddAsync(initialProgress);
             await _context.SaveChangesAsync();
@@ -35,17 +35,15 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
         /// </summary>
         public async Task<UserCurrentProgress?> GetCurrentProgressAsync(int userId)
         {
-            return await _context.UserCurrentProgress
-                .FirstOrDefaultAsync(p => p.UserId == userId);
+            return await _context.UserCurrentProgress.FirstOrDefaultAsync(p => p.UserId == userId);
         }
-        
+
         /// <summary>
         /// Gets the total number of activities that belong to a specific lesson.
         /// </summary>
         public async Task<int> GetTotalActivitiesForLessonAsync(int lessonId)
         {
-            return await _context.Activities
-                .CountAsync(a => a.LessonId == lessonId);
+            return await _context.Activities.CountAsync(a => a.LessonId == lessonId);
         }
 
         /// <summary>
@@ -54,8 +52,9 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
         public async Task<int> GetCompletedActivitiesCountAsync(int userId, int lessonId)
         {
             // This query joins UserProgress with Activities to filter by lesson.
-            return await _context.UserProgresses
-                .CountAsync(p => p.UserId == userId && p.Activity.LessonId == lessonId && p.IsCompleted);
+            return await _context.UserProgresses.CountAsync(p =>
+                p.UserId == userId && p.Activity.LessonId == lessonId && p.IsCompleted
+            );
         }
 
         /// <summary>
@@ -63,8 +62,9 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
         /// </summary>
         public async Task MarkActivityAsCompleteAsync(int userId, int activityId, int? score)
         {
-            var existingProgress = await _context.UserProgresses
-                .FirstOrDefaultAsync(p => p.UserId == userId && p.ActivityId == activityId);
+            var existingProgress = await _context.UserProgresses.FirstOrDefaultAsync(p =>
+                p.UserId == userId && p.ActivityId == activityId
+            );
 
             if (existingProgress != null)
             {
@@ -82,21 +82,22 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
                     ActivityId = activityId,
                     IsCompleted = true,
                     Score = score,
-                    CompletedAt = DateTime.UtcNow
+                    CompletedAt = DateTime.UtcNow,
                 };
                 await _context.UserProgresses.AddAsync(newProgress);
             }
 
             await _context.SaveChangesAsync();
         }
-        
+
         /// <summary>
         /// Updates the user's current lesson bookmark to the next lesson.
         /// </summary>
         public async Task UpdateCurrentLessonAsync(int userId, int newLessonId)
         {
-            var currentProgress = await _context.UserCurrentProgress
-                .FirstOrDefaultAsync(p => p.UserId == userId);
+            var currentProgress = await _context.UserCurrentProgress.FirstOrDefaultAsync(p =>
+                p.UserId == userId
+            );
 
             if (currentProgress != null)
             {
@@ -113,15 +114,19 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
         /// </summary>
         public async Task<Lesson?> GetNextLessonAsync(int currentLessonId)
         {
-            var currentLesson = await _context.Lessons
-                .Include(l => l.Level) // We need level info to find the next one
+            var currentLesson = await _context
+                .Lessons.Include(l => l.Level) // We need level info to find the next one
                 .FirstOrDefaultAsync(l => l.LessonId == currentLessonId);
 
-            if (currentLesson == null) return null;
+            if (currentLesson == null)
+                return null;
 
             // Try to find the next lesson in the same level
-            var nextLessonInSameLevel = await _context.Lessons
-                .Where(l => l.LevelId == currentLesson.LevelId && l.SequenceOrder > currentLesson.SequenceOrder)
+            var nextLessonInSameLevel = await _context
+                .Lessons.Where(l =>
+                    l.LevelId == currentLesson.LevelId
+                    && l.SequenceOrder > currentLesson.SequenceOrder
+                )
                 .OrderBy(l => l.SequenceOrder)
                 .FirstOrDefaultAsync();
 
@@ -129,10 +134,10 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
             {
                 return nextLessonInSameLevel;
             }
-            
+
             // If not found, find the first lesson of the next level
-            var nextLevel = await _context.Levels
-                .Where(lvl => lvl.SequenceOrder > currentLesson.Level.SequenceOrder)
+            var nextLevel = await _context
+                .Levels.Where(lvl => lvl.SequenceOrder > currentLesson.Level.SequenceOrder)
                 .OrderBy(lvl => lvl.SequenceOrder)
                 .FirstOrDefaultAsync();
 
@@ -143,8 +148,8 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
             }
 
             // Return the first lesson of that next level
-            return await _context.Lessons
-                .Where(l => l.LevelId == nextLevel.LevelId)
+            return await _context
+                .Lessons.Where(l => l.LevelId == nextLevel.LevelId)
                 .OrderBy(l => l.SequenceOrder)
                 .FirstOrDefaultAsync();
         }
@@ -154,8 +159,8 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
         /// </summary>
         public async Task<Lesson?> GetFirstLessonAsync()
         {
-            return await _context.Lessons
-                .OrderBy(l => l.Level.SequenceOrder)
+            return await _context
+                .Lessons.OrderBy(l => l.Level.SequenceOrder)
                 .ThenBy(l => l.SequenceOrder)
                 .FirstOrDefaultAsync();
         }
@@ -165,7 +170,9 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
         /// </summary>
         public async Task<Activity?> GetActivityByIdAsync(int activityId)
         {
-            return await _context.Activities.Include(a => a.Lesson).FirstOrDefaultAsync(a => a.ActivityId == activityId);
+            return await _context
+                .Activities.Include(a => a.Lesson)
+                .FirstOrDefaultAsync(a => a.ActivityId == activityId);
         }
     }
 }

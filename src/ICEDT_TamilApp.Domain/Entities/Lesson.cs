@@ -11,20 +11,21 @@ namespace ICEDT_TamilApp.Domain.Entities
 
         [Required]
         public string? LessonName { get; set; }
+
         [Required]
         public string? Description { get; set; }
+
         [Required]
         public int SequenceOrder { get; set; }
 
-
         [Required]
         public int LevelId { get; set; }
+
         [ForeignKey("LevelId")]
         public virtual Level? Level { get; set; }
 
         public virtual ICollection<Activity>? Activities { get; set; }
-        
-         public virtual ICollection<UserCurrentProgress> ?UserCurrentProgress { get; set; }
 
+        public virtual ICollection<UserCurrentProgress>? UserCurrentProgress { get; set; }
     }
 }

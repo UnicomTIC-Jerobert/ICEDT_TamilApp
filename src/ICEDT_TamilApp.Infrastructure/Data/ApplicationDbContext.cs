@@ -2,15 +2,12 @@
 using ICEDT_TamilApp.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace
-ICEDT_TamilApp.Infrastructure.Data
+namespace ICEDT_TamilApp.Infrastructure.Data
 {
     public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
-        {
-        }
+            : base(options) { }
 
         public DbSet<Level> Levels { get; set; }
         public DbSet<Lesson> Lessons { get; set; }

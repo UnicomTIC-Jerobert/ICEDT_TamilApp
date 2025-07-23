@@ -1,10 +1,10 @@
 using Amazon.S3;
 using ICEDT_TamilApp.Application;
-using ICEDT_TamilApp.Infrastructure;
 using ICEDT_TamilApp.Application.Common;
-using Microsoft.Extensions.Options;
+using ICEDT_TamilApp.Infrastructure;
 using ICEDT_TamilApp.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,9 +20,9 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 
 // Add services to the container.
 
-
 // This is for API Controllers
 builder.Services.AddControllers();
+
 // This is for Razor Pages
 builder.Services.AddRazorPages();
 
@@ -32,6 +32,7 @@ builder.Services.AddRazorPages();
 // *** NEW: Configure the Options Pattern ***
 var jwtSettings = new JwtSettings();
 builder.Configuration.Bind(JwtSettings.SectionName, jwtSettings);
+
 // Make the settings available via DI using IOptions<T>
 builder.Services.AddSingleton(Options.Create(jwtSettings));
 
@@ -75,10 +76,10 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
-        
+
         // Ensure migrations are applied (best practice for production)
         await context.Database.MigrateAsync();
-        
+
         // Call your DbInitializer to seed the data
         await DbInitializer.Initialize(context);
     }
@@ -89,6 +90,7 @@ using (var scope = app.Services.CreateScope())
         logger.LogError(ex, "An error occurred during database initialization/seeding.");
     }
 }
+
 // =================================================================
 
 app.UseHttpsRedirection();
@@ -105,6 +107,5 @@ app.MapControllers();
 
 // This maps your Razor Pages (e.g., /Admin/Levels)
 app.MapRazorPages();
-
 
 app.Run();

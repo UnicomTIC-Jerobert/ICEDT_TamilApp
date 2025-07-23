@@ -1,10 +1,10 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using ICEDT_TamilApp.Application.DTOs;
 using ICEDT_TamilApp.Application.DTOs.Request;
 using ICEDT_TamilApp.Application.DTOs.Response;
 using ICEDT_TamilApp.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace ICEDT_TamilApp.Web.Controllers
 {
@@ -67,7 +67,11 @@ namespace ICEDT_TamilApp.Web.Controllers
             var newMainActivity = await _mainActivityService.CreateAsync(requestDto);
 
             // Return a 201 Created status code with a Location header pointing to the new resource.
-            return CreatedAtAction(nameof(GetById), new { id = newMainActivity.Id }, newMainActivity);
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = newMainActivity.Id },
+                newMainActivity
+            );
         }
 
         /// <summary>
@@ -80,7 +84,10 @@ namespace ICEDT_TamilApp.Web.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> Update(int id, [FromBody] MainActivityRequestDto requestDto)
+        public async Task<IActionResult> Update(
+            int id,
+            [FromBody] MainActivityRequestDto requestDto
+        )
         {
             await _mainActivityService.UpdateAsync(id, requestDto);
             // The service will throw a NotFoundException if the ID doesn't exist,

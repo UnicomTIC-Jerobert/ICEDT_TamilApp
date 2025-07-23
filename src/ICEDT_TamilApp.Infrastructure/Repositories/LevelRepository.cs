@@ -1,15 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ICEDT_TamilApp.Domain.Entities;
+using ICEDT_TamilApp.Domain.Interfaces;
+using ICEDT_TamilApp.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
-using
-ICEDT_TamilApp.Infrastructure.Data;
-using ICEDT_TamilApp.Domain.Interfaces;
-using ICEDT_TamilApp.Domain.Entities;
-
-
-namespace
-ICEDT_TamilApp.Infrastructure.Repositories
+namespace ICEDT_TamilApp.Infrastructure.Repositories
 {
     public class LevelRepository : ILevelRepository
     {
@@ -18,13 +14,11 @@ ICEDT_TamilApp.Infrastructure.Repositories
         public LevelRepository(ApplicationDbContext context) => _context = context;
 
         public async Task<Level> GetByIdAsync(int id) =>
-            await _context.Levels
-                .Include(l => l.Lessons)
-                .FirstOrDefaultAsync(l => l.LevelId == id);
+            await _context.Levels.Include(l => l.Lessons).FirstOrDefaultAsync(l => l.LevelId == id);
 
         public async Task<List<Level>> GetAllAsync() =>
-            await _context.Levels
-                .Include(l => l.Lessons)
+            await _context
+                .Levels.Include(l => l.Lessons)
                 .OrderBy(l => l.SequenceOrder)
                 .ToListAsync();
 
@@ -52,8 +46,8 @@ ICEDT_TamilApp.Infrastructure.Repositories
 
         public async Task<Level> GetByIdWithLessonsAsync(int id)
         {
-            return await _context.Levels
-                .Include(l => l.Lessons)
+            return await _context
+                .Levels.Include(l => l.Lessons)
                 .Where(l => l.LevelId == id)
                 .OrderBy(l => l.SequenceOrder)
                 .FirstOrDefaultAsync();
@@ -61,8 +55,8 @@ ICEDT_TamilApp.Infrastructure.Repositories
 
         public async Task<List<Level>> GetAllWithLessonsAsync()
         {
-            var levels = await _context.Levels
-                .Include(l => l.Lessons)
+            var levels = await _context
+                .Levels.Include(l => l.Lessons)
                 .OrderBy(l => l.SequenceOrder)
                 .ToListAsync();
             // Sort child lessons in-memory

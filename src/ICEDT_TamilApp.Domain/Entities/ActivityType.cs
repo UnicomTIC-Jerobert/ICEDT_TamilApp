@@ -6,9 +6,10 @@ namespace ICEDT_TamilApp.Domain.Entities
     {
         [Key]
         public int ActivityTypeId { get; set; }
+
         [Required]
         public string? Name { get; set; }
-       
+
         public ICollection<Activity>? Activities { get; set; }
     }
 }

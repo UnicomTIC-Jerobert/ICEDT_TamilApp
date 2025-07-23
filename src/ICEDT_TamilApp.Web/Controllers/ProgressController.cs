@@ -1,10 +1,10 @@
+using System.Security.Claims;
+using System.Threading.Tasks;
 using ICEDT_TamilApp.Application.DTOs.Request;
 using ICEDT_TamilApp.Application.DTOs.Response;
 using ICEDT_TamilApp.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace ICEDT_TamilApp.Web.Controllers
 {
@@ -31,7 +31,7 @@ namespace ICEDT_TamilApp.Web.Controllers
         {
             var userId = GetUserId();
             var currentLessonData = await _progressService.GetCurrentLessonForUserAsync(userId);
-            
+
             if (currentLessonData == null)
             {
                 return NotFound("Could not find a current lesson for the user.");
@@ -46,7 +46,9 @@ namespace ICEDT_TamilApp.Web.Controllers
         [HttpPost("complete-activity")]
         [ProducesResponseType(typeof(ActivityCompletionResponseDto), 200)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> CompleteActivity([FromBody] ActivityCompletionRequestDto request)
+        public async Task<IActionResult> CompleteActivity(
+            [FromBody] ActivityCompletionRequestDto request
+        )
         {
             if (!ModelState.IsValid)
             {
@@ -55,7 +57,7 @@ namespace ICEDT_TamilApp.Web.Controllers
 
             var userId = GetUserId();
             var response = await _progressService.CompleteActivityAsync(userId, request);
-            
+
             return Ok(response);
         }
 

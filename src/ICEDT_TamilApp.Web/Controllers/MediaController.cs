@@ -40,16 +40,15 @@ namespace ICEDT_TamilApp.Web.Controllers
         }
 
         [HttpGet("url")]
-        public async Task<IActionResult> GetPresignedUrl([FromQuery] string key, [FromQuery] int expiryMinutes = 60)
+        public async Task<IActionResult> GetPresignedUrl(
+            [FromQuery] string key,
+            [FromQuery] int expiryMinutes = 60
+        )
         {
             if (string.IsNullOrEmpty(key))
                 return BadRequest(new { message = "Key is required." });
 
-            var request = new MediaUrlRequestDto
-            {
-                Key = key,
-                ExpiryMinutes = expiryMinutes
-            };
+            var request = new MediaUrlRequestDto { Key = key, ExpiryMinutes = expiryMinutes };
 
             var result = await _mediaService.GetPresignedUrlAsync(request);
             return Ok(result);

@@ -2,8 +2,7 @@ using ICEDT_TamilApp.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace 
-ICEDT_TamilApp.Infrastructure.Data.EntityConfigurations
+namespace ICEDT_TamilApp.Infrastructure.Data.EntityConfigurations
 {
     public class LessonConfiguration : IEntityTypeConfiguration<Lesson>
     {
@@ -14,17 +13,19 @@ ICEDT_TamilApp.Infrastructure.Data.EntityConfigurations
             builder.Property(ls => ls.Description).IsRequired();
             builder.Property(ls => ls.SequenceOrder).IsRequired();
 
-            builder.HasOne(ls => ls.Level)
-                   .WithMany(l => l.Lessons)
-                   .HasForeignKey(ls => ls.LevelId)
-                   .OnDelete(DeleteBehavior.Cascade);
+            builder
+                .HasOne(ls => ls.Level)
+                .WithMany(l => l.Lessons)
+                .HasForeignKey(ls => ls.LevelId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasMany(ls => ls.Activities)
-                   .WithOne(a => a.Lesson)
-                   .HasForeignKey(a => a.LessonId)
-                   .OnDelete(DeleteBehavior.Cascade);
+            builder
+                .HasMany(ls => ls.Activities)
+                .WithOne(a => a.Lesson)
+                .HasForeignKey(a => a.LessonId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasIndex(l => l.SequenceOrder).IsUnique();
         }
     }
-} 
+}

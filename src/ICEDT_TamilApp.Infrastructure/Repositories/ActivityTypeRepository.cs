@@ -1,12 +1,9 @@
+using ICEDT_TamilApp.Domain.Entities;
+using ICEDT_TamilApp.Domain.Interfaces;
+using ICEDT_TamilApp.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
-using ICEDT_TamilApp.Infrastructure.Data;
-using ICEDT_TamilApp.Domain.Interfaces;
-using ICEDT_TamilApp.Domain.Entities;
-
-
-namespace
-ICEDT_TamilApp.Infrastructure.Repositories
+namespace ICEDT_TamilApp.Infrastructure.Repositories
 {
     public class ActivityTypeRepository : IActivityTypeRepository
     {

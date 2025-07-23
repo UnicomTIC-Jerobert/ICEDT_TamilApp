@@ -8,7 +8,7 @@ namespace ICEDT_TamilApp.Domain.Entities
         // This forms a one-to-one relationship with the User table
         [Key]
         public int UserCurrentProgressId { get; set; }
-        
+
         public DateTime LastActivityAt { get; set; } = DateTime.UtcNow;
 
         public int UserId { get; set; }

@@ -1,8 +1,8 @@
-using ICEDT_TamilApp.Domain.Entities;
-using Microsoft.EntityFrameworkCore; // Add this for async operations
 using System;
 using System.Linq;
 using System.Threading.Tasks; // Add this for async operations
+using ICEDT_TamilApp.Domain.Entities;
+using Microsoft.EntityFrameworkCore; // Add this for async operations
 
 namespace ICEDT_TamilApp.Infrastructure.Data
 {
@@ -30,20 +30,36 @@ namespace ICEDT_TamilApp.Infrastructure.Data
                 new Level { LevelName = "ஆண்டு 02", SequenceOrder = 4 },
                 new Level { LevelName = "ஆண்டு 03", SequenceOrder = 5 },
                 new Level { LevelName = "ஆண்டு 04", SequenceOrder = 6 },
-                new Level { LevelName = "ஆண்டு 05", SequenceOrder = 7 }
+                new Level { LevelName = "ஆண்டு 05", SequenceOrder = 7 },
             };
             await context.Levels.AddRangeAsync(levels);
             await context.SaveChangesAsync(); // Use async version
 
             // --- Seed Lessons ---
-            var aandu01LevelId = (await context.Levels.SingleAsync(l => l.SequenceOrder == 3)).LevelId;
-            var aandu02LevelId = (await context.Levels.SingleAsync(l => l.SequenceOrder == 4)).LevelId;
+            var aandu01LevelId = (
+                await context.Levels.SingleAsync(l => l.SequenceOrder == 3)
+            ).LevelId;
+            var aandu02LevelId = (
+                await context.Levels.SingleAsync(l => l.SequenceOrder == 4)
+            ).LevelId;
             // ... get other level IDs as needed
 
             var lessons = new Lesson[]
             {
-                new Lesson { LevelId = aandu01LevelId, LessonName = "பாடம் 01 - தமிழ்ப்பள்ளி", SequenceOrder = 1, Description = "Introduction to classroom vocabulary and basic alphabets." },
-                new Lesson { LevelId = aandu01LevelId, LessonName = "பாடம் 02 - விடுமுறை", SequenceOrder = 2, Description = "Learning the 'ஆ' sound series." },
+                new Lesson
+                {
+                    LevelId = aandu01LevelId,
+                    LessonName = "பாடம் 01 - தமிழ்ப்பள்ளி",
+                    SequenceOrder = 1,
+                    Description = "Introduction to classroom vocabulary and basic alphabets.",
+                },
+                new Lesson
+                {
+                    LevelId = aandu01LevelId,
+                    LessonName = "பாடம் 02 - விடுமுறை",
+                    SequenceOrder = 2,
+                    Description = "Learning the 'ஆ' sound series.",
+                },
                 // ... add all other lessons
             };
             await context.Lessons.AddRangeAsync(lessons);
@@ -57,7 +73,7 @@ namespace ICEDT_TamilApp.Infrastructure.Data
                     new MainActivity { Name = "Video" },
                     new MainActivity { Name = "Sounds" },
                     new MainActivity { Name = "Learning" },
-                    new MainActivity { Name = "Exercises" }
+                    new MainActivity { Name = "Exercises" },
                 };
                 await context.MainActivities.AddRangeAsync(mainActivities);
                 await context.SaveChangesAsync();
@@ -85,7 +101,7 @@ namespace ICEDT_TamilApp.Infrastructure.Data
                     new ActivityType { Name = "ReadingComprehension" },
                     new ActivityType { Name = "StorySequencing" },
                     new ActivityType { Name = "TimedChallenge" },
-                    new ActivityType { Name = "InteractiveDialogue" }
+                    new ActivityType { Name = "InteractiveDialogue" },
                 };
                 await context.ActivityTypes.AddRangeAsync(activityTypes);
                 await context.SaveChangesAsync();

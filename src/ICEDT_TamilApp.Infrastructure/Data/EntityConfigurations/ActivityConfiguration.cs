@@ -2,8 +2,7 @@ using ICEDT_TamilApp.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace
-ICEDT_TamilApp.Infrastructure.Data.EntityConfigurations
+namespace ICEDT_TamilApp.Infrastructure.Data.EntityConfigurations
 {
     public class ActivityConfiguration : IEntityTypeConfiguration<Activity>
     {
@@ -16,20 +15,23 @@ ICEDT_TamilApp.Infrastructure.Data.EntityConfigurations
             builder.Property(a => a.SequenceOrder).IsRequired();
             builder.Property(a => a.ContentJson).IsRequired();
 
-            builder.HasOne(a => a.Lesson)
-                   .WithMany(l => l.Activities)
-                   .HasForeignKey(a => a.LessonId)
-                   .OnDelete(DeleteBehavior.Cascade);
+            builder
+                .HasOne(a => a.Lesson)
+                .WithMany(l => l.Activities)
+                .HasForeignKey(a => a.LessonId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasOne(a => a.ActivityType)
-                   .WithMany(t => t.Activities)
-                   .HasForeignKey(a => a.ActivityTypeId)
-                   .OnDelete(DeleteBehavior.Restrict);
+            builder
+                .HasOne(a => a.ActivityType)
+                .WithMany(t => t.Activities)
+                .HasForeignKey(a => a.ActivityTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(a => a.MainActivity)
-                    .WithMany() // A MainActivity can be linked to many Activities
-                    .HasForeignKey(a => a.MainActivityId)
-                    .IsRequired();
+            builder
+                .HasOne(a => a.MainActivity)
+                .WithMany() // A MainActivity can be linked to many Activities
+                .HasForeignKey(a => a.MainActivityId)
+                .IsRequired();
 
             builder.HasIndex(a => a.SequenceOrder).IsUnique();
         }

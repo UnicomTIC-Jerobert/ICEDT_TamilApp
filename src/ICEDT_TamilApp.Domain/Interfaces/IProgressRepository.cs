@@ -1,5 +1,5 @@
-using ICEDT_TamilApp.Domain.Entities;
 using System.Threading.Tasks;
+using ICEDT_TamilApp.Domain.Entities;
 
 public interface IProgressRepository
 {

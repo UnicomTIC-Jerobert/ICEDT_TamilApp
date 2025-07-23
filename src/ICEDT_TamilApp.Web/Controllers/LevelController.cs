@@ -12,7 +12,6 @@ namespace ICEDT_TamilApp.Web.Controllers
 
         public LevelsController(ILevelService service) => _service = service;
 
-
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
@@ -22,12 +21,9 @@ namespace ICEDT_TamilApp.Web.Controllers
             return Ok(level);
         }
 
-
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAll()
-            => Ok(await _service.GetAllLevelsAsync());
-
+        public async Task<IActionResult> GetAll() => Ok(await _service.GetAllLevelsAsync());
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] LevelRequestDto dto)
@@ -35,7 +31,6 @@ namespace ICEDT_TamilApp.Web.Controllers
             var level = await _service.CreateLevelAsync(dto);
             return CreatedAtAction(nameof(Get), new { id = level.LevelId }, level);
         }
-
 
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(int id, [FromBody] LevelRequestDto dto)
@@ -46,7 +41,6 @@ namespace ICEDT_TamilApp.Web.Controllers
             return NoContent();
         }
 
-
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -55,6 +49,5 @@ namespace ICEDT_TamilApp.Web.Controllers
             await _service.DeleteLevelAsync(id);
             return NoContent();
         }
-
     }
 }
