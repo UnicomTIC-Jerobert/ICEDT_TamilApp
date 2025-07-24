@@ -1,18 +1,16 @@
-using Amazon.S3;
-using Amazon.S3.Model;
-using Amazon.Runtime;
-using Microsoft.Extensions.Configuration;
-using ICEDT_TamilApp.Application.Services.Interfaces;
-
-using ICEDT_TamilApp.Application.DTOs.Response;
-
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using ICEDT_TamilApp.Application.DTOs.Requst;
-using ICEDT_TamilApp.Application.Exceptions;
+using Amazon.Runtime;
+using Amazon.S3;
+using Amazon.S3.Model;
 using ICEDT_TamilApp.Application.Common;
+using ICEDT_TamilApp.Application.DTOs.Requst;
+using ICEDT_TamilApp.Application.DTOs.Response;
+using ICEDT_TamilApp.Application.Exceptions;
+using ICEDT_TamilApp.Application.Services.Interfaces;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace ICEDT_TamilApp.Application.Services.Implementation
@@ -38,7 +36,8 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
 
             // ... (validation logic remains the same) ...
 
-            var key = $"{request.Folder}/{Guid.NewGuid()}_{Path.GetFileName(request.File.FileName)}";
+            var key =
+                $"{request.Folder}/{Guid.NewGuid()}_{Path.GetFileName(request.File.FileName)}";
 
             try
             {
@@ -48,7 +47,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                     Key = key,
                     InputStream = request.File.OpenReadStream(),
                     ContentType = request.File.ContentType,
-                    ServerSideEncryptionMethod = ServerSideEncryptionMethod.AES256
+                    ServerSideEncryptionMethod = ServerSideEncryptionMethod.AES256,
                 };
 
                 var response = await _s3Client.PutObjectAsync(uploadRequest);
@@ -64,7 +63,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 {
                     // ...
                     Url = url,
-                    Message = "File uploaded successfully"
+                    Message = "File uploaded successfully",
                 };
             }
             catch (AmazonS3Exception ex)
@@ -83,7 +82,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             var deleteObjectRequest = new DeleteObjectRequest
             {
                 BucketName = _awsSettings.BucketName, // Use settings
-                Key = key
+                Key = key,
             };
             await _s3Client.DeleteObjectAsync(deleteObjectRequest);
         }
@@ -91,7 +90,8 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
         // This is now a private helper method, as the configuration is internal to the service
         private string GetPublicUrl(string key)
         {
-            if (string.IsNullOrEmpty(key)) return string.Empty;
+            if (string.IsNullOrEmpty(key))
+                return string.Empty;
             return $"https://{_awsSettings.BucketName}.s3.{_awsSettings.Region}.amazonaws.com/{key}";
         }
 
@@ -109,7 +109,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 {
                     BucketName = _awsSettings.BucketName,
                     Prefix = string.IsNullOrEmpty(folder) ? "" : $"{folder}/",
-                    MaxKeys = 1000
+                    MaxKeys = 1000,
                 };
 
                 var response = await _s3Client.ListObjectsV2Async(request);
@@ -124,7 +124,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 {
                     Files = keys,
                     Count = keys.Count,
-                    Folder = folder
+                    Folder = folder,
                 };
             }
             catch (AmazonS3Exception ex)
@@ -149,17 +149,19 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                     BucketName = _awsSettings.BucketName,
                     Key = request.Key,
                     Expires = DateTime.UtcNow.AddMinutes(request.ExpiryMinutes),
-                    Verb = HttpVerb.GET
+                    Verb = HttpVerb.GET,
                 };
 
                 var url = _s3Client.GetPreSignedURL(presignedRequest);
 
-                return Task.FromResult(new MediaUrlResponseDto
-                {
-                    Url = url,
-                    Key = request.Key,
-                    ExpiryMinutes = request.ExpiryMinutes
-                });
+                return Task.FromResult(
+                    new MediaUrlResponseDto
+                    {
+                        Url = url,
+                        Key = request.Key,
+                        ExpiryMinutes = request.ExpiryMinutes,
+                    }
+                );
             }
             catch (AmazonS3Exception ex)
             {
@@ -170,11 +172,6 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 throw new InvalidOperationException($"PreSigned URL Error: {ex.Message}", ex);
             }
         }
-
-
-
-
-
 
         // ... (The rest of your methods like ListAsync, GetPresignedUrlAsync also use _awsSettings.BucketName)
 

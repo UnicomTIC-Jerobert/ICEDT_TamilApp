@@ -1,15 +1,14 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using ICEDT_TamilApp.Application.Common;
 using ICEDT_TamilApp.Application.DTOs.Request;
 using ICEDT_TamilApp.Application.DTOs.Response;
-
 using ICEDT_TamilApp.Application.Services.Interfaces;
 using ICEDT_TamilApp.Domain.Entities;
 using ICEDT_TamilApp.Domain.Interfaces;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace ICEDT_TamilApp.Application.Services.Implementation
 {
@@ -29,7 +28,11 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
         {
             if (await _authRepository.UserExistsAsync(registerDto.Username, registerDto.Email))
             {
-                return new AuthResponseDto { IsSuccess = false, Message = "Username or Email already exists." };
+                return new AuthResponseDto
+                {
+                    IsSuccess = false,
+                    Message = "Username or Email already exists.",
+                };
             }
 
             // Hash the password
@@ -39,12 +42,16 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             {
                 Username = registerDto.Username,
                 Email = registerDto.Email,
-                PasswordHash = passwordHash
+                PasswordHash = passwordHash,
             };
 
             await _authRepository.RegisterUserAsync(user);
 
-            return new AuthResponseDto { IsSuccess = true, Message = "User registered successfully." };
+            return new AuthResponseDto
+            {
+                IsSuccess = true,
+                Message = "User registered successfully.",
+            };
         }
 
         public async Task<AuthResponseDto> LoginAsync(LoginRequestDto loginDto)
@@ -53,22 +60,31 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash))
             {
-                return new AuthResponseDto { IsSuccess = false, Message = "Invalid username or password." };
+                return new AuthResponseDto
+                {
+                    IsSuccess = false,
+                    Message = "Invalid username or password.",
+                };
             }
 
             // Create JWT Token
             var token = CreateToken(user);
 
-            return new AuthResponseDto { IsSuccess = true, Message = "Login successful.", Token = token };
+            return new AuthResponseDto
+            {
+                IsSuccess = true,
+                Message = "Login successful.",
+                Token = token,
+            };
         }
 
         private string CreateToken(User user)
         {
             var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-            new Claim(ClaimTypes.Name, user.Username)
-        };
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                new Claim(ClaimTypes.Name, user.Username),
+            };
 
             // Use the strongly-typed settings object now!
             if (string.IsNullOrEmpty(_jwtSettings.Secret))
@@ -81,7 +97,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             {
                 Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.Now.AddDays(_jwtSettings.ExpiryDays),
-                SigningCredentials = creds
+                SigningCredentials = creds,
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();

@@ -9,11 +9,15 @@ namespace ICEDT_TamilApp.Infrastructure
 {
     public static class InfrastructureServiceExtensions
     {
-        public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddInfrastructureServices(
+            this IServiceCollection services,
+            IConfiguration configuration
+        )
         {
             // Configure the DbContext
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(configuration.GetConnectionString("DefaultConnection"))); // Or UseSqlServer, etc.
+                options.UseSqlite(configuration.GetConnectionString("DefaultConnection"))
+            ); // Or UseSqlServer, etc.
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -23,9 +27,9 @@ namespace ICEDT_TamilApp.Infrastructure
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<ILessonRepository, LessonRepository>();
             services.AddScoped<ILevelRepository, LevelRepository>();
+            services.AddScoped<IMainActivityRepository, MainActivityRepository>();
             services.AddScoped<IProgressRepository, ProgressRepository>();
-
-
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             return services;
         }
     }

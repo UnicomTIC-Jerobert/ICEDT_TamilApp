@@ -23,7 +23,8 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
         public async Task<MainActivityResponseDto?> GetByIdAsync(int id)
         {
             var mainActivity = await _unitOfWork.MainActivities.GetByIdAsync(id);
-            if (mainActivity == null) return null;
+            if (mainActivity == null)
+                return null;
 
             return new MainActivityResponseDto { Id = mainActivity.Id, Name = mainActivity.Name };
         }
@@ -31,19 +32,14 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
         public async Task<List<MainActivityResponseDto>> GetAllAsync()
         {
             var mainActivities = await _unitOfWork.MainActivities.GetAllAsync();
-            return mainActivities.Select(ma => new MainActivityResponseDto
-            {
-                Id = ma.Id,
-                Name = ma.Name
-            }).ToList();
+            return mainActivities
+                .Select(ma => new MainActivityResponseDto { Id = ma.Id, Name = ma.Name })
+                .ToList();
         }
 
         public async Task<MainActivityResponseDto> CreateAsync(MainActivityRequestDto requestDto)
         {
-            var mainActivity = new MainActivity
-            {
-                Name = requestDto.Name
-            };
+            var mainActivity = new MainActivity { Name = requestDto.Name };
 
             await _unitOfWork.MainActivities.CreateAsync(mainActivity);
             await _unitOfWork.CompleteAsync(); // Save changes to the database

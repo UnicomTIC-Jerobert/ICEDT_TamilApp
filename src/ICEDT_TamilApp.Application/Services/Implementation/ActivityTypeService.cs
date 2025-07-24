@@ -12,12 +12,14 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
         private readonly IActivityRepository _activityRepo;
         private readonly IActivityTypeRepository _activityTypeRepo;
 
-        public ActivityTypeService(IActivityRepository activityRepo, IActivityTypeRepository typeRepo)
+        public ActivityTypeService(
+            IActivityRepository activityRepo,
+            IActivityTypeRepository typeRepo
+        )
         {
             _activityRepo = activityRepo;
             this._activityTypeRepo = typeRepo;
         }
-
 
         // ActivityType CRUD
         public async Task<ActivityTypeResponseDto> GetActivityTypeAsync(int id)
@@ -36,11 +38,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
 
         public async Task<ActivityTypeResponseDto> AddActivityTypeAsync(ActivityTypeRequestDto dto)
         {
-            var type = new ActivityType
-            {
-                Name = dto.ActivityName,
-
-            };
+            var type = new ActivityType { Name = dto.ActivityName };
             await this._activityTypeRepo.CreateAsync(type);
             return MapToActivityTypeResponseDto(type);
         }
@@ -68,7 +66,6 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 );
             await this._activityTypeRepo.DeleteAsync(id);
         }
-
 
         private ActivityTypeResponseDto MapToActivityTypeResponseDto(ActivityType type)
         {

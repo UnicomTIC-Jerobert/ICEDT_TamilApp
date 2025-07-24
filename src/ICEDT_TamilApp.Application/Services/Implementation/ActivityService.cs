@@ -33,9 +33,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             return activities.Select(MapToActivityResponseDto).ToList();
         }
 
-        public async Task<List<ActivityResponseDto>> GetActivitiesByLessonIdAsync(
-            int lessonId
-        )
+        public async Task<List<ActivityResponseDto>> GetActivitiesByLessonIdAsync(int lessonId)
         {
             var lessonExists = await _activityRepo.LessonExistsAsync(lessonId);
             if (!lessonExists)
