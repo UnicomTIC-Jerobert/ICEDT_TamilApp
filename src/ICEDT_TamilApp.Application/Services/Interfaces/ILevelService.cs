@@ -10,6 +10,5 @@ namespace ICEDT_TamilApp.Application.Services.Interfaces
         Task<LevelResponseDto> CreateLevelAsync(LevelRequestDto dto);
         Task UpdateLevelAsync(int id, LevelRequestDto dto);
         Task DeleteLevelAsync(int id);
-        
     }
 }

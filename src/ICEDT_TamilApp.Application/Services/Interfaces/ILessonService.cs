@@ -9,7 +9,6 @@ namespace ICEDT_TamilApp.Application.Services.Interfaces
         Task RemoveLessonFromLevelAsync(int levelId, int lessonId);
         Task<LevelWithLessonsResponseDto> GetLevelWithLessonsAsync(int levelId);
 
-        
         Task<LessonResponseDto?> GetLessonByIdAsync(int lessonId);
         Task<bool> UpdateLessonAsync(int lessonId, LessonRequestDto updateDto); // Create UpdateLessonDto
         Task<bool> DeleteLessonAsync(int lessonId);
