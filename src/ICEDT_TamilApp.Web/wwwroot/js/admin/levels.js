@@ -11,58 +11,58 @@ document.addEventListener('DOMContentLoaded', function () {
     const apiEndpoint = '/api/levels';
     const entityName = 'Level';
 
-    // --- RENDER FUNCTION ---
+    // --- RENDER FUNCTION (Corrected) ---
     function renderTable(levels) {
         tableBody.innerHTML = '';
         if (!levels || levels.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="4" class="text-center">No ${entityName}s found.</td></tr>`;
+            tableBody.innerHTML = '<tr><td colspan="5" class="text-center">No levels found.</td></tr>';
             return;
         }
 
         levels.forEach(level => {
             const row = document.createElement('tr');
-            // IMPORTANT: Use the camelCase property from the JSON response ('levelId')
+            // CORRECTED: Use 'level.levelId' from the API response
             row.setAttribute('data-level-id', level.levelId);
-
-            // *** CRITICAL FIX: Corrected the 'data-field' attributes for both cells. ***
             row.innerHTML = `
-                <td>${level.levelId}</td>
-                <td data-field="levelName">${level.levelName}</td>
-                <td data-field="sequenceOrder">${level.sequenceOrder}</td>
-                <td class="actions-column">
-                    <button class="btn btn-sm btn-primary btn-edit">Edit</button>
-                    <button class="btn btn-sm btn-danger btn-delete">Delete</button>
-                    <button class="btn btn-sm btn-success btn-save" style="display:none;">Save</button>
-                    <button class="btn btn-sm btn-secondary btn-cancel" style="display:none;">Cancel</button>
-                </td>
-            `;
+            <td>${level.levelId}</td>
+            <td data-field="levelName">${level.levelName}</td> <!-- CORRECTED: Use levelName for data and consistency -->
+            <td data-field="sequenceOrder">${level.sequenceOrder}</td>
+            
+            <td>
+                <!-- CORRECTED: Use 'level.levelId' for the link -->
+                <a href="/Admin/Lessons?levelId=${level.levelId}" class="btn btn-sm btn-info">Manage Lessons</a>
+            </td>
+
+            <td class="actions-column">
+                <button class="btn btn-sm btn-primary btn-edit">Edit</button>
+                <button class="btn btn-sm btn-danger btn-delete">Delete</button>
+                <button class="btn btn-sm btn-success btn-save" style="display:none;">Save</button>
+                <button class="btn btn-sm btn-secondary btn-cancel" style="display:none;">Cancel</button>
+            </td>
+        `;
             tableBody.appendChild(row);
         });
     }
 
-    // --- EDIT MODE LOGIC ---
+    // --- EDIT MODE LOGIC (Corrected) ---
     function enterEditMode(row) {
-        // First, cancel any other row that might be in edit mode
         const currentlyEditing = tableBody.querySelector('tr[data-original-name]');
         if (currentlyEditing && currentlyEditing !== row) {
             exitEditMode(currentlyEditing, false);
         }
 
-        // Find cells using the 'data-field' selectors. This is where the error was happening.
+        // CORRECTED: The selector now matches the data-field set in renderTable
         const nameCell = row.querySelector('[data-field="levelName"]');
         const orderCell = row.querySelector('[data-field="sequenceOrder"]');
 
-        // Defensive check: if cells aren't found, log an error and exit to prevent crashing.
         if (!nameCell || !orderCell) {
-            console.error("Could not find cells to edit. Check that 'data-field' attributes are correct in the renderTable function.");
+            console.error("Could not find cells to edit. Check 'data-field' attributes.");
             return;
         }
 
-        // Store original values on the row element itself for easy cancellation
         row.setAttribute('data-original-name', nameCell.textContent);
         row.setAttribute('data-original-order', orderCell.textContent);
 
-        // Create the input fields using the text content we just read
         nameCell.innerHTML = `<input type="text" class="form-control" value="${nameCell.textContent}">`;
         orderCell.innerHTML = `<input type="number" class="form-control" value="${orderCell.textContent}">`;
 
@@ -70,19 +70,21 @@ document.addEventListener('DOMContentLoaded', function () {
         toggleButtons(row, true);
     }
 
-    // --- All other functions remain the same ---
+    // --- All other functions were already mostly correct and will now work with the fixes above ---
 
     // --- API CALLS ---
     async function fetchLevels() {
         try {
-            tableBody.innerHTML = '<tr><td colspan="4" class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>';
+            // Updated colspan to 5 to match the new table structure
+            tableBody.innerHTML = '<tr><td colspan="5" class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>';
             const response = await fetch(apiEndpoint);
             if (!response.ok) throw new Error(`Server responded with status: ${response.status}`);
             const levels = await response.json();
             renderTable(levels);
         } catch (error) {
             console.error(`Error fetching ${entityName}s:`, error);
-            tableBody.innerHTML = `<tr><td colspan="4" class="text-center text-danger">Could not load ${entityName}s. Check the console for details.</td></tr>`;
+            // Updated colspan to 5
+            tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Could not load ${entityName}s. Check the console for details.</td></tr>`;
         }
     }
 
@@ -161,9 +163,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // --- LOGIC FUNCTIONS ---
+    // --- LOGIC FUNCTIONS (Corrected) ---
     async function handleDelete(row) {
         const levelId = row.dataset.levelId;
+        // CORRECTED: Selector now finds the correct cell
         const levelName = row.querySelector('[data-field="levelName"]').textContent;
         if (!confirm(`Are you sure you want to delete "${levelName}"? This action cannot be undone.`)) return;
         const success = await deleteLevel(levelId);
@@ -205,8 +208,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function exitEditMode(row, shouldSave) {
         const levelId = row.dataset.levelId;
+        // CORRECTED: Selectors now find the correct cells
         const nameCell = row.querySelector('[data-field="levelName"]');
         const orderCell = row.querySelector('[data-field="sequenceOrder"]');
+
         if (shouldSave) {
             const nameInput = nameCell.querySelector('input');
             const orderInput = orderCell.querySelector('input');
