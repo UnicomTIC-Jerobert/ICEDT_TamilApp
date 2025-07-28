@@ -25,7 +25,7 @@ namespace ICEDT_TamilApp.Infrastructure.Data.EntityConfigurations
                 .HasForeignKey(a => a.LessonId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasIndex(l => l.SequenceOrder).IsUnique();
+            builder.HasIndex(l => new { l.LevelId, l.SequenceOrder }).IsUnique();
         }
     }
 }
