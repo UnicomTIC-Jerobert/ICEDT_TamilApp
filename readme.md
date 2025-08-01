@@ -117,6 +117,3 @@ The solution follows Clean Architecture principles to ensure separation of conce
 -   **`src/ICEDT_TamilApp.Application`**: Contains the application's business logic, services, DTOs, and custom exceptions. It depends only on the `Domain` layer.
 -   **`src/ICEDT_TamilApp.Infrastructure`**: Contains the implementation details for external concerns, such as the database context (EF Core), repository implementations, and data seeding. It depends on the `Application` layer.
 -   **`src/ICEDT_TamilApp.Web`**: The entry point of the application. It contains the API Controllers, Razor Pages for the admin panel, middleware, and DI configuration. It depends on all other layers.
-
-This structure makes the application modular, testable, and easy to maintain.
-```
