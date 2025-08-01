@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using ICEDT_TamilApp.Domain.Entities;
 using ICEDT_TamilApp.Domain.Interfaces;
@@ -16,11 +17,13 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
         public async Task<Activity> GetByIdAsync(int id) =>
             await _context
                 .Activities.Include(a => a.ActivityType)
+                .Include(a => a.MainActivity)
                 .FirstOrDefaultAsync(a => a.ActivityId == id);
 
         public async Task<List<Activity>> GetAllAsync() =>
             await _context
                 .Activities.Include(a => a.ActivityType)
+                .Include(a => a.MainActivity)
                 .OrderBy(a => a.SequenceOrder)
                 .ToListAsync();
 
@@ -28,6 +31,7 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
         {
             var query = _context
                 .Activities.Include(a => a.ActivityType)
+                .Include(a => a.MainActivity)
                 .Where(a => a.LessonId == lessonId);
 
             return await query.OrderBy(a => a.SequenceOrder).ToListAsync();
