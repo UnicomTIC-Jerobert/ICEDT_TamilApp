@@ -29,11 +29,11 @@ namespace ICEDT_TamilApp.Infrastructure.Data.EntityConfigurations
 
             builder
                 .HasOne(a => a.MainActivity)
-                .WithMany() // A MainActivity can be linked to many Activities
+                .WithMany(m => m.Activities)
                 .HasForeignKey(a => a.MainActivityId)
                 .IsRequired();
 
-            builder.HasIndex(a => a.SequenceOrder).IsUnique();
+            builder.HasIndex(a => new { a.LessonId, a.SequenceOrder }).IsUnique();
         }
     }
 }

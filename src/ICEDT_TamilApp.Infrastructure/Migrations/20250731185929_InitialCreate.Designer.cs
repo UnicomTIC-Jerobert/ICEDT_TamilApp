@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ICEDT_TamilApp.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250728050937_CorrectLessonUniqueConstraint")]
-    partial class CorrectLessonUniqueConstraint
+    [Migration("20250731185929_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,9 +39,6 @@ namespace ICEDT_TamilApp.Infrastructure.Migrations
                     b.Property<int>("MainActivityId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("MainActivityTypeId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("SequenceOrder")
                         .HasColumnType("INTEGER");
 
@@ -54,11 +51,9 @@ namespace ICEDT_TamilApp.Infrastructure.Migrations
 
                     b.HasIndex("ActivityTypeId");
 
-                    b.HasIndex("LessonId");
-
                     b.HasIndex("MainActivityId");
 
-                    b.HasIndex("SequenceOrder")
+                    b.HasIndex("LessonId", "SequenceOrder")
                         .IsUnique();
 
                     b.ToTable("Activities");

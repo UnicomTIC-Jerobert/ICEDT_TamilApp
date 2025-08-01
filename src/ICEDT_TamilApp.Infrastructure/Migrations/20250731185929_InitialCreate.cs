@@ -100,8 +100,7 @@ namespace ICEDT_TamilApp.Infrastructure.Migrations
                     ContentJson = table.Column<string>(type: "TEXT", nullable: false),
                     LessonId = table.Column<int>(type: "INTEGER", nullable: false),
                     ActivityTypeId = table.Column<int>(type: "INTEGER", nullable: false),
-                    MainActivityId = table.Column<int>(type: "INTEGER", nullable: false),
-                    MainActivityTypeId = table.Column<int>(type: "INTEGER", nullable: false)
+                    MainActivityId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -199,9 +198,10 @@ namespace ICEDT_TamilApp.Infrastructure.Migrations
                 column: "ActivityTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Activities_LessonId",
+                name: "IX_Activities_LessonId_SequenceOrder",
                 table: "Activities",
-                column: "LessonId");
+                columns: new[] { "LessonId", "SequenceOrder" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Activities_MainActivityId",
@@ -209,20 +209,9 @@ namespace ICEDT_TamilApp.Infrastructure.Migrations
                 column: "MainActivityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Activities_SequenceOrder",
-                table: "Activities",
-                column: "SequenceOrder",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Lessons_LevelId",
+                name: "IX_Lessons_LevelId_SequenceOrder",
                 table: "Lessons",
-                column: "LevelId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Lessons_SequenceOrder",
-                table: "Lessons",
-                column: "SequenceOrder",
+                columns: new[] { "LevelId", "SequenceOrder" },
                 unique: true);
 
             migrationBuilder.CreateIndex(

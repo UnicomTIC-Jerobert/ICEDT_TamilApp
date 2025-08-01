@@ -22,5 +22,9 @@ namespace ICEDT_TamilApp.Application.DTOs.Request
 
         [Required(ErrorMessage = "Content JSON is required.")]
         public required string ContentJson { get; set; }
+
+        [Required(ErrorMessage = "Main Activity ID is required.")]
+        [Range(1, int.MaxValue, ErrorMessage = "Main Activity ID must be a positive number.")]
+        public int MainActivityId { get; set; }
     }
 }

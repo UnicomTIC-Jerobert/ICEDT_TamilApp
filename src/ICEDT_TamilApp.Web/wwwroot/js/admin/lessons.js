@@ -55,6 +55,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 <td data-field="lessonName">${item.lessonName}</td>
                 <td data-field="description">${item.description || ''}</td>
                 <td data-field="sequenceOrder">${item.sequenceOrder}</td>
+                <td>
+                    <a href="/Admin/Activities?lessonId=${item.lessonId}" class="btn btn-sm btn-info">
+                        <i class="fas fa-tasks"></i> Manage
+                    </a>
+                </td>
                 <td class="actions-column">
                     <button class="btn btn-sm btn-primary btn-edit">Edit</button>
                     <button class="btn btn-sm btn-danger btn-delete">Delete</button>

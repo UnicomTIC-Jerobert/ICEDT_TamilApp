@@ -36,9 +36,6 @@ namespace ICEDT_TamilApp.Infrastructure.Migrations
                     b.Property<int>("MainActivityId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("MainActivityTypeId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("SequenceOrder")
                         .HasColumnType("INTEGER");
 
@@ -51,11 +48,9 @@ namespace ICEDT_TamilApp.Infrastructure.Migrations
 
                     b.HasIndex("ActivityTypeId");
 
-                    b.HasIndex("LessonId");
-
                     b.HasIndex("MainActivityId");
 
-                    b.HasIndex("SequenceOrder")
+                    b.HasIndex("LessonId", "SequenceOrder")
                         .IsUnique();
 
                     b.ToTable("Activities");

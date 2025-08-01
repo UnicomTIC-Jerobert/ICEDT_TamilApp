@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using ICEDT_TamilApp.Application.DTOs.Request;
 using ICEDT_TamilApp.Application.DTOs.Response;
 using ICEDT_TamilApp.Application.Exceptions;
@@ -11,19 +15,26 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
     {
         private readonly IActivityRepository _activityRepo;
         private readonly IActivityTypeRepository _typeRepo;
+        private readonly IMainActivityRepository _mainActivityRepo;
 
-        public ActivityService(IActivityRepository activityRepo, IActivityTypeRepository typeRepo)
+        public ActivityService(
+            IActivityRepository activityRepo,
+            IActivityTypeRepository typeRepo,
+            IMainActivityRepository mainActivityRepo
+        )
         {
             _activityRepo = activityRepo;
             _typeRepo = typeRepo;
+            _mainActivityRepo = mainActivityRepo;
         }
 
-        // Activity CRUD
         public async Task<ActivityResponseDto> GetActivityAsync(int id)
         {
             var activity = await _activityRepo.GetByIdAsync(id);
             if (activity == null)
-                throw new NotFoundException("Activity not found.");
+            {
+                throw new NotFoundException($"Activity with ID {id} not found.");
+            }
             return MapToActivityResponseDto(activity);
         }
 
@@ -37,45 +48,57 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
         {
             var lessonExists = await _activityRepo.LessonExistsAsync(lessonId);
             if (!lessonExists)
-                throw new NotFoundException("Lesson not found.");
+            {
+                throw new NotFoundException($"Lesson with ID {lessonId} not found.");
+            }
             var activities = await _activityRepo.GetByLessonIdAsync(lessonId);
             return activities.Select(MapToActivityResponseDto).ToList();
         }
 
         public async Task<ActivityResponseDto> CreateActivityAsync(ActivityRequestDto dto)
         {
-            var lessonExists = await _activityRepo.LessonExistsAsync(dto.LessonId);
-            if (!lessonExists)
-                throw new NotFoundException("Lesson not found.");
-            var typeExists = await _typeRepo.ActivityTypeExistsAsync(dto.ActivityTypeId);
-            if (!typeExists)
-                throw new NotFoundException("Activity Type not found.");
+            var validationTasks = new List<Task<bool>>
+            {
+                _activityRepo.LessonExistsAsync(dto.LessonId),
+                _typeRepo.ActivityTypeExistsAsync(dto.ActivityTypeId),
+                _mainActivityRepo.MainActivityTypeExistsAsync(dto.MainActivityId),
+            };
 
-            if (await _activityRepo.SequenceOrderExistsAsync(dto.SequenceOrder))
-                throw new BadRequestException(
-                    $"Sequence order {dto.SequenceOrder} is already in use."
+            await Task.WhenAll(validationTasks);
+
+            if (!validationTasks[0].Result)
+                throw new NotFoundException(
+                    $"Cannot create activity: Lesson with ID {dto.LessonId} not found."
                 );
 
-            /*
-            var existingActivities = await _activityRepo.GetAllAsync();
-            if (existingActivities.Any(a => a.SequenceOrder == dto.SequenceOrder))
+            if (!validationTasks[1].Result)
+                throw new NotFoundException(
+                    $"Cannot create activity: Activity Type with ID {dto.ActivityTypeId} not found."
+                );
+
+            if (!validationTasks[2].Result)
+                throw new NotFoundException(
+                    $"Cannot create activity: Main Activity with ID {dto.MainActivityId} not found."
+                );
+
+            var existingActivitiesInLesson = await _activityRepo.GetByLessonIdAsync(dto.LessonId);
+            if (existingActivitiesInLesson.Any(a => a.SequenceOrder == dto.SequenceOrder))
             {
-                foreach (var activity in existingActivities.Where(a => a.SequenceOrder >= dto.SequenceOrder))
-                {
-                    activity.SequenceOrder++;
-                    await _activityRepo.UpdateAsync(activity);
-                }
+                throw new ConflictException(
+                    $"Sequence order {dto.SequenceOrder} is already in use for this lesson."
+                );
             }
-            */
 
             var activity = new Activity
             {
                 LessonId = dto.LessonId,
                 ActivityTypeId = dto.ActivityTypeId,
+                MainActivityId = dto.MainActivityId,
                 Title = dto.Title,
                 SequenceOrder = dto.SequenceOrder,
                 ContentJson = dto.ContentJson,
             };
+
             await _activityRepo.CreateAsync(activity);
             return MapToActivityResponseDto(activity);
         }
@@ -84,43 +107,31 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
         {
             var activity = await _activityRepo.GetByIdAsync(id);
             if (activity == null)
-                throw new NotFoundException("Activity not found.");
-
-            var lessonExists = await _activityRepo.LessonExistsAsync(dto.LessonId);
-            if (!lessonExists)
-                throw new NotFoundException("Lesson not found.");
-            var typeExists = await _typeRepo.ActivityTypeExistsAsync(dto.ActivityTypeId);
-            if (!typeExists)
-                throw new NotFoundException("Activity Type not found.");
-
-            if (activity.SequenceOrder != dto.SequenceOrder)
             {
-                if (await _activityRepo.SequenceOrderExistsAsync(dto.SequenceOrder))
-                    throw new BadRequestException(
-                        $"Sequence order {dto.SequenceOrder} is already in use."
-                    );
+                throw new NotFoundException($"Activity with ID {id} not found.");
             }
 
-            /*
-            if (activity.SequenceOrder != dto.SequenceOrder)
-            {
-                var existingActivities = await _activityRepo.GetAllAsync();
-                if (existingActivities.Any(a => a.SequenceOrder == dto.SequenceOrder && a.ActivityId != id))
-                {
-                    foreach (var existingActivity in existingActivities.Where(a => a.SequenceOrder >= dto.SequenceOrder && a.ActivityId != id))
-                    {
-                        existingActivity.SequenceOrder++;
-                        await _activityRepo.UpdateAsync(existingActivity);
-                    }
-                }
-            }
-            */
+            var mainActivityExists = await _mainActivityRepo.MainActivityTypeExistsAsync(
+                dto.MainActivityId
+            );
+            if (!mainActivityExists)
+                throw new NotFoundException(
+                    $"Cannot update activity: Main Activity with ID {dto.MainActivityId} not found."
+                );
+
+            var activityTypeExists = await _typeRepo.ActivityTypeExistsAsync(dto.ActivityTypeId);
+            if (!activityTypeExists)
+                throw new NotFoundException(
+                    $"Cannot update activity: Activity Type with ID {dto.ActivityTypeId} not found."
+                );
 
             activity.LessonId = dto.LessonId;
             activity.ActivityTypeId = dto.ActivityTypeId;
+            activity.MainActivityId = dto.MainActivityId;
             activity.Title = dto.Title;
             activity.SequenceOrder = dto.SequenceOrder;
             activity.ContentJson = dto.ContentJson;
+
             await _activityRepo.UpdateAsync(activity);
         }
 
@@ -128,7 +139,9 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
         {
             var activity = await _activityRepo.GetByIdAsync(id);
             if (activity == null)
-                throw new NotFoundException("Activity not found.");
+            {
+                throw new NotFoundException($"Activity with ID {id} not found.");
+            }
             await _activityRepo.DeleteAsync(id);
         }
 
