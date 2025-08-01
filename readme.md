@@ -1,4 +1,3 @@
-```markdown
 # ICEDT Tamil Learning App - Backend API
 
 This repository contains the backend source code for the ICEDT Tamil Learning App. It is a modern ASP.NET Core application built using Clean Architecture principles, designed to serve a Flutter-based mobile application and a Razor Pages-based admin panel.
