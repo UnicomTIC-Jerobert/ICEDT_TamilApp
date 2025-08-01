@@ -1,0 +1,50 @@
+@page "/Admin/ActivityEdit"
+@model ICEDT_TamilApp.Web.Pages.Admin.ActivityEditModel
+@{
+    ViewData["Title"] = Model.ActivityId.HasValue ? "Edit Activity" : "Add New Activity";
+}
+
+<link rel="stylesheet" href="~/css/admin.css" />
+
+<div class="admin-container">
+    <h1 class="admin-header" id="pageHeader">Loading...</h1>
+    
+    <form id="activityForm">
+        <!-- Hidden input to store the ID for updates -->
+        <input type="hidden" id="activityId" />
+        <input type="hidden" id="lessonId" />
+
+        <div class="mb-3">
+            <label for="title" class="form-label">Activity Title</label>
+            <input type="text" class="form-control" id="title" required>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="mainActivityId" class="form-label">Main Activity Category</label>
+                <select id="mainActivityId" class="form-control" required></select>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="activityTypeId" class="form-label">Activity Type (Interaction)</label>
+                <select id="activityTypeId" class="form-control" required></select>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="sequenceOrder" class="form-label">Sequence Order</label>
+            <input type="number" class="form-control" id="sequenceOrder" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="contentJson" class="form-label">Content JSON</label>
+            <textarea class="form-control" id="contentJson" rows="10" placeholder="Enter valid JSON content for this activity type..."></textarea>
+        </div>
+        
+        <button type="submit" class="btn btn-primary" id="saveBtn">Save Changes</button>
+        <a id="backLink" href="#" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+@section Scripts {
+    <script src="~/js/admin/activityEdit.js"></script>
+}
