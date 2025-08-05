@@ -119,7 +119,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             return true;
         }
 
-        public async Task<LevelWithLessonsResponseDto> GetLevelWithLessonsAsync(int levelId)
+        public async Task<List<LessonResponseDto>> GetLessonsByLevelIdAsync(int levelId)
         {
             var level = await _levelRepo.GetByIdAsync(levelId);
             if (level == null)
@@ -128,22 +128,19 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             }
             var lessonsForLevel = await _lessonRepo.GetAllLessonsByLevelIdAsync(levelId);
 
-            return new LevelWithLessonsResponseDto
-            {
-                LevelId = level.LevelId,
-                LevelName = level.LevelName,
-                SequenceOrder = level.SequenceOrder,
-                Lessons = lessonsForLevel
-                    .Select(l => new LessonResponseDto
-                    {
-                        LessonId = l.LessonId,
-                        LevelId = l.LevelId,
-                        LessonName = l.LessonName,
-                        Description = l.Description,
-                        SequenceOrder = l.SequenceOrder,
-                    })
-                    .ToList(),
-            };
+            var lessons = lessonsForLevel
+                     .Select(l => new LessonResponseDto
+                     {
+                         LessonId = l.LessonId,
+                         LevelId = l.LevelId,
+                         LessonName = l.LessonName,
+                         Description = l.Description,
+                         SequenceOrder = l.SequenceOrder,
+                     })
+                     .ToList();
+
+            return lessons;
+
         }
 
         public async Task RemoveLessonFromLevelAsync(int levelId, int lessonId)

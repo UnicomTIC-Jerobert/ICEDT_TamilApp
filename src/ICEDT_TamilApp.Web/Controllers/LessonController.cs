@@ -5,23 +5,23 @@ using Microsoft.AspNetCore.Mvc;
 namespace ICEDT_TamilApp.Web.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api")]
     public class LessonController : ControllerBase
     {
         private readonly ILessonService _service;
 
         public LessonController(ILessonService service) => _service = service;
 
-        [HttpPost("level/{levelId:int}/lessons")]
+        [HttpPost("levels/{levelId:int}/lessons")]
         public async Task<IActionResult> AddLesson(int levelId, [FromBody] LessonRequestDto dto)
         {
             if (levelId <= 0)
                 return BadRequest(new { message = "Invalid Level ID." });
             var lesson = await _service.CreateLessonToLevelAsync(levelId, dto);
-            return CreatedAtAction(nameof(GetLevelWithLessons), new { levelId }, lesson);
+            return CreatedAtAction(nameof(GetLessonsByLevelId), new { levelId }, lesson);
         }
 
-        [HttpDelete("/level/{levelId:int}/lessons/{lessonId:int}")]
+        [HttpDelete("levels/{levelId:int}/lessons/{lessonId:int}")]
         public async Task<IActionResult> RemoveLesson(int levelId, int lessonId)
         {
             if (levelId <= 0 || lessonId <= 0)
@@ -30,12 +30,12 @@ namespace ICEDT_TamilApp.Web.Controllers
             return NoContent();
         }
 
-        [HttpGet("/lessons/{levelId:int}")]
-        public async Task<IActionResult> GetLevelWithLessons(int levelId)
+        [HttpGet("levels/{levelId:int}/lessons")]
+        public async Task<IActionResult> GetLessonsByLevelId(int levelId)
         {
             if (levelId <= 0)
                 return BadRequest(new { message = "Invalid Level ID." });
-            var result = await _service.GetLevelWithLessonsAsync(levelId);
+            var result = await _service.GetLessonsByLevelIdAsync(levelId);
             return Ok(result);
         }
 
