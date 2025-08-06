@@ -106,6 +106,123 @@ namespace ICEDT_TamilApp.Infrastructure.Data
                 await context.ActivityTypes.AddRangeAsync(activityTypes);
                 await context.SaveChangesAsync();
             }
+
+            // Inside the Initialize method, after seeding Lessons...
+
+            // --- Seed placeholder Activities ---
+            if (!await context.Activities.AnyAsync())
+            {
+                var aandu01Lesson1Id = (await context.Lessons.FirstAsync(l => l.Level.SequenceOrder == 3 && l.SequenceOrder == 1)).LessonId;
+                // First, get the LessonId for Grade 1, Lesson 5
+                var aandu01Lesson5Id = (await context.Lessons.FirstAsync(l => l.Level.SequenceOrder == 3 && l.SequenceOrder == 5)).LessonId;
+
+                var activities = new Activity[]
+                {
+        // Activity from Grade 1, Lesson 1, Exercise 06
+        // ...
+        new Activity
+        {
+            LessonId = aandu01Lesson1Id,
+            Title = "அ-ஓசை உயிர்மெய் எழுத்துகள்",
+            SequenceOrder = 1,
+            ActivityTypeId = 7, // FillInTheBlanks
+            MainActivityId = 3,
+            ContentJson = @"{
+              ""leftOperand"": ""க்"",
+              ""rightOperand"": ""அ"",
+              ""correctAnswer"": ""க"",
+              ""options"": [""கா"", ""கி"", ""க"", ""கூ""]
+            }"
+        },
+        new Activity
+        {
+            LessonId = aandu01Lesson1Id,
+            Title = "அ-ஓசை உயிர்மெய் எழுத்துகள்",
+            SequenceOrder = 2,
+            ActivityTypeId = 7,
+            MainActivityId = 4,
+            ContentJson = @"{
+              ""leftOperand"": ""ச்"",
+              ""rightOperand"": ""அ"",
+              ""correctAnswer"": ""ச"",
+              ""options"": [""சா"", ""சி"", ""ச"", ""சூ""]
+            }"
+        },
+        new Activity
+        {
+            LessonId = aandu01Lesson1Id,
+            Title = "முதல் எழுத்துச் சொல் கண்டறிதல்",
+            SequenceOrder = 3, // Or whatever sequence is appropriate
+            ActivityTypeId = 4, // Matching
+            MainActivityId = 4, // Exercises
+            ContentJson = @"{
+            ""title"": ""Find the word that starts with the letter shown above."",
+            ""words"": [""பல்"", ""கல்"", ""கண்"", ""மண்"", ""வயல்"", ""மரம்"", ""படம்"", ""தடம்"", ""அப்பம்"", ""மன்னன்""]
+            }"
+        },
+        // Inside the Initialize method...
+
+
+
+// --- Add these new activities to the array ---
+
+new Activity
+{
+    LessonId = aandu01Lesson5Id,
+    Title = "எண்களை எழுத்துக்களுடன் பொருத்துக (1-5)",
+    SequenceOrder = 1,
+    ActivityTypeId = 4, // Matching
+    MainActivityId = 4, // Exercises
+    ContentJson = @"{
+      ""title"": ""Match the Number to the Word"",
+      ""columnA"": [
+        { ""id"": ""A1"", ""content"": ""1"", ""matchId"": ""B1"" },
+        { ""id"": ""A2"", ""content"": ""2"", ""matchId"": ""B2"" },
+        { ""id"": ""A3"", ""content"": ""3"", ""matchId"": ""B3"" },
+        { ""id"": ""A4"", ""content"": ""4"", ""matchId"": ""B4"" },
+        { ""id"": ""A5"", ""content"": ""5"", ""matchId"": ""B5"" }
+      ],
+      ""columnB"": [
+        { ""id"": ""B1"", ""content"": ""ஒன்று"", ""matchId"": ""A1"" },
+        { ""id"": ""B2"", ""content"": ""இரண்டு"", ""matchId"": ""A2"" },
+        { ""id"": ""B3"", ""content"": ""மூன்று"", ""matchId"": ""A3"" },
+        { ""id"": ""B4"", ""content"": ""நான்கு"", ""matchId"": ""A4"" },
+        { ""id"": ""B5"", ""content"": ""ஐந்து"", ""matchId"": ""A5"" }
+      ]
+    }"
+},
+new Activity
+{
+    LessonId = aandu01Lesson5Id,
+    Title = "எண்களை எழுத்துக்களுடன் பொருத்துக (6-10)",
+    SequenceOrder = 2,
+    ActivityTypeId = 4, // Matching
+    MainActivityId = 4, // Exercises
+    ContentJson = @"{
+      ""title"": ""Match the Number to the Word"",
+      ""columnA"": [
+        { ""id"": ""A6"", ""content"": ""6"", ""matchId"": ""B6"" },
+        { ""id"": ""A7"", ""content"": ""7"", ""matchId"": ""B7"" },
+        { ""id"": ""A8"", ""content"": ""8"", ""matchId"": ""B8"" },
+        { ""id"": ""A9"", ""content"": ""9"", ""matchId"": ""B9"" },
+        { ""id"": ""A10"", ""content"": ""10"", ""matchId"": ""B10"" }
+      ],
+      ""columnB"": [
+        { ""id"": ""B6"", ""content"": ""ஆறு"", ""matchId"": ""A6"" },
+        { ""id"": ""B7"", ""content"": ""ஏழு"", ""matchId"": ""B7"" },
+        { ""id"": ""B8"", ""content"": ""எட்டு"", ""matchId"": ""B8"" },
+        { ""id"": ""B9"", ""content"": ""ஒன்பது"", ""matchId"": ""B9"" },
+        { ""id"": ""B10"", ""content"": ""பத்து"", ""matchId"": ""B10"" }
+      ]
+    }"
+}
+
+
+                };
+
+                await context.Activities.AddRangeAsync(activities);
+                await context.SaveChangesAsync();
+            }
         }
     }
 }

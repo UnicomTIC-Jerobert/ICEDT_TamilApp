@@ -148,9 +148,18 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             await DeleteLessonAsync(lessonId);
         }
 
-        public Task<LessonResponseDto?> GetLessonByIdAsync(int lessonId)
+        public async Task<LessonResponseDto?> GetLessonByIdAsync(int lessonId)
         {
-            throw new NotImplementedException();
+            var lesson = await _lessonRepo.GetByIdAsync(lessonId);
+             
+             return new LessonResponseDto
+            {
+                LessonId = lesson.LessonId,
+                LevelId = lesson.LevelId,
+                LessonName = lesson.LessonName,
+                Description = lesson.Description,
+                SequenceOrder = lesson.SequenceOrder,
+            };
         }
     }
 }

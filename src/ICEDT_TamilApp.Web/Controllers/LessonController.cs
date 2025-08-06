@@ -63,5 +63,14 @@ namespace ICEDT_TamilApp.Web.Controllers
             }
             return NoContent(); // Standard 204 response for a successful delete
         }
+
+         [HttpGet("lessons/{id:int}")]
+        public async Task<IActionResult> Get(int id)
+        {
+            if (id <= 0)
+                return BadRequest(new { message = "Invalid Lesson ID." });
+            var lesson = await _service.GetLessonByIdAsync(id);
+            return Ok(lesson);
+        }
     }
 }
