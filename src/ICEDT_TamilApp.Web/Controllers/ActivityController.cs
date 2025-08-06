@@ -7,14 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace ICEDT_TamilApp.Web.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api")]
     public class ActivitiesController : ControllerBase
     {
         private readonly IActivityService _service;
 
         public ActivitiesController(IActivityService service) => _service = service;
 
-        [HttpGet("{id:int}")]
+        [HttpGet("activities/{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
             if (id <= 0)
@@ -23,15 +23,11 @@ namespace ICEDT_TamilApp.Web.Controllers
             return Ok(activity);
         }
 
-        [HttpGet]
+        [HttpGet("activities")]
         public async Task<IActionResult> GetAll() => Ok(await _service.GetAllActivitiesAsync());
 
-        [HttpGet("by-lesson")]
-        public async Task<IActionResult> GetActivitiesByLessonId(
-            [FromQuery] int lessonId,
-            [FromQuery] int? activityTypeId,
-            [FromQuery] int? mainActivityTypeId
-        )
+        [HttpGet("lessons/{lessonId:int}/activities")]
+        public async Task<IActionResult> GetActivitiesByLessonId(int lessonId)
         {
             if (lessonId <= 0)
                 throw new BadRequestException("Invalid Lesson ID.");
@@ -39,14 +35,14 @@ namespace ICEDT_TamilApp.Web.Controllers
             return Ok(activities);
         }
 
-        [HttpPost]
+        [HttpPost("activities")]
         public async Task<IActionResult> Create([FromBody] ActivityRequestDto dto)
         {
             var activity = await _service.CreateActivityAsync(dto);
             return CreatedAtAction(nameof(Get), new { id = activity.ActivityId }, activity);
         }
 
-        [HttpPut("{id:int}")]
+        [HttpPut("activities/{id:int}")]
         public async Task<IActionResult> Update(int id, [FromBody] ActivityRequestDto dto)
         {
             if (id <= 0)
@@ -55,7 +51,7 @@ namespace ICEDT_TamilApp.Web.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id:int}")]
+        [HttpDelete("activities/{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
             if (id <= 0)
