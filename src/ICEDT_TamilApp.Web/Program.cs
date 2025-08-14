@@ -54,10 +54,17 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Staging"))
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        // This makes the swagger page available at the root URL (e.g., http://your-ip/swagger)
+        // instead of the default which might be buried under a subpath.
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "ICEDT TamilApp API V1");
+        // To make Swagger the default page in these environments, you can do this:
+        // options.RoutePrefix = string.Empty; 
+    });
 }
 else
 {
