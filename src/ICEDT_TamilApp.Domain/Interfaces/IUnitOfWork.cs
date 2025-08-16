@@ -5,10 +5,11 @@ namespace ICEDT_TamilApp.Domain.Interfaces
     public interface IUnitOfWork : IDisposable
     {
         IMainActivityRepository MainActivities { get; }
-
         ILevelRepository Levels { get; }
-
         ILessonRepository Lessons { get; }
+
+        IActivityTypeRepository ActivityTypes { get; } 
+        IActivityRepository Activities { get; }
 
 
         // Add other repositories here as you create them

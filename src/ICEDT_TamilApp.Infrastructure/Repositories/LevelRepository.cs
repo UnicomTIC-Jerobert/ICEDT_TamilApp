@@ -13,14 +13,18 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
 
         public LevelRepository(ApplicationDbContext context) => _context = context;
 
-        public async Task<Level> GetByIdAsync(int id) =>
-            await _context.Levels.Include(l => l.Lessons).FirstOrDefaultAsync(l => l.LevelId == id);
+        public async Task<Level> GetByIdAsync(int id)
+        {
+            return await _context.Levels.Include(l => l.Lessons).FirstOrDefaultAsync(l => l.LevelId == id);
+        }
 
-        public async Task<List<Level>> GetAllAsync() =>
-            await _context
+        public async Task<List<Level>> GetAllAsync()
+        {
+            return await _context
                 .Levels.Include(l => l.Lessons)
                 .OrderBy(l => l.SequenceOrder)
                 .ToListAsync();
+        }
 
         public async Task CreateAsync(Level level)
         {
@@ -68,13 +72,19 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
             return levels;
         }
 
-        public async Task<bool> SequenceOrderExistsAsync(int sequenceOrder) =>
-            await _context.Levels.AnyAsync(l => l.SequenceOrder == sequenceOrder);
+        public async Task<bool> SequenceOrderExistsAsync(int sequenceOrder)
+        {
+            return await _context.Levels.AnyAsync(l => l.SequenceOrder == sequenceOrder);
+        }
 
-        public async Task<bool> SlugExistsAsync(string slug) =>
-            await _context.Levels.AnyAsync(l => l.Slug == slug);
+        public async Task<bool> SlugExistsAsync(string slug)
+        {
+            return await _context.Levels.AnyAsync(l => l.Slug == slug);
+        }
 
-        public async Task<bool> LevelExistsAsync(int levelId) =>
-            await _context.Levels.AnyAsync(l => l.LevelId == levelId);
+        public async Task<bool> LevelExistsAsync(int levelId)
+        {
+            return await _context.Levels.AnyAsync(l => l.LevelId == levelId);
+        }
     }
 }

@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using ICEDT_TamilApp.Application.DTOs.Request;
 using ICEDT_TamilApp.Application.DTOs.Response;
 using ICEDT_TamilApp.Application.Exceptions;
@@ -9,22 +12,17 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
 {
     public class ActivityTypeService : IActivityTypeService
     {
-        private readonly IActivityRepository _activityRepo;
-        private readonly IActivityTypeRepository _activityTypeRepo;
+        // Single dependency on IUnitOfWork
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ActivityTypeService(
-            IActivityRepository activityRepo,
-            IActivityTypeRepository typeRepo
-        )
+        public ActivityTypeService(IUnitOfWork unitOfWork)
         {
-            _activityRepo = activityRepo;
-            this._activityTypeRepo = typeRepo;
+            _unitOfWork = unitOfWork;
         }
 
-        // ActivityType CRUD
         public async Task<ActivityTypeResponseDto> GetActivityTypeAsync(int id)
         {
-            var type = await this._activityTypeRepo.GetByIdAsync(id);
+            var type = await _unitOfWork.ActivityTypes.GetByIdAsync(id);
             if (type == null)
                 throw new NotFoundException("ActivityType not found.");
             return MapToActivityTypeResponseDto(type);
@@ -32,39 +30,55 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
 
         public async Task<List<ActivityTypeResponseDto>> GetAllActivityTypesAsync()
         {
-            var types = await this._activityTypeRepo.GetAllAsync();
+            var types = await _unitOfWork.ActivityTypes.GetAllAsync();
             return types.Select(MapToActivityTypeResponseDto).ToList();
         }
 
         public async Task<ActivityTypeResponseDto> AddActivityTypeAsync(ActivityTypeRequestDto dto)
         {
             var type = new ActivityType { Name = dto.ActivityName };
-            await this._activityTypeRepo.CreateAsync(type);
+            
+            await _unitOfWork.ActivityTypes.CreateAsync(type);
+            
+            // Commit the transaction
+            await _unitOfWork.CompleteAsync();
+
             return MapToActivityTypeResponseDto(type);
         }
 
         public async Task UpdateActivityTypeAsync(int id, ActivityTypeRequestDto dto)
         {
-            var type = await this._activityTypeRepo.GetByIdAsync(id);
+            var type = await _unitOfWork.ActivityTypes.GetByIdAsync(id);
             if (type == null)
                 throw new NotFoundException("ActivityType not found.");
+            
             type.Name = dto.ActivityName;
-            await this._activityTypeRepo.UpdateAsync(type);
+            
+            await _unitOfWork.ActivityTypes.UpdateAsync(type);
+            
+            // Commit the transaction
+            await _unitOfWork.CompleteAsync();
         }
 
         public async Task DeleteActivityTypeAsync(int id)
         {
-            var type = await this._activityTypeRepo.GetByIdAsync(id);
+            var type = await _unitOfWork.ActivityTypes.GetByIdAsync(id);
             if (type == null)
                 throw new NotFoundException("ActivityType not found.");
-            var hasActivities = await _activityRepo
-                .GetAllAsync()
-                .ContinueWith(t => t.Result.Any(a => a.ActivityTypeId == id));
+
+            // Business Rule: Check for dependent activities before deleting.
+            // This is a perfect use case for the Unit of Work, as it provides
+            // access to the Activities repository within the same transaction context.
+            var hasActivities = await _unitOfWork.Activities.HasActivitiesOfTypeAsync(id); // A more efficient repository method
             if (hasActivities)
-                throw new BadRequestException(
-                    "Cannot delete ActivityType with associated Activities."
-                );
-            await this._activityTypeRepo.DeleteAsync(id);
+            {
+                throw new BadRequestException("Cannot delete ActivityType because it is currently in use by one or more Activities.");
+            }
+
+            await _unitOfWork.ActivityTypes.DeleteAsync(id);
+            
+            // Commit the transaction
+            await _unitOfWork.CompleteAsync();
         }
 
         private ActivityTypeResponseDto MapToActivityTypeResponseDto(ActivityType type)

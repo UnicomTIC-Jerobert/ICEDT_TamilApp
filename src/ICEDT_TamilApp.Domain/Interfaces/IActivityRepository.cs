@@ -12,5 +12,8 @@ namespace ICEDT_TamilApp.Domain.Interfaces
         Task DeleteAsync(int id);
         Task<bool> SequenceOrderExistsAsync(int sequenceOrder);
         Task<bool> LessonExistsAsync(int lessonId);
+
+        Task<bool> HasActivitiesOfTypeAsync(int activityTypeId);
+        Task<bool> SequenceOrderExistsAsync(int lessonId, int sequenceOrder);
     }
 }
