@@ -6,6 +6,7 @@ using ICEDT_TamilApp.Infrastructure;
 using ICEDT_TamilApp.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using ICEDT_TamilApp.Web.Middlewares; // Add this using statement!
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -121,6 +122,8 @@ using (var scope = app.Services.CreateScope())
 }
 
 // =================================================================
+
+app.UseWrapResponseMiddleware();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles(); // Serves your wwwroot folder (JS, CSS)

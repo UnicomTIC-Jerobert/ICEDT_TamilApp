@@ -15,6 +15,7 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
         {
             _context = context;
             MainActivities = new MainActivityRepository(_context);
+            Levels = new LevelRepository(_context);
         }
 
         public async Task<int> CompleteAsync()
