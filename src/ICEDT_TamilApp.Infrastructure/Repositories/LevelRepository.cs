@@ -74,5 +74,7 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
         public async Task<bool> SlugExistsAsync(string slug) =>
             await _context.Levels.AnyAsync(l => l.Slug == slug);
 
+        public async Task<bool> LevelExistsAsync(int levelId) =>
+            await _context.Levels.AnyAsync(l => l.LevelId == levelId);
     }
 }

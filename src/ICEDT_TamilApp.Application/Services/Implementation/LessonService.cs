@@ -1,5 +1,7 @@
 using System;
 using System.Linq;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using ICEDT_TamilApp.Application.DTOs.Request;
 using ICEDT_TamilApp.Application.DTOs.Response;
 using ICEDT_TamilApp.Application.Exceptions;
@@ -11,82 +13,62 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
 {
     public class LessonService : ILessonService
     {
-        private readonly ILessonRepository _lessonRepo;
-        private readonly ILevelRepository _levelRepo;
+        // The service now has a single dependency on IUnitOfWork
+        private readonly IUnitOfWork _unitOfWork;
 
-        public LessonService(ILessonRepository lessonRepo, ILevelRepository levelRepo)
+        public LessonService(IUnitOfWork unitOfWork)
         {
-            _lessonRepo = lessonRepo;
-            _levelRepo = levelRepo;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> UpdateLessonAsync(int lessonId, LessonRequestDto updateDto)
         {
-            var lessonToUpdate = await _lessonRepo.GetByIdAsync(lessonId);
+            var lessonToUpdate = await _unitOfWork.Lessons.GetByIdAsync(lessonId);
             if (lessonToUpdate == null)
             {
                 throw new NotFoundException($"Lesson with ID {lessonId} not found.");
             }
 
             var otherLessonsInLevel = (
-                await _lessonRepo.GetAllLessonsByLevelIdAsync(lessonToUpdate.LevelId)
+                await _unitOfWork.Lessons.GetAllLessonsByLevelIdAsync(lessonToUpdate.LevelId)
             ).Where(l => l.LessonId != lessonId);
 
-            if (
-                otherLessonsInLevel.Any(l =>
-                    string.Equals(
-                        l.LessonName,
-                        updateDto.LessonName,
-                        StringComparison.OrdinalIgnoreCase
-                    )
-                )
-            )
+            if (otherLessonsInLevel.Any(l => string.Equals(l.LessonName, updateDto.LessonName, StringComparison.OrdinalIgnoreCase)))
             {
-                throw new ConflictException(
-                    $"Another lesson with the name '{updateDto.LessonName}' already exists in this level."
-                );
+                throw new ConflictException($"Another lesson with the name '{updateDto.LessonName}' already exists in this level.");
             }
             if (otherLessonsInLevel.Any(l => l.SequenceOrder == updateDto.SequenceOrder))
             {
-                throw new ConflictException(
-                    $"Another lesson with sequence order {updateDto.SequenceOrder} already exists in this level."
-                );
+                throw new ConflictException($"Another lesson with sequence order {updateDto.SequenceOrder} already exists in this level.");
             }
 
             lessonToUpdate.LessonName = updateDto.LessonName;
             lessonToUpdate.Description = updateDto.Description;
             lessonToUpdate.SequenceOrder = updateDto.SequenceOrder;
 
-            return await _lessonRepo.UpdateAsync(lessonToUpdate);
+            await _unitOfWork.Lessons.UpdateAsync(lessonToUpdate);
+            
+            // Commit the transaction
+            await _unitOfWork.CompleteAsync();
+            return true;
         }
 
-        public async Task<LessonResponseDto> CreateLessonToLevelAsync(
-            int levelId,
-            LessonRequestDto dto
-        )
+        public async Task<LessonResponseDto> CreateLessonToLevelAsync(int levelId, LessonRequestDto dto)
         {
-            var level = await _levelRepo.GetByIdAsync(levelId);
+            var level = await _unitOfWork.Levels.GetByIdAsync(levelId);
             if (level == null)
             {
                 throw new NotFoundException($"Level with ID {levelId} not found.");
             }
 
-            var existingLessons = await _lessonRepo.GetAllLessonsByLevelIdAsync(levelId);
-            if (
-                existingLessons.Any(l =>
-                    string.Equals(l.LessonName, dto.LessonName, StringComparison.OrdinalIgnoreCase)
-                )
-            )
+            var existingLessons = await _unitOfWork.Lessons.GetAllLessonsByLevelIdAsync(levelId);
+            if (existingLessons.Any(l => string.Equals(l.LessonName, dto.LessonName, StringComparison.OrdinalIgnoreCase)))
             {
-                throw new ConflictException(
-                    $"A lesson with the name '{dto.LessonName}' already exists in this level."
-                );
+                throw new ConflictException($"A lesson with the name '{dto.LessonName}' already exists in this level.");
             }
             if (existingLessons.Any(l => l.SequenceOrder == dto.SequenceOrder))
             {
-                throw new ConflictException(
-                    $"A lesson with Sequence Order {dto.SequenceOrder} already exists in this level."
-                );
+                throw new ConflictException($"A lesson with Sequence Order {dto.SequenceOrder} already exists in this level.");
             }
 
             var lesson = new Lesson
@@ -97,62 +79,63 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 SequenceOrder = dto.SequenceOrder,
             };
 
-            var newLesson = await _lessonRepo.CreateAsync(lesson);
+            var newLesson = await _unitOfWork.Lessons.CreateAsync(lesson);
+            
+            // Commit the transaction
+            await _unitOfWork.CompleteAsync();
 
-            return new LessonResponseDto
-            {
-                LessonId = newLesson.LessonId,
-                LevelId = newLesson.LevelId,
-                LessonName = newLesson.LessonName,
-                Description = newLesson.Description,
-                SequenceOrder = newLesson.SequenceOrder,
-            };
+            return MapToResponseDto(newLesson);
         }
 
         public async Task<bool> DeleteLessonAsync(int lessonId)
         {
-            var success = await _lessonRepo.DeleteAsync(lessonId);
-            if (!success)
+            var lesson = await _unitOfWork.Lessons.GetByIdAsync(lessonId);
+            if (lesson == null)
             {
                 throw new NotFoundException($"Lesson with ID {lessonId} not found for deletion.");
             }
+
+            await _unitOfWork.Lessons.DeleteAsync(lessonId);
+            
+            // Commit the transaction
+            await _unitOfWork.CompleteAsync();
             return true;
         }
 
         public async Task<List<LessonResponseDto>> GetLessonsByLevelIdAsync(int levelId)
         {
-            var level = await _levelRepo.GetByIdAsync(levelId);
-            if (level == null)
+            var levelExists = await _unitOfWork.Levels.LevelExistsAsync(levelId); // Assuming LevelExistsAsync is in ILevelRepository
+            if (!levelExists)
             {
-                throw new NotFoundException("Level not found.");
+                throw new NotFoundException($"Level with ID {levelId} not found.");
             }
-            var lessonsForLevel = await _lessonRepo.GetAllLessonsByLevelIdAsync(levelId);
-
-            var lessons = lessonsForLevel
-                     .Select(l => new LessonResponseDto
-                     {
-                         LessonId = l.LessonId,
-                         LevelId = l.LevelId,
-                         LessonName = l.LessonName,
-                         Description = l.Description,
-                         SequenceOrder = l.SequenceOrder,
-                     })
-                     .ToList();
-
-            return lessons;
-
-        }
-
-        public async Task RemoveLessonFromLevelAsync(int levelId, int lessonId)
-        {
-            await DeleteLessonAsync(lessonId);
+            
+            var lessonsForLevel = await _unitOfWork.Lessons.GetAllLessonsByLevelIdAsync(levelId);
+            return lessonsForLevel.Select(MapToResponseDto).ToList();
         }
 
         public async Task<LessonResponseDto?> GetLessonByIdAsync(int lessonId)
         {
-            var lesson = await _lessonRepo.GetByIdAsync(lessonId);
-             
-             return new LessonResponseDto
+            var lesson = await _unitOfWork.Lessons.GetByIdAsync(lessonId);
+            if (lesson == null)
+            {
+                throw new NotFoundException($"Lesson with ID {lessonId} not found.");
+            }
+            return MapToResponseDto(lesson);
+        }
+
+        // It seems RemoveLessonFromLevelAsync was just a wrapper for DeleteLessonAsync,
+        // so its implementation remains simple.
+        public async Task RemoveLessonFromLevelAsync(int levelId, int lessonId)
+        {
+            // The logic inside ensures the lesson exists before attempting to delete.
+            await DeleteLessonAsync(lessonId);
+        }
+
+        // A private helper for mapping to avoid code duplication
+        private LessonResponseDto MapToResponseDto(Lesson lesson)
+        {
+            return new LessonResponseDto
             {
                 LessonId = lesson.LessonId,
                 LevelId = lesson.LevelId,

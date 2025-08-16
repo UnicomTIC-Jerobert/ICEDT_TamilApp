@@ -8,6 +8,7 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
     {
         private readonly ApplicationDbContext _context;
         public IMainActivityRepository MainActivities { get; private set; }
+        public ILessonRepository Lessons { get; private set; }
 
         public ILevelRepository Levels { get; private set; }
 
@@ -16,6 +17,7 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
             _context = context;
             MainActivities = new MainActivityRepository(_context);
             Levels = new LevelRepository(_context);
+            Lessons = new LessonRepository(_context);
         }
 
         public async Task<int> CompleteAsync()
