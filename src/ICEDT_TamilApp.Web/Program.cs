@@ -1,3 +1,4 @@
+using Amazon.Runtime;
 using Amazon.S3;
 using ICEDT_TamilApp.Application;
 using ICEDT_TamilApp.Application.Common;
@@ -38,15 +39,36 @@ builder.Services.AddSingleton(Options.Create(jwtSettings));
 
 // *** NEW: Configure AWS Settings and S3 Client for DI ***
 
-// 1. Bind the AwsSettings class using the Options Pattern
+// 1. Bind the AwsSettings class using the Options Pattern (this is still a good practice)
 builder.Services.Configure<AwsSettings>(builder.Configuration.GetSection(AwsSettings.SectionName));
 
-// 2. Add the default AWS options from the configuration
-builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
+// 2. Conditionally configure the IAmazonS3 client
+if (builder.Environment.IsDevelopment())
+{
+    // --- DEVELOPMENT LOGIC ---
+    // In Development, we read the keys directly from appsettings.json
+    // and create the client with explicit credentials.
+    var awsSettings = builder.Configuration.GetSection(AwsSettings.SectionName).Get<AwsSettings>();
+    
+    if (string.IsNullOrEmpty(awsSettings?.AccessKey) || string.IsNullOrEmpty(awsSettings.SecretKey))
+    {
+        throw new Exception("AWS AccessKey/SecretKey not configured in appsettings.Development.json");
+    }
 
-// 3. Register the IAmazonS3 client. The SDK will automatically use the
-//    credentials and region from the AWSOptions.
-builder.Services.AddAWSService<IAmazonS3>();
+    var credentials = new BasicAWSCredentials(awsSettings.AccessKey, awsSettings.SecretKey);
+    
+    builder.Services.AddSingleton<IAmazonS3>(sp => 
+    {
+        return new AmazonS3Client(credentials, Amazon.RegionEndpoint.GetBySystemName(awsSettings.Region));
+    });
+}
+else
+{
+    // --- PRODUCTION LOGIC (for EC2) ---
+    // In Production/Staging, we let the SDK find the credentials automatically from the IAM Role.
+    builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
+    builder.Services.AddAWSService<IAmazonS3>();
+}
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

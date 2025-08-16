@@ -1,6 +1,11 @@
-using ICEDT_TamilApp.Application.DTOs.Requst;
+using ICEDT_TamilApp.Application.DTOs.Request;
+using ICEDT_TamilApp.Application.DTOs.Response;
 using ICEDT_TamilApp.Application.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 namespace ICEDT_TamilApp.Web.Controllers
 {
@@ -15,54 +20,52 @@ namespace ICEDT_TamilApp.Web.Controllers
             _mediaService = mediaService;
         }
 
-        [HttpPost("upload")]
-        public async Task<IActionResult> Upload(MediaUploadRequestDto request)
+        /// <summary>
+        /// Uploads a single file to a structured path in S3 based on level and lesson.
+        /// </summary>
+        [HttpPost("upload-single")]
+        [ProducesResponseType(typeof(MediaUploadResponseDto), 200)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> UploadSingleFile([FromForm] FileUploadRequestDto request)
         {
-            var result = await _mediaService.UploadAsync(request);
+            // The model binder will automatically populate the 'request' object.
+            // The [ApiController] attribute will handle validation.
+
+            var result = await _mediaService.UploadSingleFileAsync(request.File, request.LevelId, request.LessonId, request.MediaType);
+
             return Ok(result);
         }
 
-        [HttpDelete("{key}")]
-        public async Task<IActionResult> Delete(string key)
+        /// <summary>
+        /// Uploads multiple files to a structured path in S3 based on level and lesson.
+        /// </summary>
+        [HttpPost("upload-multiple")]
+        [ProducesResponseType(typeof(List<MediaUploadResponseDto>), 200)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> UploadMultipleFiles(
+            [FromForm, Required] List<IFormFile> files,
+            [FromForm, Required] int levelId,
+            [FromForm, Required] int lessonId,
+            [FromForm, Required] string mediaType)
         {
-            if (string.IsNullOrEmpty(key))
-                return BadRequest(new { message = "Key is required." });
-
-            await _mediaService.DeleteAsync(key);
-            return NoContent();
+            var results = await _mediaService.UploadMultipleFilesAsync(files, levelId, lessonId, mediaType);
+            return Ok(results);
         }
 
+        // ... (existing constructor and upload endpoints)
+
+        /// <summary>
+        /// Lists all files in a specific media folder for a given lesson.
+        /// </summary>
         [HttpGet("list")]
-        public async Task<IActionResult> List([FromQuery] string folder = "")
+        [ProducesResponseType(typeof(List<MediaFileDto>), 200)]
+        public async Task<IActionResult> ListFiles(
+            [FromQuery, Required] int levelId,
+            [FromQuery, Required] int lessonId,
+            [FromQuery, Required] string mediaType)
         {
-            var result = await _mediaService.ListAsync(folder);
-            return Ok(result);
-        }
-
-        [HttpGet("url")]
-        public async Task<IActionResult> GetPresignedUrl(
-            [FromQuery] string key,
-            [FromQuery] int expiryMinutes = 60
-        )
-        {
-            if (string.IsNullOrEmpty(key))
-                return BadRequest(new { message = "Key is required." });
-
-            var request = new MediaUrlRequestDto { Key = key, ExpiryMinutes = expiryMinutes };
-
-            var result = await _mediaService.GetPresignedUrlAsync(request);
-            return Ok(result);
-        }
-
-        [HttpGet("public-url")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetPublicUrl([FromQuery] string key)
-        {
-            if (string.IsNullOrEmpty(key))
-                return BadRequest(new { message = "Key is required." });
-
-            var url = await _mediaService.GetPublicUrlAsync(key);
-            return Ok(new { url });
+            var files = await _mediaService.ListFilesAsync(levelId, lessonId, mediaType);
+            return Ok(files);
         }
     }
 }

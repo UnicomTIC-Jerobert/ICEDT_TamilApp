@@ -1,16 +1,15 @@
-using ICEDT_TamilApp.Application.DTOs.Requst;
 using ICEDT_TamilApp.Application.DTOs.Response;
+using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ICEDT_TamilApp.Application.Services.Interfaces
 {
     public interface IMediaService
     {
-        Task<MediaUploadResponseDto> UploadAsync(MediaUploadRequestDto request);
-        Task DeleteAsync(string key);
+        Task<MediaUploadResponseDto> UploadSingleFileAsync(IFormFile file, int levelId, int lessonId, string mediaType);
+        Task<List<MediaUploadResponseDto>> UploadMultipleFilesAsync(List<IFormFile> files, int levelId, int lessonId, string mediaType);
 
-        Task<MediaUrlResponseDto> GetPresignedUrlAsync(MediaUrlRequestDto request);
-        Task<string> GetPublicUrlAsync(string key);
-
-        Task<MediaListResponseDto> ListAsync(string folder);
+        Task<List<MediaFileDto>> ListFilesAsync(int levelId, int lessonId, string mediaType);
     }
 }

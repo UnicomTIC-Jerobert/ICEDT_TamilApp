@@ -1,17 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
-using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
 using ICEDT_TamilApp.Application.Common;
-using ICEDT_TamilApp.Application.DTOs.Requst;
 using ICEDT_TamilApp.Application.DTOs.Response;
 using ICEDT_TamilApp.Application.Exceptions;
 using ICEDT_TamilApp.Application.Services.Interfaces;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ICEDT_TamilApp.Application.Services.Implementation
 {
@@ -20,162 +18,128 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
         private readonly IAmazonS3 _s3Client;
         private readonly AwsSettings _awsSettings;
 
-        // The constructor is now clean. It just receives the dependencies it needs.
         public MediaService(IAmazonS3 s3Client, IOptions<AwsSettings> awsOptions)
         {
             _s3Client = s3Client;
-            _awsSettings = awsOptions.Value; // Get the actual settings object
-
-            // No more manual client creation or configuration reading here!
+            _awsSettings = awsOptions.Value;
         }
 
-        public async Task<MediaUploadResponseDto> UploadAsync(MediaUploadRequestDto request)
+        public async Task<MediaUploadResponseDto> UploadSingleFileAsync(IFormFile file, int levelId, int lessonId, string mediaType)
         {
-            if (request.File == null || request.File.Length == 0)
-                throw new BadRequestException("File is empty");
+            if (file == null || file.Length == 0)
+                throw new BadRequestException("File is empty or null.");
 
-            // ... (validation logic remains the same) ...
+            // Construct the hierarchical S3 key
+            var key = GenerateS3Key(levelId, lessonId, mediaType, file.FileName);
 
-            var key =
-                $"{request.Folder}/{Guid.NewGuid()}_{Path.GetFileName(request.File.FileName)}";
+            // Use a shared private method to perform the actual upload
+            var url = await UploadToS3Async(file, key);
 
-            try
+            return new MediaUploadResponseDto
             {
-                var uploadRequest = new PutObjectRequest
-                {
-                    BucketName = _awsSettings.BucketName, // Use the settings object
-                    Key = key,
-                    InputStream = request.File.OpenReadStream(),
-                    ContentType = request.File.ContentType,
-                    ServerSideEncryptionMethod = ServerSideEncryptionMethod.AES256,
-                };
+                Url = url,
+                Key = key,
+                FileName = file.FileName
+            };
+        }
 
-                var response = await _s3Client.PutObjectAsync(uploadRequest);
+        public async Task<List<MediaUploadResponseDto>> UploadMultipleFilesAsync(List<IFormFile> files, int levelId, int lessonId, string mediaType)
+        {
+            if (files == null || !files.Any())
+                throw new BadRequestException("No files provided for upload.");
 
-                if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
-                {
-                    throw new InvalidOperationException("Failed to upload file to S3");
-                }
-
-                var url = GetPublicUrl(key);
-
+            var uploadTasks = files.Select(async file =>
+            {
+                var key = GenerateS3Key(levelId, lessonId, mediaType, file.FileName);
+                var url = await UploadToS3Async(file, key);
                 return new MediaUploadResponseDto
                 {
-                    // ...
                     Url = url,
-                    Message = "File uploaded successfully",
+                    Key = key,
+                    FileName = file.FileName
                 };
+            });
+
+            var results = await Task.WhenAll(uploadTasks);
+            return results.ToList();
+        }
+
+        // --- Private Helper Methods ---
+
+        private string GenerateS3Key(int levelId, int lessonId, string mediaType, string fileName)
+        {
+            // Sanitize mediaType to prevent path traversal issues (e.g., "images", "audio")
+            var sanitizedMediaType = mediaType.ToLowerInvariant();
+            if (sanitizedMediaType != "images" && sanitizedMediaType != "audio" && sanitizedMediaType != "videos")
+            {
+                throw new BadRequestException("Invalid media type. Must be 'images', 'audio', or 'videos'.");
+            }
+
+            // Generate a unique file name to avoid overwrites
+            var uniqueFileName = $"{Guid.NewGuid()}_{Path.GetFileName(fileName)}";
+
+            return $"levels/{levelId}/lessons/{lessonId}/{sanitizedMediaType}/{uniqueFileName}";
+        }
+
+        private async Task<string> UploadToS3Async(IFormFile file, string key)
+        {
+            try
+            {
+                var putRequest = new PutObjectRequest
+                {
+                    BucketName = _awsSettings.MediaBucketName,
+                    Key = key,
+                    InputStream = file.OpenReadStream(),
+                    ContentType = file.ContentType
+                };
+
+                await _s3Client.PutObjectAsync(putRequest);
+
+                return $"https://{_awsSettings.MediaBucketName}.s3.{_awsSettings.Region}.amazonaws.com/{key}";
             }
             catch (AmazonS3Exception ex)
             {
-                throw new InvalidOperationException($"S3 Error: {ex.Message}", ex);
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Upload Error: {ex.Message}", ex);
+                // In a real app, log this exception
+                throw new Exception($"Error uploading file '{file.FileName}' to S3: {ex.Message}", ex);
             }
         }
 
-        public async Task DeleteAsync(string key)
-        {
-            // ... (Implementation is much cleaner now)
-            var deleteObjectRequest = new DeleteObjectRequest
-            {
-                BucketName = _awsSettings.BucketName, // Use settings
-                Key = key,
-            };
-            await _s3Client.DeleteObjectAsync(deleteObjectRequest);
-        }
+        // ... (existing constructor and upload methods)
 
-        // This is now a private helper method, as the configuration is internal to the service
-        private string GetPublicUrl(string key)
+        public async Task<List<MediaFileDto>> ListFilesAsync(int levelId, int lessonId, string mediaType)
         {
-            if (string.IsNullOrEmpty(key))
-                return string.Empty;
-            return $"https://{_awsSettings.BucketName}.s3.{_awsSettings.Region}.amazonaws.com/{key}";
-        }
+            // Define the folder prefix to search for in S3
+            var prefix = $"levels/{levelId}/lessons/{lessonId}/{mediaType.ToLowerInvariant()}/";
 
-        // You can remove GetPublicUrlAsync if this helper is sufficient, or implement it like this:
-        public Task<string> GetPublicUrlAsync(string key)
-        {
-            return Task.FromResult(GetPublicUrl(key));
-        }
-
-        public async Task<MediaListResponseDto> ListAsync(string folder)
-        {
             try
             {
                 var request = new ListObjectsV2Request
                 {
-                    BucketName = _awsSettings.BucketName,
-                    Prefix = string.IsNullOrEmpty(folder) ? "" : $"{folder}/",
-                    MaxKeys = 1000,
+                    BucketName = _awsSettings.MediaBucketName,
+                    Prefix = prefix
                 };
 
                 var response = await _s3Client.ListObjectsV2Async(request);
-                var keys = new List<string>();
 
-                foreach (var obj in response.S3Objects)
+                // Map the S3 objects to our DTO
+                var mediaFiles = response.S3Objects.Select(s3Obj => new MediaFileDto
                 {
-                    keys.Add(obj.Key);
-                }
+                    Key = s3Obj.Key,
+                    Url = $"https://{_awsSettings.MediaBucketName}.s3.{_awsSettings.Region}.amazonaws.com/{s3Obj.Key}",
+                    // Extract the original file name, removing the GUID prefix
+                    FileName = Path.GetFileName(s3Obj.Key).Substring(37), // 36 chars for GUID + 1 for '_'
+                    Size = s3Obj.Size,
+                     LastModified = s3Obj.LastModified?.ToUniversalTime() ?? DateTime.MinValue,
+                }).ToList();
 
-                return new MediaListResponseDto
-                {
-                    Files = keys,
-                    Count = keys.Count,
-                    Folder = folder,
-                };
+                return mediaFiles;
             }
             catch (AmazonS3Exception ex)
             {
-                throw new InvalidOperationException($"S3 List Error: {ex.Message}", ex);
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"List Error: {ex.Message}", ex);
+                // Log the exception
+                throw new Exception($"Error listing files from S3: {ex.Message}", ex);
             }
         }
 
-        public Task<MediaUrlResponseDto> GetPresignedUrlAsync(MediaUrlRequestDto request)
-        {
-            if (string.IsNullOrEmpty(request.Key))
-                throw new BadRequestException("Key cannot be empty");
-
-            try
-            {
-                var presignedRequest = new GetPreSignedUrlRequest
-                {
-                    BucketName = _awsSettings.BucketName,
-                    Key = request.Key,
-                    Expires = DateTime.UtcNow.AddMinutes(request.ExpiryMinutes),
-                    Verb = HttpVerb.GET,
-                };
-
-                var url = _s3Client.GetPreSignedURL(presignedRequest);
-
-                return Task.FromResult(
-                    new MediaUrlResponseDto
-                    {
-                        Url = url,
-                        Key = request.Key,
-                        ExpiryMinutes = request.ExpiryMinutes,
-                    }
-                );
-            }
-            catch (AmazonS3Exception ex)
-            {
-                throw new InvalidOperationException($"S3 PreSigned URL Error: {ex.Message}", ex);
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"PreSigned URL Error: {ex.Message}", ex);
-            }
-        }
-
-        // ... (The rest of your methods like ListAsync, GetPresignedUrlAsync also use _awsSettings.BucketName)
-
-        // The Dispose method is no longer needed in this service, as the DI container
-        // will manage the lifetime of the IAmazonS3 client.
     }
 }

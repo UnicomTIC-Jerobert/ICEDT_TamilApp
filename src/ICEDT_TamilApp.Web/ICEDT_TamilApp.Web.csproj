@@ -3,8 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ICEDT_TamilApp.Domain\ICEDT_TamilApp.Domain.csproj" />
     <ProjectReference Include="..\ICEDT_TamilApp.Application\ICEDT_TamilApp.Application.csproj" />
-    <ProjectReference
-      Include="..\ICEDT_TamilApp.Infrastructure\ICEDT_TamilApp.Infrastructure.csproj" />
+    <ProjectReference Include="..\ICEDT_TamilApp.Infrastructure\ICEDT_TamilApp.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -13,7 +12,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.3" />
   </ItemGroup>
 
   <ItemGroup>
