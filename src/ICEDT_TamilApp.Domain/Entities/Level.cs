@@ -12,6 +12,10 @@ namespace ICEDT_TamilApp.Domain.Entities
         public required string LevelName { get; set; }
 
         [Required]
+        [StringLength(50)]
+        public required string Slug { get; set; }
+
+        [Required]
         public int SequenceOrder { get; set; }
 
         public ICollection<Lesson>? Lessons { get; set; }

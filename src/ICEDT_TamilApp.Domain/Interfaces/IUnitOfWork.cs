@@ -6,6 +6,9 @@ namespace ICEDT_TamilApp.Domain.Interfaces
     {
         IMainActivityRepository MainActivities { get; }
 
+        ILevelRepository Levels { get; }
+
+
         // Add other repositories here as you create them
         // IActivityTypeRepository ActivityTypes { get; }
         Task<int> CompleteAsync();

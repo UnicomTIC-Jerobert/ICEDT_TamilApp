@@ -9,6 +9,8 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
         private readonly ApplicationDbContext _context;
         public IMainActivityRepository MainActivities { get; private set; }
 
+        public ILevelRepository Levels { get; private set; }
+
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;

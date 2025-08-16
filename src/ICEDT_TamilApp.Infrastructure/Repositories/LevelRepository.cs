@@ -70,5 +70,9 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
 
         public async Task<bool> SequenceOrderExistsAsync(int sequenceOrder) =>
             await _context.Levels.AnyAsync(l => l.SequenceOrder == sequenceOrder);
+
+        public async Task<bool> SlugExistsAsync(string slug) =>
+            await _context.Levels.AnyAsync(l => l.Slug == slug);
+
     }
 }

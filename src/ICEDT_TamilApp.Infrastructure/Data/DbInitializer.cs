@@ -24,13 +24,13 @@ namespace ICEDT_TamilApp.Infrastructure.Data
             // --- Seed Levels ---
             var levels = new Level[]
             {
-                new Level { LevelName = "மழலையர் நிலை", SequenceOrder = 1 },
-                new Level { LevelName = "சிறுவர் நிலை", SequenceOrder = 2 },
-                new Level { LevelName = "ஆண்டு 01", SequenceOrder = 3 },
-                new Level { LevelName = "ஆண்டு 02", SequenceOrder = 4 },
-                new Level { LevelName = "ஆண்டு 03", SequenceOrder = 5 },
-                new Level { LevelName = "ஆண்டு 04", SequenceOrder = 6 },
-                new Level { LevelName = "ஆண்டு 05", SequenceOrder = 7 },
+                new Level { LevelName = "மழலையர் நிலை", SequenceOrder = 1,Slug="malayalar-nilai" },
+                new Level { LevelName = "சிறுவர் நிலை", SequenceOrder = 2 ,Slug="siruvar-nilai"},
+                new Level { LevelName = "ஆண்டு 01", SequenceOrder = 3 ,Slug="aandu-01"},
+                new Level { LevelName = "ஆண்டு 02", SequenceOrder = 4,Slug="aandu-02" },
+                new Level { LevelName = "ஆண்டு 03", SequenceOrder = 5 ,Slug="aandu-03"},
+                new Level { LevelName = "ஆண்டு 04", SequenceOrder = 6 ,Slug="aandu-04"},
+                new Level { LevelName = "ஆண்டு 05", SequenceOrder = 7 ,Slug="aandu-05"},
             };
             await context.Levels.AddRangeAsync(levels);
             await context.SaveChangesAsync(); // Use async version
