@@ -50,6 +50,7 @@ namespace ICEDT_TamilApp.Infrastructure.Data
                 {
                     LevelId = aandu01LevelId,
                     LessonName = "பாடம் 01 - தமிழ்ப்பள்ளி",
+                    Slug="paadam-01-tamil-pallii",
                     SequenceOrder = 1,
                     Description = "Introduction to classroom vocabulary and basic alphabets.",
                 },
@@ -57,6 +58,7 @@ namespace ICEDT_TamilApp.Infrastructure.Data
                 {
                     LevelId = aandu01LevelId,
                     LessonName = "பாடம் 02 - விடுமுறை",
+                    Slug="paadam-02-vidumurai",
                     SequenceOrder = 2,
                     Description = "Learning the 'ஆ' sound series.",
                 },

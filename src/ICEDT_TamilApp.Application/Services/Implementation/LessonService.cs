@@ -8,6 +8,7 @@ using ICEDT_TamilApp.Application.Exceptions;
 using ICEDT_TamilApp.Application.Services.Interfaces;
 using ICEDT_TamilApp.Domain.Entities;
 using ICEDT_TamilApp.Domain.Interfaces;
+using Microsoft.AspNetCore.Http;
 
 namespace ICEDT_TamilApp.Application.Services.Implementation
 {
@@ -15,10 +16,12 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
     {
         // The service now has a single dependency on IUnitOfWork
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IFileUploader _fileUploader;
 
-        public LessonService(IUnitOfWork unitOfWork)
+        public LessonService(IUnitOfWork unitOfWork, IFileUploader fileUploader)
         {
             _unitOfWork = unitOfWork;
+            _fileUploader = fileUploader;
         }
 
         public async Task<bool> UpdateLessonAsync(int lessonId, LessonRequestDto updateDto)
@@ -47,7 +50,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             lessonToUpdate.SequenceOrder = updateDto.SequenceOrder;
 
             await _unitOfWork.Lessons.UpdateAsync(lessonToUpdate);
-            
+
             // Commit the transaction
             await _unitOfWork.CompleteAsync();
             return true;
@@ -74,13 +77,14 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             var lesson = new Lesson
             {
                 LevelId = levelId,
+                Slug=dto.Slug,
                 LessonName = dto.LessonName,
                 Description = dto.Description,
                 SequenceOrder = dto.SequenceOrder,
             };
 
             var newLesson = await _unitOfWork.Lessons.CreateAsync(lesson);
-            
+
             // Commit the transaction
             await _unitOfWork.CompleteAsync();
 
@@ -96,7 +100,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             }
 
             await _unitOfWork.Lessons.DeleteAsync(lessonId);
-            
+
             // Commit the transaction
             await _unitOfWork.CompleteAsync();
             return true;
@@ -109,7 +113,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             {
                 throw new NotFoundException($"Level with ID {levelId} not found.");
             }
-            
+
             var lessonsForLevel = await _unitOfWork.Lessons.GetAllLessonsByLevelIdAsync(levelId);
             return lessonsForLevel.Select(MapToResponseDto).ToList();
         }
@@ -143,6 +147,28 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 Description = lesson.Description,
                 SequenceOrder = lesson.SequenceOrder,
             };
+        }
+
+        public async Task<LessonResponseDto> UpdateLessonImageAsync(int lessonId, IFormFile file)
+        {
+            // Important: We need the level's slug for the path, so we must include it in the query.
+            var lesson = await _unitOfWork.Lessons.GetByIdAsync(lessonId);
+            if (lesson == null)
+            {
+                throw new NotFoundException($"{nameof(Lesson)}, {lessonId} not found.");
+            }
+
+            // 1. Construct the S3 key using both parent and child slugs/IDs
+            var s3Key = $"levels/{lesson.Level.Slug}/lessons/{lesson.Slug}/image/{Guid.NewGuid()}_{file.FileName}";
+
+            // 2. Upload the file
+            var imageUrl = await _fileUploader.UploadFileAsync(file, s3Key);
+
+            // 3. Update the entity and save
+            lesson.LessonImageUrl = imageUrl;
+            await _unitOfWork.CompleteAsync();
+
+            return MapToResponseDto(lesson);
         }
     }
 }

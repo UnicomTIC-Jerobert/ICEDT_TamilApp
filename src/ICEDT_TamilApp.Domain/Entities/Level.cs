@@ -18,6 +18,8 @@ namespace ICEDT_TamilApp.Domain.Entities
         [Required]
         public int SequenceOrder { get; set; }
 
+        public string? CoverImageUrl { get; set; }
+
         public ICollection<Lesson>? Lessons { get; set; }
     }
 }

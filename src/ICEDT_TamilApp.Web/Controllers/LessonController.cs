@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using ICEDT_TamilApp.Application.DTOs.Request;
 using ICEDT_TamilApp.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -64,13 +65,20 @@ namespace ICEDT_TamilApp.Web.Controllers
             return NoContent(); // Standard 204 response for a successful delete
         }
 
-         [HttpGet("lessons/{id:int}")]
+        [HttpGet("lessons/{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
             if (id <= 0)
                 return BadRequest(new { message = "Invalid Lesson ID." });
             var lesson = await _service.GetLessonByIdAsync(id);
             return Ok(lesson);
+        }
+
+        [HttpPost("{lessonId}/image")]
+        public async Task<IActionResult> UploadLessonImage(int lessonId, [Required] IFormFile file)
+        {
+            var updatedLesson = await _service.UpdateLessonImageAsync(lessonId, file);
+            return Ok(updatedLesson);
         }
     }
 }

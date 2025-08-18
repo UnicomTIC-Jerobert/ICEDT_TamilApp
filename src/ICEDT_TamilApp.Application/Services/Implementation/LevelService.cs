@@ -4,6 +4,7 @@ using ICEDT_TamilApp.Application.Exceptions;
 using ICEDT_TamilApp.Application.Services.Interfaces;
 using ICEDT_TamilApp.Domain.Entities;
 using ICEDT_TamilApp.Domain.Interfaces;
+using Microsoft.AspNetCore.Http;
 
 namespace ICEDT_TamilApp.Application.Services.Implementation
 {
@@ -11,23 +12,25 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
     {
         // The service now depends on the Unit of Work, not an individual repository.
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IFileUploader _fileUploader;
 
-        public LevelService(IUnitOfWork unitOfWork)
+        public LevelService(IUnitOfWork unitOfWork, IFileUploader fileUploader)
         {
             _unitOfWork = unitOfWork;
+            _fileUploader = fileUploader;
         }
 
         public async Task<LevelResponseDto> GetLevelAsync(int id)
         {
             if (id <= 0)
                 throw new BadRequestException("Invalid Level ID.");
-            
+
             // Access the specific repository through the Unit of Work property.
             var level = await _unitOfWork.Levels.GetByIdAsync(id);
-            
+
             if (level == null)
                 throw new NotFoundException("Level not found.");
-            
+
             return MapToResponseDto(level);
         }
 
@@ -44,18 +47,18 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 throw new BadRequestException($"Sequence order {dto.SequenceOrder} is already in use.");
 
             if (await _unitOfWork.Levels.SlugExistsAsync(dto.Slug))
-                 throw new BadRequestException($"Slug '{dto.Slug}' is already in use.");
+                throw new BadRequestException($"Slug '{dto.Slug}' is already in use.");
 
-            var level = new Level 
-            { 
-                LevelName = dto.LevelName, 
-                SequenceOrder = dto.SequenceOrder, 
-                Slug = dto.Slug 
+            var level = new Level
+            {
+                LevelName = dto.LevelName,
+                SequenceOrder = dto.SequenceOrder,
+                Slug = dto.Slug
             };
 
             // Add the new entity to the context via the repository.
             await _unitOfWork.Levels.CreateAsync(level);
-            
+
             // *** THE KEY CHANGE ***
             // Commit all changes made in this transaction to the database.
             await _unitOfWork.CompleteAsync();
@@ -67,7 +70,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
         {
             if (id <= 0)
                 throw new BadRequestException("Invalid Level ID.");
-            
+
             var level = await _unitOfWork.Levels.GetByIdAsync(id);
             if (level == null)
                 throw new NotFoundException("Level not found.");
@@ -77,11 +80,11 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             {
                 throw new BadRequestException($"Sequence order {dto.SequenceOrder} is already in use.");
             }
-            
+
             // Check if the slug is being changed AND if the new one is already taken.
             if (level.Slug != dto.Slug && await _unitOfWork.Levels.SlugExistsAsync(dto.Slug))
             {
-                 throw new BadRequestException($"Slug '{dto.Slug}' is already in use.");
+                throw new BadRequestException($"Slug '{dto.Slug}' is already in use.");
             }
 
             // Update the entity's properties in memory.
@@ -102,7 +105,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             var level = await _unitOfWork.Levels.GetByIdAsync(id);
             if (level == null)
                 throw new NotFoundException("Level not found.");
-            
+
             // The repository's DeleteAsync method removes the entity from the context.
             await _unitOfWork.Levels.DeleteAsync(id);
 
@@ -121,6 +124,28 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 Slug = level.Slug,
                 SequenceOrder = level.SequenceOrder,
             };
+        }
+
+        // Implement the new method
+        public async Task<LevelResponseDto> UpdateLevelCoverImageAsync(int levelId, IFormFile file)
+        {
+            var level = await _unitOfWork.Levels.GetByIdAsync(levelId);
+            if (level == null)
+            {
+                throw new NotFoundException($"{nameof(Level)}, {levelId} not found");
+            }
+
+            // 1. Construct the S3 key
+            var s3Key = $"levels/{level.Slug}/cover-image/{Guid.NewGuid()}_{file.FileName}";
+
+            // 2. Upload the file using the reusable service
+            var imageUrl = await _fileUploader.UploadFileAsync(file, s3Key);
+
+            // 3. Update the entity and save to the database
+            level.CoverImageUrl = imageUrl;
+            await _unitOfWork.CompleteAsync();
+
+            return MapToResponseDto(level);
         }
     }
 }
