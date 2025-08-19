@@ -18,6 +18,7 @@ namespace ICEDT_TamilApp.Application
             services.AddScoped<IMediaService, MediaService>();
             services.AddScoped<IMainActivityService, MainActivityService>(); // Assuming you add this back
 
+            services.AddScoped<IFileUploader, S3FileUploader>();
             // If you have AutoMapper or MediatR, you would register them here too.
 
             return services;

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ICEDT_TamilApp.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250816113456_InitialSchema")]
+    [Migration("20250818040529_InitialSchema")]
     partial class InitialSchema
     {
         /// <inheritdoc />
@@ -85,6 +85,9 @@ namespace ICEDT_TamilApp.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("LessonImageUrl")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("LessonName")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -94,6 +97,11 @@ namespace ICEDT_TamilApp.Infrastructure.Migrations
 
                     b.Property<int>("SequenceOrder")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("LessonId");
 
@@ -108,6 +116,9 @@ namespace ICEDT_TamilApp.Infrastructure.Migrations
                     b.Property<int>("LevelId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("CoverImageUrl")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("LevelName")
                         .IsRequired()

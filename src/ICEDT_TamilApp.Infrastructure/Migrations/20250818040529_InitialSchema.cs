@@ -32,7 +32,8 @@ namespace ICEDT_TamilApp.Infrastructure.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     LevelName = table.Column<string>(type: "TEXT", nullable: false),
                     Slug = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
-                    SequenceOrder = table.Column<int>(type: "INTEGER", nullable: false)
+                    SequenceOrder = table.Column<int>(type: "INTEGER", nullable: false),
+                    CoverImageUrl = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -75,8 +76,10 @@ namespace ICEDT_TamilApp.Infrastructure.Migrations
                     LessonId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     LessonName = table.Column<string>(type: "TEXT", nullable: false),
+                    Slug = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
                     Description = table.Column<string>(type: "TEXT", nullable: false),
                     SequenceOrder = table.Column<int>(type: "INTEGER", nullable: false),
+                    LessonImageUrl = table.Column<string>(type: "TEXT", nullable: true),
                     LevelId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
