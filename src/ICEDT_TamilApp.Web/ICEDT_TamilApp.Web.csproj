@@ -3,7 +3,8 @@
   <ItemGroup>
     <ProjectReference Include="..\ICEDT_TamilApp.Domain\ICEDT_TamilApp.Domain.csproj" />
     <ProjectReference Include="..\ICEDT_TamilApp.Application\ICEDT_TamilApp.Application.csproj" />
-    <ProjectReference Include="..\ICEDT_TamilApp.Infrastructure\ICEDT_TamilApp.Infrastructure.csproj" />
+    <ProjectReference
+      Include="..\ICEDT_TamilApp.Infrastructure\ICEDT_TamilApp.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -29,6 +30,13 @@
     <Content Update="appsettings.Production.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="tamilapp.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
