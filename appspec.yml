@@ -5,30 +5,14 @@ files:
     destination: /var/www/tamilapp
 
 hooks:
-  # STEP 1: Stop the currently running application service.
   ApplicationStop:
     - location: scripts/stop_server.sh
       timeout: 300
       runas: root
-
-  # STEP 2: Clean the directory of old application files.
-  BeforeInstall:
-    - location: scripts/before_install.sh
-      timeout: 300
-      runas: root
-  
-  # STEP 3 (NEW): After the new application files are copied, run setup scripts.
   AfterInstall:
-    # Set the correct file ownership for the new files.
     - location: scripts/set_permissions.sh
-      timeout: 300
       runas: root
-    # Run the EF Core database migrations using the new code.
-    - location: scripts/migrate_db.sh
-      timeout: 300
-      runas: root
-
-  # STEP 4: Start the new version of the application service.
+  # The migrate_db.sh line is now REMOVED
   ApplicationStart:
     - location: scripts/start_server.sh
       timeout: 300
