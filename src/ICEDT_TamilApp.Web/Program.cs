@@ -96,28 +96,33 @@ else
 }
 
 // =================================================================
-// 3. SEED THE DATABASE (Crucial Step)
+// 3. APPLY MIGRATIONS AND SEED DYNAMIC DATA
 // =================================================================
-// This block will create a scope, get the DbContext, and run your seeder.
-// It's wrapped in a try-catch to log any errors during startup.
+// This block will run automatically on application startup.
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     try
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
+        var logger = services.GetRequiredService<ILogger<Program>>();
 
-        // Ensure migrations are applied (best practice for production)
+        logger.LogInformation("Applying database migrations...");
+        // Step 1: Apply migrations. This creates the schema and seeds static data from configurations.
         await context.Database.MigrateAsync();
+        logger.LogInformation("Database migrations applied successfully.");
 
-        // Call your DbInitializer to seed the data
+        logger.LogInformation("Running data initializer for dynamic data (e.g., default user)...");
+        // Step 2: Run the DbInitializer for dynamic data (like creating the admin user).
         await DbInitializer.Initialize(context);
+        logger.LogInformation("Data initializer completed.");
     }
     catch (Exception ex)
     {
-        // Get a logger and log the error
         var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred during database initialization/seeding.");
+        logger.LogError(ex, "An error occurred during database initialization, migration, or seeding.");
+        // In a real production app, you might want to handle this more gracefully,
+        // but for now, logging the error is the most important step.
     }
 }
 
