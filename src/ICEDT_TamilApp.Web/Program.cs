@@ -10,6 +10,23 @@ using ICEDT_TamilApp.Web.Middlewares; // Add this using statement!
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Give a name to your CORS policy
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+// --- ADD THIS CORS CONFIGURATION ---
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy =>
+                      {
+                          policy.WithOrigins("http://localhost:3000") // Your local React app
+                                .AllowAnyHeader()
+                                .AllowAnyMethod();
+                          // In production, you would add your deployed React app's domain here as well.
+                          // .WithOrigins("http://localhost:3000", "https://your-admin-app.com")
+                      });
+});
+
 // =================================================================
 // 1. Configure Services by calling Extension Methods
 // =================================================================
@@ -132,6 +149,10 @@ app.UseHttpsRedirection();
 app.UseStaticFiles(); // Serves your wwwroot folder (JS, CSS)
 
 app.UseRouting();
+
+// --- ADD THIS CORS MIDDLEWARE ---
+// It's important to place UseCors here: after UseRouting but before UseAuthorization.
+app.UseCors(MyAllowSpecificOrigins);
 
 // Auth must come after Routing but before Authorization and Endpoints
 app.UseAuthentication();
