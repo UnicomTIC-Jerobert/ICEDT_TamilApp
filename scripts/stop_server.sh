@@ -1,2 +1,2 @@
 #!/bin/bash
-systemctl stop tamilapp.service || true
+systemctl stop icedt_tamilapp.service || true
