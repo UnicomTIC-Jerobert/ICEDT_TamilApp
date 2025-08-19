@@ -1,3 +1,4 @@
+using Amazon.Runtime;
 using Amazon.S3;
 using ICEDT_TamilApp.Application;
 using ICEDT_TamilApp.Application.Common;
@@ -5,6 +6,7 @@ using ICEDT_TamilApp.Infrastructure;
 using ICEDT_TamilApp.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using ICEDT_TamilApp.Web.Middlewares; // Add this using statement!
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,15 +40,36 @@ builder.Services.AddSingleton(Options.Create(jwtSettings));
 
 // *** NEW: Configure AWS Settings and S3 Client for DI ***
 
-// 1. Bind the AwsSettings class using the Options Pattern
+// 1. Bind the AwsSettings class using the Options Pattern (this is still a good practice)
 builder.Services.Configure<AwsSettings>(builder.Configuration.GetSection(AwsSettings.SectionName));
 
-// 2. Add the default AWS options from the configuration
-builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
+// 2. Conditionally configure the IAmazonS3 client
+if (builder.Environment.IsDevelopment())
+{
+    // --- DEVELOPMENT LOGIC ---
+    // In Development, we read the keys directly from appsettings.json
+    // and create the client with explicit credentials.
+    var awsSettings = builder.Configuration.GetSection(AwsSettings.SectionName).Get<AwsSettings>();
+    
+    if (string.IsNullOrEmpty(awsSettings?.AccessKey) || string.IsNullOrEmpty(awsSettings.SecretKey))
+    {
+        throw new Exception("AWS AccessKey/SecretKey not configured in appsettings.Development.json");
+    }
 
-// 3. Register the IAmazonS3 client. The SDK will automatically use the
-//    credentials and region from the AWSOptions.
-builder.Services.AddAWSService<IAmazonS3>();
+    var credentials = new BasicAWSCredentials(awsSettings.AccessKey, awsSettings.SecretKey);
+    
+    builder.Services.AddSingleton<IAmazonS3>(sp => 
+    {
+        return new AmazonS3Client(credentials, Amazon.RegionEndpoint.GetBySystemName(awsSettings.Region));
+    });
+}
+else
+{
+    // --- PRODUCTION LOGIC (for EC2) ---
+    // In Production/Staging, we let the SDK find the credentials automatically from the IAM Role.
+    builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
+    builder.Services.AddAWSService<IAmazonS3>();
+}
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -73,32 +96,39 @@ else
 }
 
 // =================================================================
-// 3. SEED THE DATABASE (Crucial Step)
+// 3. APPLY MIGRATIONS AND SEED DYNAMIC DATA
 // =================================================================
-// This block will create a scope, get the DbContext, and run your seeder.
-// It's wrapped in a try-catch to log any errors during startup.
+// This block will run automatically on application startup.
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     try
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
+        var logger = services.GetRequiredService<ILogger<Program>>();
 
-        // Ensure migrations are applied (best practice for production)
+        logger.LogInformation("Applying database migrations...");
+        // Step 1: Apply migrations. This creates the schema and seeds static data from configurations.
         await context.Database.MigrateAsync();
+        logger.LogInformation("Database migrations applied successfully.");
 
-        // Call your DbInitializer to seed the data
+        logger.LogInformation("Running data initializer for dynamic data (e.g., default user)...");
+        // Step 2: Run the DbInitializer for dynamic data (like creating the admin user).
         await DbInitializer.Initialize(context);
+        logger.LogInformation("Data initializer completed.");
     }
     catch (Exception ex)
     {
-        // Get a logger and log the error
         var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred during database initialization/seeding.");
+        logger.LogError(ex, "An error occurred during database initialization, migration, or seeding.");
+        // In a real production app, you might want to handle this more gracefully,
+        // but for now, logging the error is the most important step.
     }
 }
 
 // =================================================================
+
+app.UseWrapResponseMiddleware();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles(); // Serves your wwwroot folder (JS, CSS)

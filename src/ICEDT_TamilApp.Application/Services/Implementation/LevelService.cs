@@ -4,52 +4,65 @@ using ICEDT_TamilApp.Application.Exceptions;
 using ICEDT_TamilApp.Application.Services.Interfaces;
 using ICEDT_TamilApp.Domain.Entities;
 using ICEDT_TamilApp.Domain.Interfaces;
+using Microsoft.AspNetCore.Http;
 
 namespace ICEDT_TamilApp.Application.Services.Implementation
 {
     public class LevelService : ILevelService
     {
-        private readonly ILevelRepository _repo;
+        // The service now depends on the Unit of Work, not an individual repository.
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IFileUploader _fileUploader;
 
-        public LevelService(ILevelRepository repo) => _repo = repo;
+        public LevelService(IUnitOfWork unitOfWork, IFileUploader fileUploader)
+        {
+            _unitOfWork = unitOfWork;
+            _fileUploader = fileUploader;
+        }
 
         public async Task<LevelResponseDto> GetLevelAsync(int id)
         {
             if (id <= 0)
                 throw new BadRequestException("Invalid Level ID.");
-            var level = await _repo.GetByIdAsync(id);
+
+            // Access the specific repository through the Unit of Work property.
+            var level = await _unitOfWork.Levels.GetByIdAsync(id);
+
             if (level == null)
                 throw new NotFoundException("Level not found.");
+
             return MapToResponseDto(level);
         }
 
         public async Task<List<LevelResponseDto>> GetAllLevelsAsync()
         {
-            var levels = await _repo.GetAllAsync();
+            var levels = await _unitOfWork.Levels.GetAllAsync();
             return levels.Select(MapToResponseDto).ToList();
         }
 
         public async Task<LevelResponseDto> CreateLevelAsync(LevelRequestDto dto)
         {
-            if (await _repo.SequenceOrderExistsAsync(dto.SequenceOrder))
-                throw new BadRequestException(
-                    $"Sequence order {dto.SequenceOrder} is already in use."
-                );
+            // Perform validation using the repository.
+            if (await _unitOfWork.Levels.SequenceOrderExistsAsync(dto.SequenceOrder))
+                throw new BadRequestException($"Sequence order {dto.SequenceOrder} is already in use.");
 
-            /*
-            var existingLevels = await _repo.GetAllAsync();
-            if (existingLevels.Any(l => l.SequenceOrder == dto.SequenceOrder))
+            if (await _unitOfWork.Levels.SlugExistsAsync(dto.Slug))
+                throw new BadRequestException($"Slug '{dto.Slug}' is already in use.");
+
+            var level = new Level
             {
-                foreach (var level in existingLevels.Where(l => l.SequenceOrder >= dto.SequenceOrder))
-                {
-                    level.SequenceOrder++;
-                    await _repo.UpdateAsync(level);
-                }
-            }
-            */
+                LevelName = dto.LevelName,
+                SequenceOrder = dto.SequenceOrder,
+                Slug = dto.Slug
+            };
 
-            var level = new Level { LevelName = dto.LevelName, SequenceOrder = dto.SequenceOrder };
-            await _repo.CreateAsync(level);
+            // Add the new entity to the context via the repository.
+            await _unitOfWork.Levels.CreateAsync(level);
+
+            // *** THE KEY CHANGE ***
+            // Commit all changes made in this transaction to the database.
+            await _unitOfWork.CompleteAsync();
+
             return MapToResponseDto(level);
         }
 
@@ -57,54 +70,82 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
         {
             if (id <= 0)
                 throw new BadRequestException("Invalid Level ID.");
-            var level = await _repo.GetByIdAsync(id);
+
+            var level = await _unitOfWork.Levels.GetByIdAsync(id);
             if (level == null)
                 throw new NotFoundException("Level not found.");
 
-            if (level.SequenceOrder != dto.SequenceOrder)
+            // Check if the sequence order is being changed AND if the new one is already taken.
+            if (level.SequenceOrder != dto.SequenceOrder && await _unitOfWork.Levels.SequenceOrderExistsAsync(dto.SequenceOrder))
             {
-                if (await _repo.SequenceOrderExistsAsync(dto.SequenceOrder))
-                    throw new BadRequestException(
-                        $"Sequence order {dto.SequenceOrder} is already in use."
-                    );
+                throw new BadRequestException($"Sequence order {dto.SequenceOrder} is already in use.");
             }
 
-            /*
-            if (level.SequenceOrder != dto.SequenceOrder)
+            // Check if the slug is being changed AND if the new one is already taken.
+            if (level.Slug != dto.Slug && await _unitOfWork.Levels.SlugExistsAsync(dto.Slug))
             {
-                var existingLevels = await _repo.GetAllAsync();
-                if (existingLevels.Any(l => l.SequenceOrder == dto.SequenceOrder && l.LevelId != id))
-                {
-                    foreach (var existingLevel in existingLevels.Where(l => l.SequenceOrder >= dto.SequenceOrder && l.LevelId != id))
-                    {
-                        existingLevel.SequenceOrder++;
-                        await _repo.UpdateAsync(existingLevel);
-                    }
-                }
+                throw new BadRequestException($"Slug '{dto.Slug}' is already in use.");
             }
-            */
 
+            // Update the entity's properties in memory.
             level.LevelName = dto.LevelName;
             level.SequenceOrder = dto.SequenceOrder;
-            await _repo.UpdateAsync(level);
+            level.Slug = dto.Slug;
+
+            // The repository's UpdateAsync method just marks the entity as Modified.
+            await _unitOfWork.Levels.UpdateAsync(level);
+
+            // *** THE KEY CHANGE ***
+            // Commit the update to the database.
+            await _unitOfWork.CompleteAsync();
         }
 
         public async Task DeleteLevelAsync(int id)
         {
-            var level = await _repo.GetByIdAsync(id);
+            var level = await _unitOfWork.Levels.GetByIdAsync(id);
             if (level == null)
                 throw new NotFoundException("Level not found.");
-            await _repo.DeleteAsync(id);
+
+            // The repository's DeleteAsync method removes the entity from the context.
+            await _unitOfWork.Levels.DeleteAsync(id);
+
+            // *** THE KEY CHANGE ***
+            // Commit the deletion to the database.
+            await _unitOfWork.CompleteAsync();
         }
 
+        // The private DTO mapper function remains the same.
         private LevelResponseDto MapToResponseDto(Level level)
         {
             return new LevelResponseDto
             {
                 LevelId = level.LevelId,
                 LevelName = level.LevelName,
+                Slug = level.Slug,
                 SequenceOrder = level.SequenceOrder,
             };
+        }
+
+        // Implement the new method
+        public async Task<LevelResponseDto> UpdateLevelCoverImageAsync(int levelId, IFormFile file)
+        {
+            var level = await _unitOfWork.Levels.GetByIdAsync(levelId);
+            if (level == null)
+            {
+                throw new NotFoundException($"{nameof(Level)}, {levelId} not found");
+            }
+
+            // 1. Construct the S3 key
+            var s3Key = $"levels/{level.Slug}/cover-image/{Guid.NewGuid()}_{file.FileName}";
+
+            // 2. Upload the file using the reusable service
+            var imageUrl = await _fileUploader.UploadFileAsync(file, s3Key);
+
+            // 3. Update the entity and save to the database
+            level.CoverImageUrl = imageUrl;
+            await _unitOfWork.CompleteAsync();
+
+            return MapToResponseDto(level);
         }
     }
 }

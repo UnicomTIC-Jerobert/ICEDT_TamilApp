@@ -11,6 +11,7 @@ namespace ICEDT_TamilApp.Domain.Interfaces
         Task CreateAsync(MainActivity mainActivity);
         Task UpdateAsync(MainActivity mainActivity);
         Task DeleteAsync(int id);
-        Task<bool> MainActivityTypeExistsAsync(int mainActivityId);
+        Task<bool> ExistsAsync(int mainActivityId);
+
     }
 }

@@ -13,5 +13,7 @@ namespace ICEDT_TamilApp.Domain.Interfaces
         Task DeleteAsync(int id);
 
         Task<bool> SequenceOrderExistsAsync(int sequenceOrder);
+        Task<bool> SlugExistsAsync(string slug);
+        Task<bool> LevelExistsAsync(int levelId);
     }
 }

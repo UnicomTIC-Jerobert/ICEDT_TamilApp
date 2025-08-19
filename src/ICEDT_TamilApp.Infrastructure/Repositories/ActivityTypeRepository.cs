@@ -11,11 +11,15 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
 
         public ActivityTypeRepository(ApplicationDbContext context) => _context = context;
 
-        public async Task<ActivityType> GetByIdAsync(int id) =>
-            await _context.ActivityTypes.FindAsync(id);
+        public async Task<ActivityType> GetByIdAsync(int id)
+        {
+            return await _context.ActivityTypes.FindAsync(id);
+        }
 
-        public async Task<List<ActivityType>> GetAllAsync() =>
-            await _context.ActivityTypes.ToListAsync();
+        public async Task<List<ActivityType>> GetAllAsync()
+        {
+            return await _context.ActivityTypes.ToListAsync();
+        }
 
         public async Task CreateAsync(ActivityType activityType)
         {
@@ -39,7 +43,9 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
             }
         }
 
-        public async Task<bool> ActivityTypeExistsAsync(int activityTypeId) =>
-            await _context.ActivityTypes.AnyAsync(t => t.ActivityTypeId == activityTypeId);
+        public async Task<bool> ExistsAsync(int activityTypeId)
+        {
+            return await _context.ActivityTypes.AnyAsync(t => t.ActivityTypeId == activityTypeId);
+        }
     }
 }

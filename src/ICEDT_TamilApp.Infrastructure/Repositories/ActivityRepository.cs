@@ -14,18 +14,22 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
 
         public ActivityRepository(ApplicationDbContext context) => _context = context;
 
-        public async Task<Activity> GetByIdAsync(int id) =>
-            await _context
+        public async Task<Activity> GetByIdAsync(int id)
+        {
+            return await _context
                 .Activities.Include(a => a.ActivityType)
                 .Include(a => a.MainActivity)
                 .FirstOrDefaultAsync(a => a.ActivityId == id);
+        }
 
-        public async Task<List<Activity>> GetAllAsync() =>
-            await _context
+        public async Task<List<Activity>> GetAllAsync()
+        {
+            return await _context
                 .Activities.Include(a => a.ActivityType)
                 .Include(a => a.MainActivity)
                 .OrderBy(a => a.SequenceOrder)
                 .ToListAsync();
+        }
 
         public async Task<List<Activity>> GetByLessonIdAsync(int lessonId)
         {
@@ -59,10 +63,30 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
             }
         }
 
-        public async Task<bool> SequenceOrderExistsAsync(int sequenceOrder) =>
-            await _context.Activities.AnyAsync(a => a.SequenceOrder == sequenceOrder);
+        public async Task<bool> SequenceOrderExistsAsync(int sequenceOrder)
+        {
+            return await _context.Activities.AnyAsync(a => a.SequenceOrder == sequenceOrder);
+        }
 
-        public async Task<bool> LessonExistsAsync(int lessonId) =>
-            await _context.Lessons.AnyAsync(l => l.LessonId == lessonId);
+        public async Task<bool> LessonExistsAsync(int lessonId)
+        {
+            return await _context.Lessons.AnyAsync(l => l.LessonId == lessonId);
+        }
+
+        public async Task<bool> HasActivitiesOfTypeAsync(int activityTypeId)
+        {
+            // This is highly efficient. It translates to a SQL query like:
+            // SELECT CASE WHEN EXISTS (SELECT 1 FROM "Activities" WHERE "ActivityTypeId" = @p0)
+            // THEN 1 ELSE 0 END
+            return await _context.Activities.AnyAsync(a => a.ActivityTypeId == activityTypeId);
+        }
+
+        public async Task<bool> SequenceOrderExistsAsync(int lessonId, int sequenceOrder)
+        {
+             return await _context.Activities.AnyAsync(a => 
+                a.LessonId == lessonId && 
+                a.SequenceOrder == sequenceOrder
+            );
+        }
     }
 }

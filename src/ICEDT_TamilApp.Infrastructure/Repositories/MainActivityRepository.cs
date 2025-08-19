@@ -76,9 +76,10 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
         /// <summary>
         /// Checks if a MainActivity with the given ID exists.
         /// </summary>
-        public async Task<bool> MainActivityTypeExistsAsync(int id)
+        public async Task<bool> ExistsAsync(int id)
         {
             return await _context.MainActivities.AnyAsync(m => m.Id == id);
         }
+
     }
 }

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using ICEDT_TamilApp.Application.DTOs.Request;
 using ICEDT_TamilApp.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -48,6 +49,14 @@ namespace ICEDT_TamilApp.Web.Controllers
                 return BadRequest(new { message = "Invalid Level ID." });
             await _service.DeleteLevelAsync(id);
             return NoContent();
+        }
+
+        [HttpPost("{levelId}/cover-image")]
+        public async Task<IActionResult> UploadLevelCoverImage(int levelId, [Required] IFormFile file)
+        {
+            // The service method will handle all the logic
+            var updatedLevel = await _service.UpdateLevelCoverImageAsync(levelId, file);
+            return Ok(updatedLevel);
         }
     }
 }

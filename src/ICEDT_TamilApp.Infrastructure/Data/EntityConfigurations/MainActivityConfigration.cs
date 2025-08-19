@@ -16,6 +16,13 @@ namespace ICEDT_TamilApp.Infrastructure.Data.EntityConfigurations
                 .WithOne(a => a.MainActivity)
                 .HasForeignKey(a => a.MainActivityId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasData(
+                 new MainActivity {Id=1, Name = "Video" },
+                    new MainActivity {Id=2, Name = "Sounds" },
+                    new MainActivity {Id=3, Name = "Learning" },
+                    new MainActivity {Id=4, Name = "Exercises" }
+            );
         }
     }
 }

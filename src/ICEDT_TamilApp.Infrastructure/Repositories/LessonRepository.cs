@@ -16,9 +16,9 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
 
         public async Task<Lesson> GetByIdAsync(int lessonId)
         {
-            // No changes needed here, this is fine.
+
             return await _context
-                .Lessons.AsNoTracking() // Use AsNoTracking for read-only queries
+                .Lessons.AsNoTracking()
                 .FirstOrDefaultAsync(l => l.LessonId == lessonId);
         }
 
@@ -80,7 +80,14 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
             return true;
         }
 
-        public async Task<bool> SequenceOrderExistsAsync(int sequenceOrder) =>
-            await _context.Lessons.AnyAsync(l => l.SequenceOrder == sequenceOrder); // Corrected to check Lessons table
+        public async Task<bool> SequenceOrderExistsAsync(int sequenceOrder)
+        {
+            return await _context.Lessons.AnyAsync(l => l.SequenceOrder == sequenceOrder); // Corrected to check Lessons table
+        }
+
+        public async Task<bool> ExistsAsync(int lessonId)
+        {
+            return await _context.Lessons.AnyAsync(l => l.LessonId == lessonId);
+        }
     }
 }
