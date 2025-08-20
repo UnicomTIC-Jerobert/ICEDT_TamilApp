@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ICEDT_TamilApp.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250820041740_Initial")]
+    [Migration("20250820045123_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -63,7 +63,7 @@ namespace ICEDT_TamilApp.Infrastructure.Migrations
                         {
                             ActivityId = 1,
                             ActivityTypeId = 7,
-                            ContentJson = "{\r\n                      \"leftOperand\": \"க்\",\r\n                      \"rightOperand\": \"அ\",\r\n                      \"correctAnswer\": \"க\",\r\n                      \"options\": [\"கா\", \"கி\", \"க\", \"கூ\"]\r\n                    }",
+                            ContentJson = "[\r\n      { \"leftOperand\": \"க்\", \"rightOperand\": \"அ\", \"correctAnswer\": \"க\", \"options\": [\"கா\", \"கி\", \"க\", \"கூ\"] },\r\n      { \"leftOperand\": \"ங்\", \"rightOperand\": \"அ\", \"correctAnswer\": \"ங\", \"options\": [\"ஙா\", \"ஙி\", \"ங\", \"ஙூ\"] },\r\n      { \"leftOperand\": \"ச்\", \"rightOperand\": \"அ\", \"correctAnswer\": \"ச\", \"options\": [\"சா\", \"சி\", \"ச\", \"சூ\"] },\r\n      { \"leftOperand\": \"ஞ்\", \"rightOperand\": \"அ\", \"correctAnswer\": \"ஞ\", \"options\": [\"ஞா\", \"ஞி\", \"ஞ\", \"ஞூ\"] },\r\n      { \"leftOperand\": \"ட்\", \"rightOperand\": \"அ\", \"correctAnswer\": \"ட\", \"options\": [\"டா\", \"டி\", \"ட\", \"டூ\"] },\r\n      { \"leftOperand\": \"ண்\", \"rightOperand\": \"அ\", \"correctAnswer\": \"ண\", \"options\": [\"ணா\", \"ணி\", \"ண\", \"ணூ\"] },\r\n      { \"leftOperand\": \"த்\", \"rightOperand\": \"அ\", \"correctAnswer\": \"த\", \"options\": [\"தா\", \"தி\", \"த\", \"தூ\"] },\r\n      { \"leftOperand\": \"ந்\", \"rightOperand\": \"அ\", \"correctAnswer\": \"ந\", \"options\": [\"நா\", \"நி\", \"ந\", \"நூ\"] },\r\n      { \"leftOperand\": \"ப்\", \"rightOperand\": \"அ\", \"correctAnswer\": \"ப\", \"options\": [\"பா\", \"பி\", \"ப\", \"பூ\"] },\r\n      { \"leftOperand\": \"ம்\", \"rightOperand\": \"அ\", \"correctAnswer\": \"ம\", \"options\": [\"மா\", \"மி\", \"ம\", \"மூ\"] },\r\n      { \"leftOperand\": \"ய்\", \"rightOperand\": \"அ\", \"correctAnswer\": \"ய\", \"options\": [\"யா\", \"யி\", \"ய\", \"யூ\"] },\r\n      { \"leftOperand\": \"ர்\", \"rightOperand\": \"அ\", \"correctAnswer\": \"ர\", \"options\": [\"ரா\", \"ரி\", \"ர\", \"ரூ\"] },\r\n      { \"leftOperand\": \"ல்\", \"rightOperand\": \"அ\", \"correctAnswer\": \"ல\", \"options\": [\"லா\", \"லி\", \"ல\", \"லூ\"] },\r\n      { \"leftOperand\": \"வ்\", \"rightOperand\": \"அ\", \"correctAnswer\": \"வ\", \"options\": [\"வா\", \"வி\", \"வ\", \"வூ\"] },\r\n      { \"leftOperand\": \"ழ்\", \"rightOperand\": \"அ\", \"correctAnswer\": \"ழ\", \"options\": [\"ழா\", \"ழி\", \"ழ\", \"ழூ\"] },\r\n      { \"leftOperand\": \"ள்\", \"rightOperand\": \"அ\", \"correctAnswer\": \"ள\", \"options\": [\"ளா\", \"ளி\", \"ள\", \"ளூ\"] },\r\n      { \"leftOperand\": \"ற்\", \"rightOperand\": \"அ\", \"correctAnswer\": \"ற\", \"options\": [\"றா\", \"றி\", \"ற\", \"றூ\"] },\r\n      { \"leftOperand\": \"ன்\", \"rightOperand\": \"அ\", \"correctAnswer\": \"ன\", \"options\": [\"னா\", \"னி\", \"ன\", \"னூ\"] }\r\n    ]",
                             LessonId = 21,
                             MainActivityId = 3,
                             SequenceOrder = 1,
