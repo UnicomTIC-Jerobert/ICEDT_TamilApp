@@ -108,13 +108,23 @@ namespace ICEDT_TamilApp.Infrastructure.Migrations
                         },
                         new
                         {
-                            ActivityId = 6,
-                            ActivityTypeId = 13,
-                            ContentJson = "{\r\n                      \"question\": \"Which part of the body do we use to see?\",\r\n                      \"choices\": [\r\n                        { \"id\": 1, \"text\": \"காது (Ear)\", \"isCorrect\": false },\r\n                        { \"id\": 2, \"text\": \"கண் (Eye)\", \"isCorrect\": true },\r\n                        { \"id\": 3, \"text\": \"மூக்கு (Nose)\", \"isCorrect\": false }\r\n                      ]\r\n                    }",
+                            ActivityId = 7,
+                            ActivityTypeId = 2,
+                            ContentJson = "{\r\n      \"spotlightLetter\": \"அ\",\r\n      \"words\": [\r\n        { \"text\": \"அம்மா\" }, { \"text\": \"அரிசி\" }, { \"text\": \"அன்னம்\" },\r\n        { \"text\": \"அடுப்பு\" }, { \"text\": \"அருவி\" }\r\n      ]\r\n    }",
                             LessonId = 1,
-                            MainActivityId = 4,
+                            MainActivityId = 3,
                             SequenceOrder = 1,
-                            Title = "உடல் உறுப்புகள் கேள்வி"
+                            Title = "உயிர் எழுத்து - அ"
+                        },
+                        new
+                        {
+                            ActivityId = 8,
+                            ActivityTypeId = 2,
+                            ContentJson = "[\r\n      {\r\n        \"spotlightLetter\": \"க்\",\r\n        \"words\": [\r\n          { \"text\": \"கொக்கு\" }, { \"text\": \"பாக்கு\" }, { \"text\": \"நாக்கு\" },\r\n          { \"text\": \"தக்காளி\" }, { \"text\": \"சக்கரம்\" }\r\n        ]\r\n      },\r\n      {\r\n        \"spotlightLetter\": \"ங்\",\r\n        \"words\": [\r\n          { \"text\": \"சங்கு\" }, { \"text\": \"நங்கூரம்\" }, { \"text\": \"குரங்கு\" },\r\n          { \"text\": \"பழங்கள்\" }, { \"text\": \"தங்கம்\" }\r\n        ]\r\n      },\r\n      {\r\n        \"spotlightLetter\": \"ச்\",\r\n        \"words\": [\r\n          { \"text\": \"பச்சை\" }, { \"text\": \"எலுமிச்சை\" }, { \"text\": \"பூச்சி\" },\r\n          { \"text\": \"குச்சி\" }, { \"text\": \"நீச்சல்\" }\r\n        ]\r\n      },\r\n      {\r\n        \"spotlightLetter\": \"ஞ்\",\r\n        \"words\": [\r\n          { \"text\": \"இஞ்சி\" }, { \"text\": \"ஊஞ்சல்\" }, { \"text\": \"மஞ்சள்\" },\r\n          { \"text\": \"குஞ்சு\" }, { \"text\": \"பஞ்சு\" }\r\n        ]\r\n      }\r\n    ]",
+                            LessonId = 15,
+                            MainActivityId = 3,
+                            SequenceOrder = 1,
+                            Title = "மெய்யெழுத்துகள் பயிற்சி"
                         });
                 });
 

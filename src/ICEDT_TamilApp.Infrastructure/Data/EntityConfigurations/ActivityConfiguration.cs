@@ -160,24 +160,75 @@ namespace ICEDT_TamilApp.Infrastructure.Data.EntityConfigurations
                     }"
           },
 
-           // === A Sample MCQ Activity (ID: 13) ===
-           new Activity
-           {
-             ActivityId = 6,
-             LessonId = 1, // Belongs to a Preschool lesson
-             Title = "உடல் உறுப்புகள் கேள்வி",
-             SequenceOrder = 1,
-             ActivityTypeId = 13, // ID for MCQ
-             MainActivityId = 4, // ID for "Exercises"
-             ContentJson = @"{
-                      ""question"": ""Which part of the body do we use to see?"",
-                      ""choices"": [
-                        { ""id"": 1, ""text"": ""காது (Ear)"", ""isCorrect"": false },
-                        { ""id"": 2, ""text"": ""கண் (Eye)"", ""isCorrect"": true },
-                        { ""id"": 3, ""text"": ""மூக்கு (Nose)"", ""isCorrect"": false }
-                      ]
-                    }"
-           }
+// === Activity for Preschool, Lesson 1: Letter Spotlight (ID: 2) ===
+// Inside builder.HasData(...)
+
+// === Activity for Preschool, Lesson 1: Letter Spotlight (SINGLE EXERCISE) ===
+new Activity
+{
+  ActivityId = 7,
+  LessonId = 1,
+  Title = "உயிர் எழுத்து - அ",
+  SequenceOrder = 1,
+  ActivityTypeId = 2,
+  MainActivityId = 3,
+  ContentJson = @"{
+      ""spotlightLetter"": ""அ"",
+      ""words"": [
+        { ""text"": ""அம்மா"" }, { ""text"": ""அரிசி"" }, { ""text"": ""அன்னம்"" },
+        { ""text"": ""அடுப்பு"" }, { ""text"": ""அருவி"" }
+      ]
+    }"
+},
+
+
+// === Activity for Kindergarten, Lesson 5: Consonants (MULTIPLE EXERCISES in one Activity) ===
+new Activity
+{
+  ActivityId = 8,
+  LessonId = 15,
+  Title = "மெய்யெழுத்துகள் பயிற்சி",
+  SequenceOrder = 1, // Only ONE activity for this lesson
+  ActivityTypeId = 2,
+  MainActivityId = 3,
+  // The ContentJson is an ARRAY of exercise objects
+  ContentJson = @"[
+      {
+        ""spotlightLetter"": ""க்"",
+        ""words"": [
+          { ""text"": ""கொக்கு"" }, { ""text"": ""பாக்கு"" }, { ""text"": ""நாக்கு"" },
+          { ""text"": ""தக்காளி"" }, { ""text"": ""சக்கரம்"" }
+        ]
+      },
+      {
+        ""spotlightLetter"": ""ங்"",
+        ""words"": [
+          { ""text"": ""சங்கு"" }, { ""text"": ""நங்கூரம்"" }, { ""text"": ""குரங்கு"" },
+          { ""text"": ""பழங்கள்"" }, { ""text"": ""தங்கம்"" }
+        ]
+      },
+      {
+        ""spotlightLetter"": ""ச்"",
+        ""words"": [
+          { ""text"": ""பச்சை"" }, { ""text"": ""எலுமிச்சை"" }, { ""text"": ""பூச்சி"" },
+          { ""text"": ""குச்சி"" }, { ""text"": ""நீச்சல்"" }
+        ]
+      },
+      {
+        ""spotlightLetter"": ""ஞ்"",
+        ""words"": [
+          { ""text"": ""இஞ்சி"" }, { ""text"": ""ஊஞ்சல்"" }, { ""text"": ""மஞ்சள்"" },
+          { ""text"": ""குஞ்சு"" }, { ""text"": ""பஞ்சு"" }
+        ]
+      }
+    ]"
+}
+
+// ...
+
+
+
+
       );
     }
   }
