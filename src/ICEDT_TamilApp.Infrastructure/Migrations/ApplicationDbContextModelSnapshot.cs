@@ -54,6 +54,68 @@ namespace ICEDT_TamilApp.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Activities");
+
+                    b.HasData(
+                        new
+                        {
+                            ActivityId = 1,
+                            ActivityTypeId = 7,
+                            ContentJson = "{\r\n                      \"leftOperand\": \"க்\",\r\n                      \"rightOperand\": \"அ\",\r\n                      \"correctAnswer\": \"க\",\r\n                      \"options\": [\"கா\", \"கி\", \"க\", \"கூ\"]\r\n                    }",
+                            LessonId = 21,
+                            MainActivityId = 3,
+                            SequenceOrder = 1,
+                            Title = "அ-ஓசை உயிர்மெய் எழுத்துகள் (க் + அ)"
+                        },
+                        new
+                        {
+                            ActivityId = 2,
+                            ActivityTypeId = 4,
+                            ContentJson = "{\r\n                      \"title\": \"Find the word that starts with the letter shown above.\",\r\n                      \"words\": [\"பல்\", \"கல்\", \"கண்\", \"மண்\", \"வயல்\", \"மரம்\", \"படம்\", \"தடம்\", \"அப்பம்\", \"மன்னன்\"]\r\n                    }",
+                            LessonId = 21,
+                            MainActivityId = 4,
+                            SequenceOrder = 2,
+                            Title = "முதல் எழுத்துச் சொல் கண்டறிதல்"
+                        },
+                        new
+                        {
+                            ActivityId = 3,
+                            ActivityTypeId = 4,
+                            ContentJson = "{\r\n                      \"title\": \"Match the Number to the Word\",\r\n                      \"columnA\": [\r\n                        { \"id\": \"A1\", \"content\": \"1\", \"matchId\": \"B1\" },\r\n                        { \"id\": \"A2\", \"content\": \"2\", \"matchId\": \"B2\" },\r\n                        { \"id\": \"A3\", \"content\": \"3\", \"matchId\": \"B3\" },\r\n                        { \"id\": \"A4\", \"content\": \"4\", \"matchId\": \"B4\" },\r\n                        { \"id\": \"A5\", \"content\": \"5\", \"matchId\": \"B5\" }\r\n                      ],\r\n                      \"columnB\": [\r\n                        { \"id\": \"B1\", \"content\": \"ஒன்று\", \"matchId\": \"A1\" },\r\n                        { \"id\": \"B2\", \"content\": \"இரண்டு\", \"matchId\": \"A2\" },\r\n                        { \"id\": \"B3\", \"content\": \"மூன்று\", \"matchId\": \"A3\" },\r\n                        { \"id\": \"B4\", \"content\": \"நான்கு\", \"matchId\": \"A4\" },\r\n                        { \"id\": \"B5\", \"content\": \"ஐந்து\", \"matchId\": \"A5\" }\r\n                      ]\r\n                    }",
+                            LessonId = 25,
+                            MainActivityId = 4,
+                            SequenceOrder = 1,
+                            Title = "எண்களை எழுத்துக்களுடன் பொருத்துக (1-5)"
+                        },
+                        new
+                        {
+                            ActivityId = 4,
+                            ActivityTypeId = 7,
+                            ContentJson = "{\r\n                      \"title\": \"Fill in the blanks with the correct word from the word bank.\",\r\n                      \"sentences\": [\r\n                        { \"id\": 1, \"prefix\": \"\", \"suffix\": \" செழிப்பாக வளர்கின்றன.\", \"correctAnswer\": \"அவை\" },\r\n                        { \"id\": 2, \"prefix\": \"\", \"suffix\": \" பேருந்தில் செல்கிறாள்.\", \"correctAnswer\": \"அவள்\" }\r\n                      ],\r\n                      \"wordBank\": [\"அவை\", \"அவள்\", \"பறக்கிறது\", \"ஆடுகிறோம்\"]\r\n                    }",
+                            LessonId = 32,
+                            MainActivityId = 4,
+                            SequenceOrder = 1,
+                            Title = "வினைச்சொல் பொருத்தம் (Word Bank)"
+                        },
+                        new
+                        {
+                            ActivityId = 5,
+                            ActivityTypeId = 7,
+                            ContentJson = "{\r\n                      \"title\": \"Complete the sentences by selecting the correct verb.\",\r\n                      \"sentences\": [\r\n                        {\r\n                          \"id\": 1,\r\n                          \"prefix\": \"மாதவி\",\r\n                          \"suffix\": \"பாட்டு.\",\r\n                          \"options\": [\"பாடுகிறாள்\", \"வரைகிறான்\", \"மீட்டுகிறாள்\"],\r\n                          \"correctAnswer\": \"பாடுகிறாள்\"\r\n                        },\r\n                        {\r\n                          \"id\": 2,\r\n                          \"prefix\": \"மகிழன்\",\r\n                          \"suffix\": \"ஓவியம்.\",\r\n                          \"options\": [\"ஆடுகிறாள்\", \"வரைகிறான்\", \"ஊதுகிறாள்\"],\r\n                          \"correctAnswer\": \"வரைகிறான்\"\r\n                        }\r\n                      ]\r\n                    }",
+                            LessonId = 45,
+                            MainActivityId = 4,
+                            SequenceOrder = 1,
+                            Title = "பொருத்தமான வினைச்சொல்லைத் தெரிவு செய்க (Dropdown)"
+                        },
+                        new
+                        {
+                            ActivityId = 6,
+                            ActivityTypeId = 13,
+                            ContentJson = "{\r\n                      \"question\": \"Which part of the body do we use to see?\",\r\n                      \"choices\": [\r\n                        { \"id\": 1, \"text\": \"காது (Ear)\", \"isCorrect\": false },\r\n                        { \"id\": 2, \"text\": \"கண் (Eye)\", \"isCorrect\": true },\r\n                        { \"id\": 3, \"text\": \"மூக்கு (Nose)\", \"isCorrect\": false }\r\n                      ]\r\n                    }",
+                            LessonId = 1,
+                            MainActivityId = 4,
+                            SequenceOrder = 1,
+                            Title = "உடல் உறுப்புகள் கேள்வி"
+                        });
                 });
 
             modelBuilder.Entity("ICEDT_TamilApp.Domain.Entities.ActivityType", b =>
