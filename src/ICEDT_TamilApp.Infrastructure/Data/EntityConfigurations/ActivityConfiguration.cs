@@ -222,9 +222,182 @@ new Activity
         ]
       }
     ]"
+},
+
+// Inside builder.HasData(...) in ActivityConfiguration.cs
+
+// === Activity for Kindergarten, Lesson 6: Consonants with Media ===
+new Activity
+{
+  ActivityId = 9, // Ensure this ID is unique
+  LessonId = 16,   // Belongs to "சிறுவர் நிலை - பாடம் 06"
+  Title = "மெய்யெழுத்துகள் படங்களுடன்",
+  SequenceOrder = 1,
+  ActivityTypeId = 2,  // The ID we use for Spotlight components
+  MainActivityId = 3,  // "Learning"
+  ContentJson = @"[
+      {
+        ""spotlightLetter"": ""ட்"",
+        ""items"": [
+          { ""text"": ""பட்டம்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson6/pattam.jpg"" },
+          { ""text"": ""பெட்டி"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson6/petti.jpg"" },
+          { ""text"": ""ஒட்டகம்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson6/ottakam.jpg"" }
+        ]
+      },
+      {
+        ""spotlightLetter"": ""ண்"",
+        ""items"": [
+          { ""text"": ""செண்பகம்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson6/senpakam.jpg"" },
+          { ""text"": ""நண்டு"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson6/nandu.jpg"" },
+          { ""text"": ""வண்டு"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson6/vandu.jpg"" }
+        ]
+      },
+      {
+        ""spotlightLetter"": ""த்"",
+        ""items"": [
+          { ""text"": ""பத்து"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson6/pathu.jpg"" },
+          { ""text"": ""வாத்து"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson6/vaaththu.jpg"" },
+          { ""text"": ""நத்தை"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson6/naththai.jpg"" }
+        ]
+      },
+      {
+        ""spotlightLetter"": ""ந்"",
+        ""items"": [
+          { ""text"": ""பந்து"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson6/panthu.jpg"" },
+          { ""text"": ""ஆந்தை"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson6/aanthai.jpg"" },
+          { ""text"": ""தந்தம்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson6/thantham.jpg"" }
+        ]
+      }
+    ]"
+},
+// Inside builder.HasData(...) in ActivityConfiguration.cs
+
+// === Activity for Kindergarten, Lesson 7: Consonants with Media ===
+new Activity
+{
+  ActivityId = 13, // Ensure this ID is unique
+  LessonId = 17,   // Belongs to "சிறுவர் நிலை - பாடம் 07"
+  Title = "மெய்யெழுத்துகள் படங்களுடன் (தொடர்ச்சி)",
+  SequenceOrder = 1,
+  ActivityTypeId = 2,  // The ID for Spotlight components
+  MainActivityId = 3,  // "Learning"
+  ContentJson = @"[
+      {
+        ""spotlightLetter"": ""ப்"",
+        ""items"": [
+          { ""text"": ""சீப்பு"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson7/seeppu.jpg"" },
+          { ""text"": ""பப்பாசி"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson7/pappasi.jpg"" },
+          { ""text"": ""கப்பல்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson7/kappal.jpg"" }
+        ]
+      },
+      {
+        ""spotlightLetter"": ""ம்"",
+        ""items"": [
+          { ""text"": ""மரம்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson7/maram.jpg"" },
+          { ""text"": ""மாம்பழம்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson7/maampazham.jpg"" },
+          { ""text"": ""பாம்பு"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson7/paambu.jpg"" }
+        ]
+      },
+      {
+        ""spotlightLetter"": ""ய்"",
+        ""items"": [
+          { ""text"": ""நாய்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson7/naai.jpg"" },
+          { ""text"": ""தாய்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson7/thaai.jpg"" },
+          { ""text"": ""மாங்காய்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson7/maangaai.jpg"" }
+        ]
+      },
+      {
+        ""spotlightLetter"": ""ர்"",
+        ""items"": [
+          { ""text"": ""ஏர்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson7/aer.jpg"" },
+          { ""text"": ""வேர்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson7/vaer.jpg"" },
+          { ""text"": ""ஆசிரியர்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson7/aasiriyar.jpg"" }
+        ]
+      }
+    ]"
+},
+
+// Inside builder.HasData(...) in ActivityConfiguration.cs
+
+// === Activity for Kindergarten, Lesson 8: Consonants with Media ===
+new Activity
+{
+  ActivityId = 14, // Ensure this ID is unique
+  LessonId = 18,   // Belongs to "சிறுவர் நிலை - பாடம் 08"
+  Title = "மெய்யெழுத்துகள் படங்களுடன் (தொடர்ச்சி)",
+  SequenceOrder = 1,
+  ActivityTypeId = 2,  // The ID for Spotlight components
+  MainActivityId = 3,  // "Learning"
+  ContentJson = @"[
+      {
+        ""spotlightLetter"": ""ல்"",
+        ""items"": [
+          { ""text"": ""மயில்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson8/mayil.jpg"" },
+          { ""text"": ""சேவல்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson8/seval.jpg"" },
+          { ""text"": ""பால்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson8/paal.jpg"" }
+        ]
+      },
+      {
+        ""spotlightLetter"": ""வ்"",
+        ""items"": [
+          { ""text"": ""செவ்வாழை"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson8/sevvazhai.jpg"" },
+          { ""text"": ""செவ்வகம்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson8/sevvakam.jpg"" },
+          { ""text"": ""செவ்வந்தி"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson8/sevvanthi.jpg"" }
+        ]
+      },
+      {
+        ""spotlightLetter"": ""ழ்"",
+        ""items"": [
+          { ""text"": ""யாழ்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson8/yaazh.jpg"" },
+          { ""text"": ""தமிழ்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson8/thamizh.jpg"" },
+          { ""text"": ""கூழ்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson8/koozh.jpg"" }
+        ]
+      },
+      {
+        ""spotlightLetter"": ""ள்"",
+        ""items"": [
+          { ""text"": ""வாள்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson8/vaal.jpg"" },
+          { ""text"": ""தேள்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson8/thel.jpg"" },
+          { ""text"": ""பள்ளி"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson8/palli.jpg"" }
+        ]
+      }
+    ]"
+},
+
+// Inside builder.HasData(...) in ActivityConfiguration.cs
+
+// === Activity for Kindergarten, Lesson 9: Consonants with Media ===
+new Activity
+{
+  ActivityId = 15, // Ensure this ID is unique
+  LessonId = 19,   // Belongs to "சிறுவர் நிலை - பாடம் 09"
+  Title = "மெய்யெழுத்துகள் படங்களுடன் (இறுதிப் பகுதி)",
+  SequenceOrder = 1,
+  ActivityTypeId = 2,  // The ID for Spotlight components
+  MainActivityId = 3,  // "Learning"
+  ContentJson = @"[
+      {
+        ""spotlightLetter"": ""ற்"",
+        ""items"": [
+          { ""text"": ""பாகற்காய்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson9/paagarkaai.jpg"" },
+          { ""text"": ""காற்றாடி"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson9/kaatraadi.jpg"" },
+          { ""text"": ""நாற்று"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson9/naatru.jpg"" }
+        ]
+      },
+      {
+        ""spotlightLetter"": ""ன்"",
+        ""items"": [
+          { ""text"": ""மீன்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson9/meen.jpg"" },
+          { ""text"": ""காளான்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson9/kaalaan.jpg"" },
+          { ""text"": ""பன்றி"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson9/panri.jpg"" }
+        ]
+      }
+    ]"
 }
 
-// ...
+
+
+
 
 
 
