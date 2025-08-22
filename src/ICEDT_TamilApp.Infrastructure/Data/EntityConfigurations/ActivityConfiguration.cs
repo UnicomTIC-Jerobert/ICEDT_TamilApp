@@ -51,38 +51,38 @@ namespace ICEDT_TamilApp.Infrastructure.Data.EntityConfigurations
       {
         ""title"": ""எனது குடும்பம் (My Family)"",
         ""word"": ""அம்மா"",
-        ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson2/amma.jpg"",
-        ""audioUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson2/amma_sound.mp3""
+        ""imageUrl"": ""malaiyar/lesson2/amma.jpg"",
+        ""audioUrl"": ""malaiyar/lesson2/amma_sound.mp3""
       },
       {
         ""title"": ""எனது குடும்பம் (My Family)"",
         ""word"": ""அப்பா"",
-        ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson2/appa.jpg"",
+        ""imageUrl"": ""malaiyar/lesson2/appa.jpg"",
         ""audioUrl"": ""https://your-bucket.s.region.amazonaws.com/malaiyar/lesson2/appa_sound.mp3""
       },
       {
         ""title"": ""எனது குடும்பம் (My Family)"",
         ""word"": ""அக்கா"",
-        ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson2/akka.jpg"",
-        ""audioUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson2/akka_sound.mp3""
+        ""imageUrl"": ""malaiyar/lesson2/akka.jpg"",
+        ""audioUrl"": ""malaiyar/lesson2/akka_sound.mp3""
       },
       {
         ""title"": ""எனது குடும்பம் (My Family)"",
         ""word"": ""அண்ணா"",
-        ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson2/anna.jpg"",
-        ""audioUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson2/anna_sound.mp3""
+        ""imageUrl"": ""malaiyar/lesson2/anna.jpg"",
+        ""audioUrl"": ""malaiyar/lesson2/anna_sound.mp3""
       },
       {
         ""title"": ""எனது குடும்பம் (My Family)"",
         ""word"": ""தம்பி"",
-        ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson2/thambi.jpg"",
-        ""audioUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson2/thambi_sound.mp3""
+        ""imageUrl"": ""malaiyar/lesson2/thambi.jpg"",
+        ""audioUrl"": ""malaiyar/lesson2/thambi_sound.mp3""
       },
       {
         ""title"": ""எனது குடும்பம் (My Family)"",
         ""word"": ""தங்கை"",
-        ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson2/thangai.jpg"",
-        ""audioUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson2/thangai_sound.mp3""
+        ""imageUrl"": ""malaiyar/lesson2/thangai.jpg"",
+        ""audioUrl"": ""malaiyar/lesson2/thangai_sound.mp3""
       }
     ]"
     },
@@ -99,11 +99,11 @@ new Activity   // : Vocabulary Spotlight
       ""title"": ""உயிர் எழுத்து"",
       ""spotlightLetter"": ""அ"",
       ""items"": [
-        { ""text"": ""அம்மா"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson1/amma.jpg"", ""audioUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson1/amma_sound.mp3"" },
-        { ""text"": ""அரிசி"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson1/arisi.jpg"", ""audioUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson1/arisi_sound.mp3"" },
-        { ""text"": ""அன்னம்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson1/annam.jpg"", ""audioUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson1/annam_sound.mp3"" },
-        { ""text"": ""அடுப்பு"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson1/aduppu.jpg"", ""audioUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson1/aduppu_sound.mp3"" },
-        { ""text"": ""அருவி"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson1/aruvi.jpg"", ""audioUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson1/aruvi_sound.mp3"" }
+        { ""text"": ""அம்மா"", ""imageUrl"": ""malaiyar/lesson1/amma.jpg"", ""audioUrl"": ""malaiyar/lesson1/amma_sound.mp3"" },
+        { ""text"": ""அரிசி"", ""imageUrl"": ""malaiyar/lesson1/arisi.jpg"", ""audioUrl"": ""malaiyar/lesson1/arisi_sound.mp3"" },
+        { ""text"": ""அன்னம்"", ""imageUrl"": ""malaiyar/lesson1/annam.jpg"", ""audioUrl"": ""malaiyar/lesson1/annam_sound.mp3"" },
+        { ""text"": ""அடுப்பு"", ""imageUrl"": ""malaiyar/lesson1/aduppu.jpg"", ""audioUrl"": ""malaiyar/lesson1/aduppu_sound.mp3"" },
+        { ""text"": ""அருவி"", ""imageUrl"": ""malaiyar/lesson1/aruvi.jpg"", ""audioUrl"": ""malaiyar/lesson1/aruvi_sound.mp3"" }
       ]
     }"
 },
@@ -123,38 +123,38 @@ new Activity
       {
         ""title"": ""எனது குடும்பம் (My Family)"",
         ""word"": ""அம்மா"",
-        ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson2/amma.jpg"",
-        ""audioUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson2/amma_sound.mp3""
+        ""imageUrl"": ""malaiyar/lesson2/amma.jpg"",
+        ""audioUrl"": ""malaiyar/lesson2/amma_sound.mp3""
       },
       {
         ""title"": ""எனது குடும்பம் (My Family)"",
         ""word"": ""அப்பா"",
-        ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson2/appa.jpg"",
+        ""imageUrl"": ""malaiyar/lesson2/appa.jpg"",
         ""audioUrl"": ""https://your-bucket.s.region.amazonaws.com/malaiyar/lesson2/appa_sound.mp3""
       },
       {
         ""title"": ""எனது குடும்பம் (My Family)"",
         ""word"": ""அக்கா"",
-        ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson2/akka.jpg"",
-        ""audioUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson2/akka_sound.mp3""
+        ""imageUrl"": ""malaiyar/lesson2/akka.jpg"",
+        ""audioUrl"": ""malaiyar/lesson2/akka_sound.mp3""
       },
       {
         ""title"": ""எனது குடும்பம் (My Family)"",
         ""word"": ""அண்ணா"",
-        ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson2/anna.jpg"",
-        ""audioUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson2/anna_sound.mp3""
+        ""imageUrl"": ""malaiyar/lesson2/anna.jpg"",
+        ""audioUrl"": ""malaiyar/lesson2/anna_sound.mp3""
       },
       {
         ""title"": ""எனது குடும்பம் (My Family)"",
         ""word"": ""தம்பி"",
-        ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson2/thambi.jpg"",
-        ""audioUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson2/thambi_sound.mp3""
+        ""imageUrl"": ""malaiyar/lesson2/thambi.jpg"",
+        ""audioUrl"": ""malaiyar/lesson2/thambi_sound.mp3""
       },
       {
         ""title"": ""எனது குடும்பம் (My Family)"",
         ""word"": ""தங்கை"",
-        ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson2/thangai.jpg"",
-        ""audioUrl"": ""https://your-bucket.s3.region.amazonaws.com/malaiyar/lesson2/thangai_sound.mp3""
+        ""imageUrl"": ""malaiyar/lesson2/thangai.jpg"",
+        ""audioUrl"": ""malaiyar/lesson2/thangai_sound.mp3""
       }
     ]"
 },
@@ -174,33 +174,33 @@ new Activity
       {
         ""spotlightLetter"": ""ப்"",
         ""items"": [
-          { ""text"": ""சீப்பு"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson7/seeppu.jpg"" },
-          { ""text"": ""பப்பாசி"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson7/pappasi.jpg"" },
-          { ""text"": ""கப்பல்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson7/kappal.jpg"" }
+          { ""text"": ""சீப்பு"", ""imageUrl"": ""siruvar/lesson7/seeppu.jpg"" },
+          { ""text"": ""பப்பாசி"", ""imageUrl"": ""siruvar/lesson7/pappasi.jpg"" },
+          { ""text"": ""கப்பல்"", ""imageUrl"": ""siruvar/lesson7/kappal.jpg"" }
         ]
       },
       {
         ""spotlightLetter"": ""ம்"",
         ""items"": [
-          { ""text"": ""மரம்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson7/maram.jpg"" },
-          { ""text"": ""மாம்பழம்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson7/maampazham.jpg"" },
-          { ""text"": ""பாம்பு"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson7/paambu.jpg"" }
+          { ""text"": ""மரம்"", ""imageUrl"": ""siruvar/lesson7/maram.jpg"" },
+          { ""text"": ""மாம்பழம்"", ""imageUrl"": ""siruvar/lesson7/maampazham.jpg"" },
+          { ""text"": ""பாம்பு"", ""imageUrl"": ""siruvar/lesson7/paambu.jpg"" }
         ]
       },
       {
         ""spotlightLetter"": ""ய்"",
         ""items"": [
-          { ""text"": ""நாய்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson7/naai.jpg"" },
-          { ""text"": ""தாய்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson7/thaai.jpg"" },
-          { ""text"": ""மாங்காய்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson7/maangaai.jpg"" }
+          { ""text"": ""நாய்"", ""imageUrl"": ""siruvar/lesson7/naai.jpg"" },
+          { ""text"": ""தாய்"", ""imageUrl"": ""siruvar/lesson7/thaai.jpg"" },
+          { ""text"": ""மாங்காய்"", ""imageUrl"": ""siruvar/lesson7/maangaai.jpg"" }
         ]
       },
       {
         ""spotlightLetter"": ""ர்"",
         ""items"": [
-          { ""text"": ""ஏர்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson7/aer.jpg"" },
-          { ""text"": ""வேர்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson7/vaer.jpg"" },
-          { ""text"": ""ஆசிரியர்"", ""imageUrl"": ""https://your-bucket.s3.region.amazonaws.com/siruvar/lesson7/aasiriyar.jpg"" }
+          { ""text"": ""ஏர்"", ""imageUrl"": ""siruvar/lesson7/aer.jpg"" },
+          { ""text"": ""வேர்"", ""imageUrl"": ""siruvar/lesson7/vaer.jpg"" },
+          { ""text"": ""ஆசிரியர்"", ""imageUrl"": ""siruvar/lesson7/aasiriyar.jpg"" }
         ]
       }
     ]"
