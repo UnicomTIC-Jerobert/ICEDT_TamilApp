@@ -92,6 +92,9 @@ else
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// *** ADD THIS LINE RIGHT AFTER AddSwaggerGen ***
+builder.Services.AddSwaggerGenNewtonsoftSupport();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
