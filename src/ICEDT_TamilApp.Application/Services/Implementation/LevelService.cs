@@ -5,6 +5,9 @@ using ICEDT_TamilApp.Application.Services.Interfaces;
 using ICEDT_TamilApp.Domain.Entities;
 using ICEDT_TamilApp.Domain.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace ICEDT_TamilApp.Application.Services.Implementation
 {
@@ -91,7 +94,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             level.LevelName = dto.LevelName;
             level.SequenceOrder = dto.SequenceOrder;
             level.Slug = dto.Slug;
-            level.CoverImageUrl=dto.CoverImageUrl;
+            level.CoverImageUrl = dto.CoverImageUrl;
 
             // The repository's UpdateAsync method just marks the entity as Modified.
             await _unitOfWork.Levels.UpdateAsync(level);
@@ -144,6 +147,55 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
 
             // 3. Update the entity and save to the database
             level.CoverImageUrl = imageUrl;
+            await _unitOfWork.CompleteAsync();
+
+            return MapToResponseDto(level);
+        }
+
+        public async Task<LevelResponseDto?> PartialUpdateLevelAsync(int id, JsonPatchDocument<LevelUpdateRequestDto> patchDoc)
+        {
+            var level = await _unitOfWork.Levels.GetByIdAsync(id);
+            if (level == null)
+            {
+                // Return null or throw NotFoundException based on your preference
+                return null;
+            }
+
+            // 1. Create a DTO from the existing entity data.
+            var levelToPatch = new LevelUpdateRequestDto
+            {
+                LevelName = level.LevelName,
+                Slug = level.Slug,
+                SequenceOrder = level.SequenceOrder,
+                CoverImageUrl = level.CoverImageUrl
+            };
+
+            // 2. Apply the patch document to the DTO.
+            //    The ModelState is needed to capture any validation errors during patching.
+            var modelState = new ModelStateDictionary();
+            patchDoc.ApplyTo(levelToPatch, modelState);
+
+            if (!modelState.IsValid)
+            {
+                // This is a simplified way to throw validation errors.
+                // In a real app, you might want to format these errors more nicely.
+                throw new BadRequestException("Patch document is invalid.");
+            }
+
+            // 3. (Optional but recommended) Perform business rule validation on the patched DTO.
+            //    For example, check if the new Slug is unique if it was changed.
+            if (level.Slug != levelToPatch.Slug && await _unitOfWork.Levels.SlugExistsAsync(levelToPatch.Slug))
+            {
+                throw new ConflictException($"Slug '{levelToPatch.Slug}' is already in use.");
+            }
+
+            // 4. Map the valid changes from the DTO back to the original entity.
+            level.LevelName = levelToPatch.LevelName;
+            level.Slug = levelToPatch.Slug;
+            level.SequenceOrder = levelToPatch.SequenceOrder;
+            level.CoverImageUrl = levelToPatch.CoverImageUrl;
+
+            // 5. Save the changes to the database.
             await _unitOfWork.CompleteAsync();
 
             return MapToResponseDto(level);

@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using ICEDT_TamilApp.Application.DTOs.Request;
 using ICEDT_TamilApp.Application.Services.Interfaces;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ICEDT_TamilApp.Web.Controllers
@@ -57,6 +58,35 @@ namespace ICEDT_TamilApp.Web.Controllers
             // The service method will handle all the logic
             var updatedLevel = await _service.UpdateLevelCoverImageAsync(levelId, file);
             return Ok(updatedLevel);
+        }
+
+        // --- NEW PATCH ENDPOINT ---
+        /// <summary>
+        /// Partially updates a Level.
+        /// </summary>
+        /// <param name="id">The ID of the level to update.</param>
+        /// <param name="patchDoc">A JSON Patch document describing the changes.</param>
+        /// <returns>No content if successful.</returns>
+        [HttpPatch("{id:int}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> PartialUpdate(int id, [FromBody] JsonPatchDocument<LevelUpdateRequestDto> patchDoc)
+        {
+            if (patchDoc == null)
+            {
+                return BadRequest("A JSON Patch document is required.");
+            }
+
+            // The service will handle the logic of fetching, patching, and saving.
+            var updatedLevel = await _service.PartialUpdateLevelAsync(id, patchDoc);
+            
+            if (updatedLevel == null)
+            {
+                return NotFound($"Level with ID {id} not found.");
+            }
+
+            return NoContent();
         }
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.JsonPatch;
 using ICEDT_TamilApp.Application.DTOs.Request;
 using ICEDT_TamilApp.Application.DTOs.Response;
 using Microsoft.AspNetCore.Http;
@@ -13,5 +14,7 @@ namespace ICEDT_TamilApp.Application.Services.Interfaces
         Task DeleteLevelAsync(int id);
 
         Task<LevelResponseDto> UpdateLevelCoverImageAsync(int levelId, IFormFile file);
+
+        Task<LevelResponseDto?> PartialUpdateLevelAsync(int id, JsonPatchDocument<LevelUpdateRequestDto> patchDoc);
     }
 }

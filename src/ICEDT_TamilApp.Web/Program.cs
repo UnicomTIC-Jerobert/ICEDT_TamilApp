@@ -40,7 +40,8 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 // Add services to the container.
 
 // This is for API Controllers
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+                .AddNewtonsoftJson();
 
 // This is for Razor Pages
 builder.Services.AddRazorPages();
