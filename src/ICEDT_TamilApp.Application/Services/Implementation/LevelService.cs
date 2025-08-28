@@ -127,6 +127,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 LevelName = level.LevelName,
                 Slug = level.Slug,
                 SequenceOrder = level.SequenceOrder,
+                CoverImageUrl = level.CoverImageUrl
             };
         }
 
