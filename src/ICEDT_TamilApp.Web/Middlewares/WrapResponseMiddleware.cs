@@ -21,6 +21,15 @@ namespace ICEDT_TamilApp.Web.Middlewares
 
         public async Task InvokeAsync(HttpContext context)
         {
+            // *** THE FIX IS HERE ***
+            // Check if the request path is related to Swagger. If it is,
+            // skip all wrapping logic and just pass the request to the next middleware.
+            if (context.Request.Path.StartsWithSegments("/swagger"))
+            {
+                await _next(context);
+                return;
+            }
+            
             var originalBodyStream = context.Response.Body;
 
             using var newBodyStream = new MemoryStream();
