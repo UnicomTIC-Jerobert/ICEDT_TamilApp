@@ -91,6 +91,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             level.LevelName = dto.LevelName;
             level.SequenceOrder = dto.SequenceOrder;
             level.Slug = dto.Slug;
+            level.CoverImageUrl=dto.CoverImageUrl;
 
             // The repository's UpdateAsync method just marks the entity as Modified.
             await _unitOfWork.Levels.UpdateAsync(level);

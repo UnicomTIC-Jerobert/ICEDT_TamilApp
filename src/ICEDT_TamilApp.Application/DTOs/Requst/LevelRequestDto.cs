@@ -17,5 +17,7 @@ namespace ICEDT_TamilApp.Application.DTOs.Request
         [Required(ErrorMessage = "Sequence order is required.")]
         [Range(1, int.MaxValue, ErrorMessage = "Sequence order must be a positive number.")]
         public int SequenceOrder { get; set; }
+
+        public string? CoverImageUrl { get; set; }
     }
 }
