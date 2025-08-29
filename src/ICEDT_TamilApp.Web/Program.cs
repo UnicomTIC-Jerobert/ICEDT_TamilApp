@@ -19,7 +19,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: MyAllowSpecificOrigins,
                       policy =>
                       {
-                          policy.WithOrigins("http://localhost:3000") // Your local React app
+                          policy.WithOrigins(
+                            "http://localhost:3000", // For local development
+                            "https://d263kqjlbz7z70.cloudfront.net" // For your deployed staging frontend
+                          ) // Your local React app
                                 .AllowAnyHeader()
                                 .AllowAnyMethod();
                           // In production, you would add your deployed React app's domain here as well.
@@ -67,15 +70,15 @@ if (builder.Environment.IsDevelopment())
     // In Development, we read the keys directly from appsettings.json
     // and create the client with explicit credentials.
     var awsSettings = builder.Configuration.GetSection(AwsSettings.SectionName).Get<AwsSettings>();
-    
+
     if (string.IsNullOrEmpty(awsSettings?.AccessKey) || string.IsNullOrEmpty(awsSettings.SecretKey))
     {
         throw new Exception("AWS AccessKey/SecretKey not configured in appsettings.Development.json");
     }
 
     var credentials = new BasicAWSCredentials(awsSettings.AccessKey, awsSettings.SecretKey);
-    
-    builder.Services.AddSingleton<IAmazonS3>(sp => 
+
+    builder.Services.AddSingleton<IAmazonS3>(sp =>
     {
         return new AmazonS3Client(credentials, Amazon.RegionEndpoint.GetBySystemName(awsSettings.Region));
     });
