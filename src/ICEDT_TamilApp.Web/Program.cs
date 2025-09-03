@@ -21,7 +21,8 @@ builder.Services.AddCors(options =>
                       {
                           policy.WithOrigins(
                             "http://localhost:3000", // For local development
-                            "https://d263kqjlbz7z70.cloudfront.net" // For your deployed staging frontend
+                            "https://d263kqjlbz7z70.cloudfront.net", // For your deployed staging frontend
+                            "https://icedt-app--pnc2d7w6mk.expo.app"
                           ) // Your local React app
                                 .AllowAnyHeader()
                                 .AllowAnyMethod();
