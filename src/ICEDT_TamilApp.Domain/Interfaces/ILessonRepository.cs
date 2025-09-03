@@ -13,5 +13,6 @@ namespace ICEDT_TamilApp.Domain.Interfaces
         Task<bool> DeleteAsync(int lessonId);
         Task<List<Lesson>> GetAllLessonsByLevelIdAsync(int levelId);
         Task<bool> ExistsAsync(int lessonId);
+        Task<List<MainActivity>> GetMainActivitySummaryAsync(int lessonId);
     }
 }

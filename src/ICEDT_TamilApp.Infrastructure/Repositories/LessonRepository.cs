@@ -89,5 +89,18 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
         {
             return await _context.Lessons.AnyAsync(l => l.LessonId == lessonId);
         }
+
+        public async Task<List<MainActivity>> GetMainActivitySummaryAsync(int lessonId)
+        {
+            // This is an efficient LINQ query that will be translated into optimized SQL.
+            var summary = await _context.Activities
+                .Where(a => a.LessonId == lessonId) // 1. Filter activities for the given lesson
+                .Select(a => a.MainActivity)        // 2. Select their parent MainActivity
+                .Distinct()                          // 3. Get only the unique MainActivities
+                .OrderBy(ma => ma.Id)                // 4. Order them for consistent display
+                .ToListAsync();
+
+            return summary;
+        }
     }
 }

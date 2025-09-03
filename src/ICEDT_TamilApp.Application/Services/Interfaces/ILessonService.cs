@@ -15,5 +15,7 @@ namespace ICEDT_TamilApp.Application.Services.Interfaces
         Task<bool> DeleteLessonAsync(int lessonId);
 
         Task<LessonResponseDto> UpdateLessonImageAsync(int lessonId, IFormFile file);
+
+        Task<List<MainActivityResponseDto>> GetMainActivitySummaryAsync(int lessonId);
     }
 }
