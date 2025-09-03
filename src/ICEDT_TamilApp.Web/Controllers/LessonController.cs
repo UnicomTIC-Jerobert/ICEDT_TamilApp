@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using ICEDT_TamilApp.Application.DTOs.Request;
+using ICEDT_TamilApp.Application.DTOs.Response;
 using ICEDT_TamilApp.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -79,6 +80,20 @@ namespace ICEDT_TamilApp.Web.Controllers
         {
             var updatedLesson = await _service.UpdateLessonImageAsync(lessonId, file);
             return Ok(updatedLesson);
+        }
+
+        /// <summary>
+        /// Gets a summary of the types of main activities (e.g., Video, Learning) available in a specific lesson.
+        /// </summary>
+        /// <param name="lessonId">The ID of the lesson.</param>
+        /// <returns>A list of available main activity types for the lesson.</returns>
+        [HttpGet("lessons/{lessonId}/main-activity-summary")]
+        [ProducesResponseType(typeof(List<MainActivityResponseDto>), 200)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetMainActivitySummary(int lessonId)
+        {
+            var summary = await _service.GetMainActivitySummaryAsync(lessonId);
+            return Ok(summary);
         }
     }
 }

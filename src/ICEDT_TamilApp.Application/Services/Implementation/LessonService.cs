@@ -77,7 +77,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             var lesson = new Lesson
             {
                 LevelId = levelId,
-                Slug=dto.Slug,
+                Slug = dto.Slug,
                 LessonName = dto.LessonName,
                 Description = dto.Description,
                 SequenceOrder = dto.SequenceOrder,
@@ -169,6 +169,24 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             await _unitOfWork.CompleteAsync();
 
             return MapToResponseDto(lesson);
+        }
+
+        public async Task<List<MainActivityResponseDto>> GetMainActivitySummaryAsync(int lessonId)
+        {
+            // First, check if the lesson even exists to provide a clean 404 error
+            if (!await _unitOfWork.Lessons.ExistsAsync(lessonId))
+            {
+                throw new NotFoundException($"Could not find {nameof(Lesson)}, {lessonId}");
+            }
+
+            var mainActivities = await _unitOfWork.Lessons.GetMainActivitySummaryAsync(lessonId);
+
+            // Map the entities to our lightweight DTO
+            return mainActivities.Select(ma => new MainActivityResponseDto
+            {
+                Id = ma.Id,
+                Name = ma.Name
+            }).ToList();
         }
     }
 }
