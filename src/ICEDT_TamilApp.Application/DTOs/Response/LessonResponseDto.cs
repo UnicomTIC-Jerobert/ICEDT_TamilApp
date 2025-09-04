@@ -8,6 +8,7 @@ namespace ICEDT_TamilApp.Application.DTOs.Response
         public string? Description { get; set; }
         public int SequenceOrder { get; set; }
 
+        public string? Slug { get; set; }
         public string? LessonImageUrl { get; set; }
     }
 }

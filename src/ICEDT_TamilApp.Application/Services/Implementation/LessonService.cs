@@ -46,6 +46,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             }
 
             lessonToUpdate.LessonName = updateDto.LessonName;
+            lessonToUpdate.Slug = updateDto.Slug;
             lessonToUpdate.Description = updateDto.Description;
             lessonToUpdate.SequenceOrder = updateDto.SequenceOrder;
 
@@ -146,6 +147,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 LessonName = lesson.LessonName,
                 Description = lesson.Description,
                 SequenceOrder = lesson.SequenceOrder,
+                Slug = lesson.Slug
             };
         }
 
