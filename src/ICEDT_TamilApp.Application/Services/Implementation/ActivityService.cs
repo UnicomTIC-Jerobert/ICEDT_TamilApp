@@ -89,7 +89,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             return MapToActivityResponseDto(activity);
         }
 
-        public async Task UpdateActivityAsync(int id, ActivityRequestDto dto)
+        public async Task<ActivityResponseDto> UpdateActivityAsync(int id, ActivityRequestDto dto)
         {
             _logger.LogInformation("Starting UpdateActivityAsync for Activity ID: {ActivityId}", id);
             var activity = await _unitOfWork.Activities.GetByIdAsync(id);
@@ -115,6 +115,8 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             // --- COMMIT TRANSACTION ---
             await _unitOfWork.CompleteAsync();
             _logger.LogInformation("Activity with ID {ActivityId} updated successfully.", id);
+
+            return MapToActivityResponseDto(activity);
         }
 
         public async Task DeleteActivityAsync(int id)

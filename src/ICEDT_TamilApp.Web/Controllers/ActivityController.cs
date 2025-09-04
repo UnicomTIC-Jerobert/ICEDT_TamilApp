@@ -47,7 +47,7 @@ namespace ICEDT_TamilApp.Web.Controllers
         {
             if (id <= 0)
                 throw new BadRequestException("Invalid Activity ID.");
-            await _service.UpdateActivityAsync(id, dto);
+            var activity = await _service.UpdateActivityAsync(id, dto);
             return NoContent();
         }
 

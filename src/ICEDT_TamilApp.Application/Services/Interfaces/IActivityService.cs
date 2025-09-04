@@ -10,7 +10,7 @@ namespace ICEDT_TamilApp.Application.Services.Interfaces
         Task<List<ActivityResponseDto>> GetAllActivitiesAsync();
         Task<List<ActivityResponseDto>> GetActivitiesByLessonIdAsync(int lessonId);
         Task<ActivityResponseDto> CreateActivityAsync(ActivityRequestDto dto);
-        Task UpdateActivityAsync(int id, ActivityRequestDto dto);
+        Task<ActivityResponseDto> UpdateActivityAsync(int id, ActivityRequestDto dto);
         Task DeleteActivityAsync(int id);
     }
 }
