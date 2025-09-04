@@ -42,17 +42,12 @@ namespace ICEDT_TamilApp.Web.Controllers
         }
 
         [HttpPut("lessons/{id}")]
-        public async Task<IActionResult> UpdateLesson(
-            int id,
-            [FromBody] LessonRequestDto updateLessonDto
-        ) // You'll need to create UpdateLessonDto
+        public async Task<IActionResult> UpdateLesson(int id,[FromBody] LessonRequestDto updateLessonDto)
         {
-            var success = await _service.UpdateLessonAsync(id, updateLessonDto);
-            if (!success)
-            {
-                return NotFound($"Lesson with ID {id} not found.");
-            }
-            return NoContent(); // Standard 204 response for a successful update
+            if (id <= 0)
+                return BadRequest(new { message = "Invalid  ID." });
+            var result = await _service.UpdateLessonAsync(id, updateLessonDto);
+            return Ok(result);
         }
 
         [HttpDelete("lessons/{id}")]

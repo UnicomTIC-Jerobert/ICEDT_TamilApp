@@ -24,7 +24,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             _fileUploader = fileUploader;
         }
 
-        public async Task<bool> UpdateLessonAsync(int lessonId, LessonRequestDto updateDto)
+        public async Task<LessonResponseDto> UpdateLessonAsync(int lessonId, LessonRequestDto updateDto)
         {
             var lessonToUpdate = await _unitOfWork.Lessons.GetByIdAsync(lessonId);
             if (lessonToUpdate == null)
@@ -53,7 +53,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
 
             // Commit the transaction
             await _unitOfWork.CompleteAsync();
-            return true;
+            return MapToResponseDto(lessonToUpdate);
         }
 
         public async Task<LessonResponseDto> CreateLessonToLevelAsync(int levelId, LessonRequestDto dto)

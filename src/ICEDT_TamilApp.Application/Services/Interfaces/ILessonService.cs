@@ -11,7 +11,7 @@ namespace ICEDT_TamilApp.Application.Services.Interfaces
         Task<List<LessonResponseDto>> GetLessonsByLevelIdAsync(int levelId);
 
         Task<LessonResponseDto?> GetLessonByIdAsync(int lessonId);
-        Task<bool> UpdateLessonAsync(int lessonId, LessonRequestDto updateDto);
+        Task<LessonResponseDto> UpdateLessonAsync(int lessonId, LessonRequestDto updateDto);
         Task<bool> DeleteLessonAsync(int lessonId);
 
         Task<LessonResponseDto> UpdateLessonImageAsync(int lessonId, IFormFile file);
