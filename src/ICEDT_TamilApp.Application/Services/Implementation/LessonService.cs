@@ -49,6 +49,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             lessonToUpdate.Slug = updateDto.Slug;
             lessonToUpdate.Description = updateDto.Description;
             lessonToUpdate.SequenceOrder = updateDto.SequenceOrder;
+            lessonToUpdate.LessonImageUrl = updateDto.LessonImageUrl;
 
             await _unitOfWork.Lessons.UpdateAsync(lessonToUpdate);
 
@@ -82,6 +83,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 LessonName = dto.LessonName,
                 Description = dto.Description,
                 SequenceOrder = dto.SequenceOrder,
+                LessonImageUrl = dto.LessonImageUrl
             };
 
             var newLesson = await _unitOfWork.Lessons.CreateAsync(lesson);
@@ -147,7 +149,8 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 LessonName = lesson.LessonName,
                 Description = lesson.Description,
                 SequenceOrder = lesson.SequenceOrder,
-                Slug = lesson.Slug
+                Slug = lesson.Slug,
+                LessonImageUrl=lesson.LessonImageUrl
             };
         }
 

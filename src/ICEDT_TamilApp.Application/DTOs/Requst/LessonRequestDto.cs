@@ -22,5 +22,7 @@ namespace ICEDT_TamilApp.Application.DTOs.Request
         // Add validation to ensure it's a valid URL slug format
         [RegularExpression(@"^[a-z0-9]+(?:-[a-z0-9]+)*$", ErrorMessage = "Slug must be lowercase alphanumeric with hyphens.")]
         public required string Slug { get; set; }
+
+        public string? LessonImageUrl { get; set; }
     }
 }
