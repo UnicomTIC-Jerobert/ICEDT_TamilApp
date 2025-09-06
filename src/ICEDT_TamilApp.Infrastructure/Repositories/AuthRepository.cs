@@ -34,5 +34,10 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
             await _context.SaveChangesAsync();
             return user;
         }
+
+        public async Task<User?> GetUserByRefreshTokenAsync(string refreshToken)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+        }
     }
 }

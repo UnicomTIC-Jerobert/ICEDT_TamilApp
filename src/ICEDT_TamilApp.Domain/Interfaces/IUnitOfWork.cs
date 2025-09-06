@@ -8,9 +8,10 @@ namespace ICEDT_TamilApp.Domain.Interfaces
         ILevelRepository Levels { get; }
         ILessonRepository Lessons { get; }
 
-        IActivityTypeRepository ActivityTypes { get; } 
+        IActivityTypeRepository ActivityTypes { get; }
         IActivityRepository Activities { get; }
 
+        IUserRepository Users { get; }
 
         // Add other repositories here as you create them
         // IActivityTypeRepository ActivityTypes { get; }

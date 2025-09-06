@@ -8,6 +8,7 @@ namespace ICEDT_TamilApp.Web.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin")]
     public class LevelsController : ControllerBase
     {
         private readonly ILevelService _service;
@@ -53,7 +54,10 @@ namespace ICEDT_TamilApp.Web.Controllers
         }
 
         [HttpPost("{levelId}/cover-image")]
-        public async Task<IActionResult> UploadLevelCoverImage(int levelId, [Required] IFormFile file)
+        public async Task<IActionResult> UploadLevelCoverImage(
+            int levelId,
+            [Required] IFormFile file
+        )
         {
             // The service method will handle all the logic
             var updatedLevel = await _service.UpdateLevelCoverImageAsync(levelId, file);
@@ -71,7 +75,10 @@ namespace ICEDT_TamilApp.Web.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> PartialUpdate(int id, [FromBody] JsonPatchDocument<LevelUpdateRequestDto> patchDoc)
+        public async Task<IActionResult> PartialUpdate(
+            int id,
+            [FromBody] JsonPatchDocument<LevelUpdateRequestDto> patchDoc
+        )
         {
             if (patchDoc == null)
             {
@@ -80,7 +87,7 @@ namespace ICEDT_TamilApp.Web.Controllers
 
             // The service will handle the logic of fetching, patching, and saving.
             var updatedLevel = await _service.PartialUpdateLevelAsync(id, patchDoc);
-            
+
             if (updatedLevel == null)
             {
                 return NotFound($"Level with ID {id} not found.");

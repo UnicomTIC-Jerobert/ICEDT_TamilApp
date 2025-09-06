@@ -4,9 +4,9 @@ using ICEDT_TamilApp.Application;
 using ICEDT_TamilApp.Application.Common;
 using ICEDT_TamilApp.Infrastructure;
 using ICEDT_TamilApp.Infrastructure.Data;
+using ICEDT_TamilApp.Web.Middlewares; // Add this using statement!
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using ICEDT_TamilApp.Web.Middlewares; // Add this using statement!
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,19 +16,22 @@ var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 // --- ADD THIS CORS CONFIGURATION ---
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: MyAllowSpecificOrigins,
-                      policy =>
-                      {
-                          policy.WithOrigins(
-                            "http://localhost:3000", // For local development
-                            "https://d263kqjlbz7z70.cloudfront.net", // For your deployed staging frontend
-                            "https://icedt-app--pnc2d7w6mk.expo.app"
-                          ) // Your local React app
-                                .AllowAnyHeader()
-                                .AllowAnyMethod();
-                          // In production, you would add your deployed React app's domain here as well.
-                          // .WithOrigins("http://localhost:3000", "https://your-admin-app.com")
-                      });
+    options.AddPolicy(
+        name: MyAllowSpecificOrigins,
+        policy =>
+        {
+            policy
+                .WithOrigins(
+                    "http://localhost:3000", // For local development
+                    "https://d263kqjlbz7z70.cloudfront.net", // For your deployed staging frontend
+                    "https://icedt-app--pnc2d7w6mk.expo.app"
+                ) // Your local React app
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+            // In production, you would add your deployed React app's domain here as well.
+            // .WithOrigins("http://localhost:3000", "https://your-admin-app.com")
+        }
+    );
 });
 
 // =================================================================
@@ -74,14 +77,19 @@ if (builder.Environment.IsDevelopment())
 
     if (string.IsNullOrEmpty(awsSettings?.AccessKey) || string.IsNullOrEmpty(awsSettings.SecretKey))
     {
-        throw new Exception("AWS AccessKey/SecretKey not configured in appsettings.Development.json");
+        throw new Exception(
+            "AWS AccessKey/SecretKey not configured in appsettings.Development.json"
+        );
     }
 
     var credentials = new BasicAWSCredentials(awsSettings.AccessKey, awsSettings.SecretKey);
 
     builder.Services.AddSingleton<IAmazonS3>(sp =>
     {
-        return new AmazonS3Client(credentials, Amazon.RegionEndpoint.GetBySystemName(awsSettings.Region));
+        return new AmazonS3Client(
+            credentials,
+            Amazon.RegionEndpoint.GetBySystemName(awsSettings.Region)
+        );
     });
 }
 else
@@ -110,7 +118,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Staging"))
         // instead of the default which might be buried under a subpath.
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "ICEDT TamilApp API V1");
         // To make Swagger the default page in these environments, you can do this:
-        // options.RoutePrefix = string.Empty; 
+        // options.RoutePrefix = string.Empty;
     });
 }
 else

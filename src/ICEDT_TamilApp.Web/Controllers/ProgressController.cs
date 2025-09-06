@@ -10,7 +10,7 @@ namespace ICEDT_TamilApp.Web.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] // All actions in this controller require a valid JWT
+    [Authorize]
     public class ProgressController : ControllerBase
     {
         private readonly IProgressService _progressService;
@@ -72,6 +72,26 @@ namespace ICEDT_TamilApp.Web.Controllers
                 throw new UnauthorizedAccessException("User ID not found in token.");
             }
             return userId;
+        }
+
+        [HttpGet("user/{userId}/summary")]
+        [Authorize(Roles = "Admin, Teacher")] // Allow both roles
+        public async Task<IActionResult> GetUserProgressSummary(int userId)
+        {
+            // This service method would return high-level progress:
+            // e.g., current lesson, total activities completed, etc.
+            var summary = await _progressService.GetUserProgressSummaryAsync(userId);
+            return Ok(summary);
+        }
+
+        [HttpGet("user/{userId}/detailed")]
+        [Authorize(Roles = "Admin, Teacher")]
+        public async Task<IActionResult> GetUserDetailedProgress(int userId)
+        {
+            // This service method would return the full logbook of every
+            // completed activity from the UserProgress table.
+            var detailedProgress = await _progressService.GetDetailedProgressForUserAsync(userId);
+            return Ok(detailedProgress);
         }
     }
 }

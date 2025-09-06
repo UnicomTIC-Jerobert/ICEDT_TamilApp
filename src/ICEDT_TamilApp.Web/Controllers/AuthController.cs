@@ -34,4 +34,22 @@ public class AuthController : ControllerBase
         }
         return Ok(response);
     }
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDto request)
+    {
+        if (request is null || string.IsNullOrEmpty(request.RefreshToken))
+        {
+            return BadRequest("Invalid client request");
+        }
+
+        var response = await _authService.RefreshTokenAsync(request.RefreshToken);
+
+        if (!response.IsSuccess)
+        {
+            return Unauthorized(response);
+        }
+
+        return Ok(response);
+    }
 }

@@ -8,6 +8,7 @@ namespace ICEDT_TamilApp.Web.Controllers
 {
     [ApiController]
     [Route("api")]
+    [Authorize(Roles = "Admin")]
     public class LessonController : ControllerBase
     {
         private readonly ILessonService _service;
@@ -42,7 +43,10 @@ namespace ICEDT_TamilApp.Web.Controllers
         }
 
         [HttpPut("lessons/{id}")]
-        public async Task<IActionResult> UpdateLesson(int id,[FromBody] LessonRequestDto updateLessonDto)
+        public async Task<IActionResult> UpdateLesson(
+            int id,
+            [FromBody] LessonRequestDto updateLessonDto
+        )
         {
             if (id <= 0)
                 return BadRequest(new { message = "Invalid  ID." });

@@ -7,5 +7,6 @@ namespace ICEDT_TamilApp.Domain.Interfaces
         Task<User?> GetUserByUsernameAsync(string username);
         Task<bool> UserExistsAsync(string username, string email);
         Task<User> RegisterUserAsync(User user);
+        Task<User?> GetUserByRefreshTokenAsync(string refreshToken);
     }
 }

@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using ICEDT_TamilApp.Application.Common;
 using ICEDT_TamilApp.Application.DTOs.Request;
@@ -43,6 +44,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 Username = registerDto.Username,
                 Email = registerDto.Email,
                 PasswordHash = passwordHash,
+                Role = "Student",
             };
 
             await _authRepository.RegisterUserAsync(user);
@@ -69,6 +71,12 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
 
             // Create JWT Token
             var token = CreateToken(user);
+            var refreshToken = GenerateRefreshToken();
+
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+
+            await _unitOfWork.CompleteAsync();
 
             return new AuthResponseDto
             {
@@ -84,6 +92,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             {
                 new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
                 new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Role, user.Role),
             };
 
             // Use the strongly-typed settings object now!
@@ -104,6 +113,37 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
             return tokenHandler.WriteToken(token);
+        }
+
+        public async Task<AuthResponseDto> RefreshTokenAsync(string refreshToken)
+        {
+            var user = await _unitOfWork.Auth.GetUserByRefreshTokenAsync(refreshToken); // New repository method needed
+
+            if (user == null || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+            {
+                return new AuthResponseDto
+                {
+                    IsSuccess = false,
+                    Message = "Invalid or expired refresh token.",
+                };
+            }
+
+            var newAccessToken = CreateAccessToken(user);
+            var newRefreshToken = GenerateRefreshToken();
+
+            // Update the user's refresh token with a new one (token rotation)
+            user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+
+            await _unitOfWork.CompleteAsync();
+
+            return new AuthResponseDto
+            {
+                IsSuccess = true,
+                Message = "Token refreshed successfully.",
+                Token = newAccessToken,
+                RefreshToken = newRefreshToken,
+            };
         }
     }
 }

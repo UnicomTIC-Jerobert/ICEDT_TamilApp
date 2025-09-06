@@ -9,6 +9,16 @@ namespace ICEDT_TamilApp.Domain.Entities
         public string? PasswordHash { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+        public string? RefreshToken { get; set; }
+        public DateTime? RefreshTokenExpiryTime { get; set; }
+
+        public required string Role { get; set; }
+
         public virtual UserCurrentProgress? UserCurrentProgress { get; set; }
+        public virtual ICollection<UserProgress> UserProgresses { get; set; }
+
+        public virtual UserCurrentProgress? UserCurrentProgress { get; set; }
+        public virtual ICollection<UserProgress> UserProgresses { get; set; } =
+            new List<UserProgress>();
     }
 }
