@@ -7,5 +7,7 @@ namespace ICEDT_TamilApp.Application.Services.Interfaces
     {
         Task<AuthResponseDto> RegisterAsync(RegisterRequestDto registerDto);
         Task<AuthResponseDto> LoginAsync(LoginRequestDto loginDto);
+
+        Task<AuthResponseDto> RefreshTokenAsync(string refreshToken);
     }
 }

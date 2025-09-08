@@ -18,12 +18,12 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("me")]
-    [ProducesResponseType(typeof(UserProfileDto), 200)]
+    [ProducesResponseType(typeof(UserDto), 200)]
     public async Task<IActionResult> GetMyProfile()
     {
         var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-        var userProfile = await _userService.GetUserProfileAsync(userId);
+        var userProfile = await _userService.GetUserByIdAsync(userId);
 
         return Ok(userProfile);
     }

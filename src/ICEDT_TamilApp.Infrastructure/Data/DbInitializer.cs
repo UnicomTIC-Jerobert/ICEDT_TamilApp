@@ -47,6 +47,7 @@ namespace ICEDT_TamilApp.Infrastructure.Data
                 // Never store plain-text passwords.
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@123"),
                 // You can add logic to assign roles here in the future.
+                Role = "admin",
                 CreatedAt = System.DateTime.UtcNow
             };
 

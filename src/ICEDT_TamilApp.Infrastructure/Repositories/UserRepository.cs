@@ -1,3 +1,8 @@
+using ICEDT_TamilApp.Domain.Entities;
+using ICEDT_TamilApp.Domain.Interfaces;
+using ICEDT_TamilApp.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace ICEDT_TamilApp.Infrastructure.Repositories
 {
     public class UserRepository : IUserRepository

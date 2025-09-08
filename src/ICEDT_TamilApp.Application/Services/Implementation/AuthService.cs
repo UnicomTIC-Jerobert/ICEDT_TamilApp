@@ -15,19 +15,20 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
 {
     public class AuthService : IAuthService
     {
-        private readonly IAuthRepository _authRepository;
+        private readonly IUnitOfWork _unitOfWork;
+
         private readonly JwtSettings _jwtSettings; // Store the settings directly
 
         // Inject IOptions<JwtSettings>
-        public AuthService(IAuthRepository authRepository, IOptions<JwtSettings> jwtOptions)
+        public AuthService(IUnitOfWork unitOfWork, IOptions<JwtSettings> jwtOptions)
         {
-            _authRepository = authRepository;
+            _unitOfWork = unitOfWork;
             _jwtSettings = jwtOptions.Value; // Get the actual settings object
         }
 
         public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto registerDto)
         {
-            if (await _authRepository.UserExistsAsync(registerDto.Username, registerDto.Email))
+            if (await _unitOfWork.Auth.UserExistsAsync(registerDto.Username, registerDto.Email))
             {
                 return new AuthResponseDto
                 {
@@ -47,7 +48,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 Role = "Student",
             };
 
-            await _authRepository.RegisterUserAsync(user);
+            await _unitOfWork.Auth.RegisterUserAsync(user);
 
             return new AuthResponseDto
             {
@@ -58,7 +59,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
 
         public async Task<AuthResponseDto> LoginAsync(LoginRequestDto loginDto)
         {
-            var user = await _authRepository.GetUserByUsernameAsync(loginDto.Username);
+            var user = await _unitOfWork.Auth.GetUserByUsernameAsync(loginDto.Username);
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash))
             {
@@ -95,7 +96,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 new Claim(ClaimTypes.Role, user.Role),
             };
 
-            // Use the strongly-typed settings object now!
+
             if (string.IsNullOrEmpty(_jwtSettings.Secret))
                 throw new Exception("JWT Secret is not configured!");
 
@@ -114,6 +115,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
 
             return tokenHandler.WriteToken(token);
         }
+
 
         public async Task<AuthResponseDto> RefreshTokenAsync(string refreshToken)
         {
@@ -137,6 +139,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
 
             await _unitOfWork.CompleteAsync();
 
+
             return new AuthResponseDto
             {
                 IsSuccess = true,
@@ -144,6 +147,43 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 Token = newAccessToken,
                 RefreshToken = newRefreshToken,
             };
+        }
+
+        // Renamed from CreateToken to be more specific
+        private string CreateAccessToken(User user)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Role, user.Role)
+            };
+
+            if (string.IsNullOrEmpty(_jwtSettings.Secret))
+                throw new Exception("JWT Secret is not configured!");
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                // Access tokens should have a SHORT lifetime
+                Expires = DateTime.Now.AddMinutes(15),
+                SigningCredentials = creds
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
+
+        private string GenerateRefreshToken()
+        {
+            var randomNumber = new byte[32];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomNumber);
+            return Convert.ToBase64String(randomNumber);
         }
     }
 }

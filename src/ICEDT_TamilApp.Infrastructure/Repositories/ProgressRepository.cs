@@ -174,5 +174,64 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
                 .Activities.Include(a => a.Lesson)
                 .FirstOrDefaultAsync(a => a.ActivityId == activityId);
         }
+
+        public async Task<List<UserProgress>> GetDetailedProgressForUserAsync(int userId)
+        {
+            // Eagerly load all related data needed for the DTO
+            return await _context.UserProgresses
+                .Where(p => p.UserId == userId)
+                .Include(p => p.Activity)
+                    .ThenInclude(a => a.Lesson)
+                        .ThenInclude(l => l.Level)
+                .OrderByDescending(p => p.CompletedAt)
+                .ToListAsync();
+        }
+
+        public async Task<int> GetTotalLessonCountAsync()
+        {
+            return await _context.Lessons.CountAsync();
+        }
+
+        public async Task<int> GetCompletedLessonCountForUserAsync(int userId)
+        {
+            return await _context.Lessons
+               .Where(l => l.Activities.Any() &&
+                           l.Activities.All(a => _context.UserProgresses
+                               .Any(up => up.UserId == userId && up.ActivityId == a.ActivityId && up.IsCompleted)))
+               .CountAsync();
+        }
+
+        /// <summary>
+        /// Counts the number of lessons within a specific level that a user has fully completed.
+        /// A lesson is considered complete if the user has a 'IsCompleted' record for ALL of its activities.
+        /// </summary>
+        /// <param name="userId">The ID of the user.</param>
+        /// <param name="levelId">The ID of the level to check within.</param>
+        /// <returns>The count of completed lessons in that level.</returns>
+        public async Task<int> GetCompletedLessonCountForUserAsync(int userId, int levelId)
+        {
+            // This LINQ query is powerful. It translates to a complex but efficient SQL query.
+            return await _context.Lessons
+                // 1. Filter to only include lessons from the specified level.
+                .Where(lesson => lesson.LevelId == levelId)
+
+                // 2. Filter further: the lesson must have at least one activity.
+                .Where(lesson => lesson.Activities.Any())
+
+                // 3. The crucial condition: ALL activities within that lesson...
+                .Where(lesson => lesson.Activities.All(activity =>
+
+                    // ...must have a corresponding record in UserProgresses...
+                    _context.UserProgresses.Any(progress =>
+                        progress.UserId == userId &&
+                        progress.ActivityId == activity.ActivityId &&
+                        progress.IsCompleted
+                    )
+                ))
+                // 4. Finally, count how many lessons passed all these conditions.
+                .CountAsync();
+        }
+
+
     }
 }

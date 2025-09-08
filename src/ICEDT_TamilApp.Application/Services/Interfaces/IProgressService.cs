@@ -11,5 +11,8 @@ namespace ICEDT_TamilApp.Application.Services.Interfaces
             int userId,
             ActivityCompletionRequestDto request
         );
+
+        Task<ProgressSummaryDto> GetUserProgressSummaryAsync(int userId);
+        Task<List<DetailedProgressDto>> GetDetailedProgressForUserAsync(int userId);
     }
 }

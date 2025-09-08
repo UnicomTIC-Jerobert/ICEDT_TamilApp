@@ -102,5 +102,17 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
 
             return summary;
         }
+
+        /// <summary>
+        /// Efficiently counts the number of lessons within a specific level.
+        /// </summary>
+        /// <param name="levelId">The ID of the parent level.</param>
+        /// <returns>The total count of lessons.</returns>
+        public async Task<int> GetLessonCountByLevelIdAsync(int levelId)
+        {
+            // The CountAsync method is translated directly to a COUNT(*) SQL query,
+            // which is highly performant.
+            return await _context.Lessons.CountAsync(l => l.LevelId == levelId);
+        }
     }
 }

@@ -12,8 +12,14 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
 
         public ILevelRepository Levels { get; private set; }
 
-        public IActivityTypeRepository ActivityTypes { get; private set; } // Add this
-        public IActivityRepository Activities { get; private set; } // Add this
+        public IActivityTypeRepository ActivityTypes { get; private set; }
+        public IActivityRepository Activities { get; private set; }
+
+        public IUserRepository Users { get; private set; }
+
+        public IAuthRepository Auth { get; private set; }
+
+        public IProgressRepository Progress { get; private set; }
 
         public UnitOfWork(ApplicationDbContext context)
         {
@@ -23,6 +29,9 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
             Lessons = new LessonRepository(_context);
             ActivityTypes = new ActivityTypeRepository(_context);
             Activities = new ActivityRepository(_context);
+            Users = new UserRepository(_context);
+            Auth = new AuthRepository(_context);
+            Progress = new ProgressRepository(_context);
         }
 
         public async Task<int> CompleteAsync()

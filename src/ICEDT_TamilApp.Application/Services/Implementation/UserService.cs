@@ -1,3 +1,8 @@
+using ICEDT_TamilApp.Application.Exceptions;
+using ICEDT_TamilApp.Application.Services.Interfaces;
+using ICEDT_TamilApp.Domain.Entities;
+using ICEDT_TamilApp.Domain.Interfaces;
+
 namespace ICEDT_TamilApp.Application.Services.Implementation
 {
     public class UserService : IUserService
@@ -16,7 +21,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
         {
             var user = await _unitOfWork.Users.GetByIdAsync(id);
             if (user == null)
-                throw new NotFoundException(nameof(User), id);
+                throw new NotFoundException($"{nameof(User)}, {id} not found.");
             return MapToUserDto(user);
         }
 
@@ -42,7 +47,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
         {
             var user = await _unitOfWork.Users.GetByIdAsync(id);
             if (user == null)
-                throw new NotFoundException(nameof(User), id);
+                throw new NotFoundException($"{nameof(User) }, {id} not found.");
 
             user.Username = dto.Username;
             user.Email = dto.Email;

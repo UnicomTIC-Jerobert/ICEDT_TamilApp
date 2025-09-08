@@ -4,37 +4,32 @@ using ICEDT_TamilApp.Application.DTOs.Request;
 using ICEDT_TamilApp.Application.DTOs.Response;
 using ICEDT_TamilApp.Application.Exceptions;
 using ICEDT_TamilApp.Application.Services.Interfaces;
+using ICEDT_TamilApp.Domain.Entities;
 using ICEDT_TamilApp.Domain.Interfaces;
 
 namespace ICEDT_TamilApp.Application.Services.Implementation
 {
     public class ProgressService : IProgressService
     {
-        private readonly IProgressRepository _progressRepository;
-        private readonly IActivityRepository _activityRepository; // We'll need this
-
-        private readonly ILessonRepository _lessonRepository;
+         private readonly IUnitOfWork _unitOfWork;
+    
 
         public ProgressService(
-            IProgressRepository progressRepository,
-            IActivityRepository activityRepository,
-            ILessonRepository lessonRepository
+            IUnitOfWork unitOfWork
         )
         {
-            _progressRepository = progressRepository;
-            _activityRepository = activityRepository;
-            _lessonRepository = lessonRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<CurrentLessonResponseDto?> GetCurrentLessonForUserAsync(int userId)
         {
-            var currentProgress = await _progressRepository.GetCurrentProgressAsync(userId);
+            var currentProgress = await _unitOfWork.Progress.GetCurrentProgressAsync(userId);
             int lessonIdToFetch;
 
             if (currentProgress == null)
             {
                 // New user case: find the very first lesson
-                var firstLesson = await _progressRepository.GetFirstLessonAsync();
+                var firstLesson = await _unitOfWork.Progress.GetFirstLessonAsync();
                 if (firstLesson == null)
                 {
                     // This means there is no content in the DB at all.
@@ -43,7 +38,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                     );
                 }
 
-                await _progressRepository.CreateInitialProgressAsync(userId, firstLesson.LessonId);
+                await _unitOfWork.Progress.CreateInitialProgressAsync(userId, firstLesson.LessonId);
                 lessonIdToFetch = firstLesson.LessonId;
             }
             else
@@ -51,7 +46,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 lessonIdToFetch = currentProgress.CurrentLessonId;
             }
 
-            var lesson = await _lessonRepository.GetByIdAsync(lessonIdToFetch);
+            var lesson = await _unitOfWork.Lessons.GetByIdAsync(lessonIdToFetch);
             if (lesson == null)
                 return null;
 
@@ -62,7 +57,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 LessonName = lesson.LessonName,
                 Description = lesson.Description,
                 Activities = lesson
-                    .Activities.Select(a => new ActivityResponseDto
+                    .Activities.Select(static a => new ActivityResponseDto
                     {
                         ActivityId = a.ActivityId,
                         ActivityTypeId = a.ActivityTypeId,
@@ -70,7 +65,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                         SequenceOrder = a.SequenceOrder,
                         ContentJson = a.ContentJson,
                     })
-                    .OrderBy(a => a.SequenceOrder)
+                    .OrderBy(static a => a.SequenceOrder)
                     .ToList(),
             };
 
@@ -83,14 +78,14 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
         )
         {
             // 1. Mark the activity as complete in the database
-            await _progressRepository.MarkActivityAsCompleteAsync(
+            await _unitOfWork.Progress.MarkActivityAsCompleteAsync(
                 userId,
                 request.ActivityId,
                 request.Score
             );
 
             // 2. Get the lesson this activity belongs to
-            var activity = await _progressRepository.GetActivityByIdAsync(request.ActivityId);
+            var activity = await _unitOfWork.Progress.GetActivityByIdAsync(request.ActivityId);
             if (activity == null)
             {
                 throw new NotFoundException(
@@ -100,10 +95,10 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             int currentLessonId = activity.LessonId;
 
             // 3. Check if the entire lesson is now complete
-            int totalActivities = await _progressRepository.GetTotalActivitiesForLessonAsync(
+            int totalActivities = await _unitOfWork.Progress.GetTotalActivitiesForLessonAsync(
                 currentLessonId
             );
-            int completedActivities = await _progressRepository.GetCompletedActivitiesCountAsync(
+            int completedActivities = await _unitOfWork.Progress.GetCompletedActivitiesCountAsync(
                 userId,
                 currentLessonId
             );
@@ -119,7 +114,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             }
 
             // 4. If lesson is complete, find the next lesson
-            var nextLesson = await _progressRepository.GetNextLessonAsync(currentLessonId);
+            var nextLesson = await _unitOfWork.Progress.GetNextLessonAsync(currentLessonId);
 
             if (nextLesson == null)
             {
@@ -133,7 +128,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             }
 
             // 5. Unlock the next lesson for the user
-            await _progressRepository.UpdateCurrentLessonAsync(userId, nextLesson.LessonId);
+            await _unitOfWork.Progress.UpdateCurrentLessonAsync(userId, nextLesson.LessonId);
 
             return new ActivityCompletionResponseDto
             {
@@ -141,6 +136,78 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 IsCourseCompleted = false,
                 Message = $"Lesson completed! You have unlocked: {nextLesson.LessonName}",
             };
+        }
+
+        public async Task<ProgressSummaryDto> GetUserProgressSummaryAsync(int userId)
+        {
+            var user = await _unitOfWork.Users.GetByIdAsync(userId);
+            if (user == null) throw new NotFoundException($"{nameof(User)}, {userId} not found.");
+
+            var currentProgress = await _unitOfWork.Progress.GetCurrentProgressAsync(userId);
+            if (currentProgress == null || currentProgress.CurrentLesson == null || currentProgress.CurrentLesson.Level == null)
+            {
+                // Handle case where user might not have started yet
+                return new ProgressSummaryDto { UserId = userId, Username = user.Username, CurrentLessonName = "Not Started" };
+            }
+
+            var lesson = currentProgress.CurrentLesson;
+            var level = lesson.Level;
+
+            // Run queries in parallel for efficiency
+            var totalActivitiesTask = _unitOfWork.Progress.GetTotalActivitiesForLessonAsync(lesson.LessonId);
+            var completedActivitiesTask = _unitOfWork.Progress.GetCompletedActivitiesCountAsync(userId, lesson.LessonId);
+            var totalLessonsInLevelTask = _unitOfWork.Lessons.GetLessonCountByLevelIdAsync(level.LevelId); // New repo method needed
+            var completedLessonsInLevelTask = _unitOfWork.Progress.GetCompletedLessonCountForUserAsync(userId, level.LevelId); // New repo method needed
+            var totalCourseLessonsTask = _unitOfWork.Progress.GetTotalLessonCountAsync();
+            var totalCompletedCourseLessonsTask = _unitOfWork.Progress.GetCompletedLessonCountForUserAsync(userId);
+
+            await Task.WhenAll(
+                totalActivitiesTask, completedActivitiesTask, totalLessonsInLevelTask,
+                completedLessonsInLevelTask, totalCourseLessonsTask, totalCompletedCourseLessonsTask
+            );
+
+            double overallCompletion = 0;
+            if (totalCourseLessonsTask.Result > 0)
+            {
+                overallCompletion = ((double)totalCompletedCourseLessonsTask.Result / totalCourseLessonsTask.Result) * 100;
+            }
+
+            return new ProgressSummaryDto
+            {
+                UserId = userId,
+                Username = user.Username,
+                CurrentLevelId = level.LevelId,
+                CurrentLevelName = level.LevelName,
+                CurrentLessonId = lesson.LessonId,
+                CurrentLessonName = lesson.LessonName,
+                TotalActivitiesInLesson = totalActivitiesTask.Result,
+                CompletedActivitiesInLesson = completedActivitiesTask.Result,
+                TotalLessonsInLevel = totalLessonsInLevelTask.Result,
+                CompletedLessonsInLevel = completedLessonsInLevelTask.Result,
+                OverallCourseCompletionPercentage = Math.Round(overallCompletion, 2)
+            };
+        }
+
+        public async Task<List<DetailedProgressDto>> GetDetailedProgressForUserAsync(int userId)
+        {
+            var user = await _unitOfWork.Users.GetByIdAsync(userId);
+            if (user == null) throw new NotFoundException($"{nameof(User)}, {userId} not found.");
+
+            var progressLog = await _unitOfWork.Progress.GetDetailedProgressForUserAsync(userId);
+
+            return progressLog.Select(p => new DetailedProgressDto
+            {
+                ProgressId = p.ProgressId,
+                ActivityId = p.ActivityId,
+                ActivityTitle = p.Activity.Title ?? "Untitled",
+                LessonId = p.Activity.LessonId,
+                LessonName = p.Activity.Lesson.LessonName,
+                LevelId = p.Activity.Lesson.Level.LevelId,
+                LevelName = p.Activity.Lesson.Level.LevelName,
+                IsCompleted = p.IsCompleted,
+                Score = p.Score,
+                CompletedAt = p.CompletedAt
+            }).ToList();
         }
     }
 }
