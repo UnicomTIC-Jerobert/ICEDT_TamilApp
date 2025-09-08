@@ -13,8 +13,9 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
 
         public LevelRepository(ApplicationDbContext context) => _context = context;
 
-        public async Task<Level> GetByIdAsync(int id)
+        public async Task<Level?> GetByIdAsync(int id)
         {
+            // This is now valid because the method is allowed to return null.
             return await _context.Levels.Include(l => l.Lessons).FirstOrDefaultAsync(l => l.LevelId == id);
         }
 
@@ -48,12 +49,12 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
             }
         }
 
-        public async Task<Level> GetByIdWithLessonsAsync(int id)
+         public async Task<Level?> GetByIdWithLessonsAsync(int id)
         {
             return await _context
                 .Levels.Include(l => l.Lessons)
                 .Where(l => l.LevelId == id)
-                .OrderBy(l => l.SequenceOrder)
+                .OrderBy(l => l.SequenceOrder) // Note: OrderBy on a single result doesn't do much, but it's not harmful.
                 .FirstOrDefaultAsync();
         }
 

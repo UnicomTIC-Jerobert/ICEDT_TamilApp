@@ -7,12 +7,12 @@ namespace ICEDT_TamilApp.Application.DTOs.Request
     {
         [Required]
         [StringLength(100)]
-        public string LevelName { get; set; }
+        public required string LevelName { get; set; }
 
         [Required]
         [StringLength(50)]
         [RegularExpression(@"^[a-z0-9]+(?:-[a-z0-9]+)*$")]
-        public string Slug { get; set; }
+        public required string Slug { get; set; }
 
         [Required]
         public int SequenceOrder { get; set; }

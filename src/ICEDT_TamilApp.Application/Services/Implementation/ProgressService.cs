@@ -11,8 +11,8 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
 {
     public class ProgressService : IProgressService
     {
-         private readonly IUnitOfWork _unitOfWork;
-    
+        private readonly IUnitOfWork _unitOfWork;
+
 
         public ProgressService(
             IUnitOfWork unitOfWork
@@ -21,24 +21,24 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<CurrentLessonResponseDto?> GetCurrentLessonForUserAsync(int userId)
+      public async Task<CurrentLessonResponseDto?> GetCurrentLessonForUserAsync(int userId)
         {
             var currentProgress = await _unitOfWork.Progress.GetCurrentProgressAsync(userId);
             int lessonIdToFetch;
 
             if (currentProgress == null)
             {
-                // New user case: find the very first lesson
+                // New user case: find the very first lesson in the entire course.
                 var firstLesson = await _unitOfWork.Progress.GetFirstLessonAsync();
                 if (firstLesson == null)
                 {
-                    // This means there is no content in the DB at all.
-                    throw new NotFoundException(
-                        "No lessons found in the system. Cannot set initial progress."
-                    );
+                    // This is a critical state where the application has no content.
+                    throw new NotFoundException("No lessons found in the system. Cannot set initial progress.");
                 }
 
+                // Create the initial progress bookmark for the user.
                 await _unitOfWork.Progress.CreateInitialProgressAsync(userId, firstLesson.LessonId);
+                await _unitOfWork.CompleteAsync(); // Commit the new progress entry.
                 lessonIdToFetch = firstLesson.LessonId;
             }
             else
@@ -46,27 +46,36 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 lessonIdToFetch = currentProgress.CurrentLessonId;
             }
 
-            var lesson = await _unitOfWork.Lessons.GetByIdAsync(lessonIdToFetch);
+            // Fetch the lesson AND its related activities using the specific repository method.
+            var lesson = await _unitOfWork.Lessons.GetByIdWithActivitiesAsync(lessonIdToFetch);
             if (lesson == null)
+            {
+                // This would indicate a data integrity issue (e.g., UserCurrentProgress points to a deleted lesson).
+                // Returning null is a safe way to handle it.
                 return null;
+            }
 
-            // Map the entity to our DTO
+            // Map the entity to our DTO, safely handling potential nulls.
             var response = new CurrentLessonResponseDto
             {
                 LessonId = lesson.LessonId,
                 LessonName = lesson.LessonName,
-                Description = lesson.Description,
-                Activities = lesson
-                    .Activities.Select(static a => new ActivityResponseDto
-                    {
-                        ActivityId = a.ActivityId,
-                        ActivityTypeId = a.ActivityTypeId,
-                        Title = a.Title,
-                        SequenceOrder = a.SequenceOrder,
-                        ContentJson = a.ContentJson,
-                    })
-                    .OrderBy(static a => a.SequenceOrder)
-                    .ToList(),
+                
+                // Use the null-coalescing operator to provide an empty string if Description is null.
+                Description = lesson.Description ?? string.Empty,
+                
+                // Use the null-conditional and null-coalescing operators to safely handle the Activities collection.
+                Activities = lesson.Activities?.Select(a => new ActivityResponseDto
+                {
+                    ActivityId = a.ActivityId,
+                    ActivityTypeId = a.ActivityTypeId,
+                    MainActivityId = a.MainActivityId, // Assuming DTO has these
+                    Title = a.Title,
+                    SequenceOrder = a.SequenceOrder,
+                    ContentJson = a.ContentJson,
+                })
+                .OrderBy(a => a.SequenceOrder)
+                .ToList() ?? new List<ActivityResponseDto>() // If lesson.Activities is null, return an empty list.
             };
 
             return response;
@@ -195,15 +204,21 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
 
             var progressLog = await _unitOfWork.Progress.GetDetailedProgressForUserAsync(userId);
 
+            // Use null-safe operators to prevent NullReferenceException
             return progressLog.Select(p => new DetailedProgressDto
             {
                 ProgressId = p.ProgressId,
                 ActivityId = p.ActivityId,
-                ActivityTitle = p.Activity.Title ?? "Untitled",
-                LessonId = p.Activity.LessonId,
-                LessonName = p.Activity.Lesson.LessonName,
-                LevelId = p.Activity.Lesson.Level.LevelId,
-                LevelName = p.Activity.Lesson.Level.LevelName,
+                ActivityTitle = p.Activity?.Title ?? "Untitled Activity", // If Activity is null or Title is null, use fallback
+
+                // Safely access Lesson properties
+                LessonId = p.Activity?.LessonId ?? 0, // Fallback to 0 if Activity is null
+                LessonName = p.Activity?.Lesson?.LessonName ?? "Unknown Lesson", // If Activity or Lesson is null, use fallback
+
+                // Safely access Level properties
+                LevelId = p.Activity?.Lesson?.Level?.LevelId ?? 0, // If any part of the chain is null, fallback to 0
+                LevelName = p.Activity?.Lesson?.Level?.LevelName ?? "Unknown Level", // Fallback to a string
+
                 IsCompleted = p.IsCompleted,
                 Score = p.Score,
                 CompletedAt = p.CompletedAt

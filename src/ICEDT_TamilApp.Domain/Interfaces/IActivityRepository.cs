@@ -4,7 +4,7 @@ namespace ICEDT_TamilApp.Domain.Interfaces
 {
     public interface IActivityRepository
     {
-        Task<Activity> GetByIdAsync(int activityId);
+        Task<Activity?> GetByIdAsync(int activityId);
         Task<List<Activity>> GetAllAsync();
         Task<List<Activity>> GetByLessonIdAsync(int lessonId);
         Task CreateAsync(Activity activity);

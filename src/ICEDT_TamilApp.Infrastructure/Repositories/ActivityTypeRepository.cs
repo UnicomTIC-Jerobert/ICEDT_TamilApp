@@ -11,7 +11,7 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
 
         public ActivityTypeRepository(ApplicationDbContext context) => _context = context;
 
-        public async Task<ActivityType> GetByIdAsync(int id)
+         public async Task<ActivityType?> GetByIdAsync(int id)
         {
             return await _context.ActivityTypes.FindAsync(id);
         }

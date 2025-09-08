@@ -6,7 +6,7 @@ namespace ICEDT_TamilApp.Application.DTOs.Requst
     public class MediaUploadRequestDto
     {
         [Required]
-        public IFormFile File { get; set; }
+        public required IFormFile File { get; set; }
 
         public string Folder { get; set; } = "general";
     }

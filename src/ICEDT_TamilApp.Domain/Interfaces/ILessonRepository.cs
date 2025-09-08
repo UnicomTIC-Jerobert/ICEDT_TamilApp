@@ -16,5 +16,7 @@ namespace ICEDT_TamilApp.Domain.Interfaces
         Task<List<MainActivity>> GetMainActivitySummaryAsync(int lessonId);
 
         Task<int> GetLessonCountByLevelIdAsync(int levelId);
+
+        Task<Lesson?> GetByIdWithActivitiesAsync(int lessonId);
     }
 }

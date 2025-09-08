@@ -6,7 +6,7 @@ namespace ICEDT_TamilApp.Domain.Interfaces
 {
     public interface ILevelRepository
     {
-        Task<Level> GetByIdAsync(int id);
+        Task<Level?> GetByIdAsync(int id);
         Task<List<Level>> GetAllAsync();
         Task CreateAsync(Level level);
         Task UpdateAsync(Level level);

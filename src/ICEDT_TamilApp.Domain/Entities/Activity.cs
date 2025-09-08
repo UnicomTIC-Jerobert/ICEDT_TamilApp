@@ -11,13 +11,13 @@ namespace ICEDT_TamilApp.Domain.Entities
         public int ActivityId { get; set; }
 
         [Required]
-        public string? Title { get; set; }
+        public required string Title { get; set; }
 
         [Required]
         public int SequenceOrder { get; set; }
 
         [Required]
-        public string? ContentJson { get; set; }
+        public required string  ContentJson { get; set; }
 
         [Required]
         public int LessonId { get; set; }

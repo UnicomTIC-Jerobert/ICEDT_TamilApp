@@ -114,5 +114,12 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
             // which is highly performant.
             return await _context.Lessons.CountAsync(l => l.LevelId == levelId);
         }
+
+        public async Task<Lesson?> GetByIdWithActivitiesAsync(int lessonId)
+        {
+            return await _context.Lessons
+                .Include(l => l.Activities)
+                .FirstOrDefaultAsync(l => l.LessonId == lessonId);
+        }
     }
 }

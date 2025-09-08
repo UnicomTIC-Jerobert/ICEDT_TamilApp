@@ -6,7 +6,7 @@ namespace ICEDT_TamilApp.Application.DTOs.Request
     public class FileUploadRequestDto
     {
         [Required]
-        public IFormFile File { get; set; }
+        public required IFormFile File { get; set; }
 
         [Required]
         public int LevelId { get; set; }

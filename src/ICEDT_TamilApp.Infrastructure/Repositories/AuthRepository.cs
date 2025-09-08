@@ -16,15 +16,17 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
 
         public async Task<User?> GetUserByUsernameAsync(string username)
         {
-            return await _context.Users.FirstOrDefaultAsync(u =>
-                u.Username.ToLower() == username.ToLower()
+            return await _context.Users.FirstOrDefaultAsync(u => 
+                string.Equals(u.Username, username, StringComparison.OrdinalIgnoreCase)
             );
         }
 
         public async Task<bool> UserExistsAsync(string username, string email)
         {
+            // FIX: Apply the same case-insensitive comparison here.
             return await _context.Users.AnyAsync(u =>
-                u.Username.ToLower() == username.ToLower() || u.Email.ToLower() == email.ToLower()
+                string.Equals(u.Username, username, StringComparison.OrdinalIgnoreCase) || 
+                string.Equals(u.Email, email, StringComparison.OrdinalIgnoreCase)
             );
         }
 

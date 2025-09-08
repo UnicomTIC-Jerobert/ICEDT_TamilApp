@@ -15,7 +15,7 @@ namespace ICEDT_TamilApp.Domain.Entities
         public required string Role { get; set; }
 
         public virtual UserCurrentProgress? UserCurrentProgress { get; set; }
-        public virtual ICollection<UserProgress> UserProgresses { get; set; }
+        public virtual ICollection<UserProgress>? UserProgresses { get; set; }
 
     }
 }

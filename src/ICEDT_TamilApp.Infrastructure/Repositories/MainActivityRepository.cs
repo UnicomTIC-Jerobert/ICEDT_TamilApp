@@ -20,7 +20,7 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
         /// Retrieves a single MainActivity by its primary key.
         /// Returns null if not found.
         /// </summary>
-        public async Task<MainActivity> GetByIdAsync(int id)
+        public async Task<MainActivity?> GetByIdAsync(int id)
         {
             // FindAsync is highly optimized for finding entities by their primary key.
             return await _context.MainActivities.FindAsync(id);

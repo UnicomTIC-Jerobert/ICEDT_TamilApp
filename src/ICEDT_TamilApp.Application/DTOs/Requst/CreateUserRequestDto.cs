@@ -3,16 +3,16 @@ using System.ComponentModel.DataAnnotations;
 public class CreateUserRequestDto
 {
     [Required]
-    public string Username { get; set; }
+    public required string Username { get; set; }
 
     [Required]
     [EmailAddress]
-    public string Email { get; set; }
+    public required string Email { get; set; }
 
     [Required]
     [MinLength(6)]
-    public string Password { get; set; }
+    public required string Password { get; set; }
 
     [Required]
-    public string Role { get; set; } // "Admin" or "Teacher" or "Student"
+    public required string Role { get; set; } // "Admin" or "Teacher" or "Student"
 }
