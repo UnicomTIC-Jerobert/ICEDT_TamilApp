@@ -14,12 +14,9 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
 
         public LessonRepository(ApplicationDbContext context) => _context = context;
 
-        public async Task<Lesson> GetByIdAsync(int lessonId)
+        public async Task<Lesson?> GetByIdAsync(int lessonId)
         {
-
-            return await _context
-                .Lessons.AsNoTracking()
-                .FirstOrDefaultAsync(l => l.LessonId == lessonId);
+            return await _context.Lessons.AsNoTracking().FirstOrDefaultAsync(l => l.LessonId == lessonId);
         }
 
         public async Task<List<Lesson>> GetAllAsync()
@@ -92,15 +89,17 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
 
         public async Task<List<MainActivity>> GetMainActivitySummaryAsync(int lessonId)
         {
-            // This is an efficient LINQ query that will be translated into optimized SQL.
-            var summary = await _context.Activities
-                .Where(a => a.LessonId == lessonId) // 1. Filter activities for the given lesson
-                .Select(a => a.MainActivity)        // 2. Select their parent MainActivity
-                .Distinct()                          // 3. Get only the unique MainActivities
-                .OrderBy(ma => ma.Id)                // 4. Order them for consistent display
-                .ToListAsync();
+            return await _context.Activities
+                // 1. Filter for the lesson AND ensure the navigation property is not null
+                .Where(a => a.LessonId == lessonId && a.MainActivity != null)
 
-            return summary;
+                // 2. Select the non-null MainActivity
+                .Select(a => a.MainActivity!) // The '!' tells the compiler we are sure it's not null now
+
+                // 3. The rest of the query is now safe
+                .Distinct()
+                .OrderBy(ma => ma.Id)
+                .ToListAsync();
         }
 
         /// <summary>

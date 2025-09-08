@@ -50,13 +50,10 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
         /// <summary>
         /// Updates an existing MainActivity entity in the database.
         /// </summary>
-        public async Task UpdateAsync(MainActivity mainActivity)
+        public Task UpdateAsync(MainActivity mainActivity)
         {
-            // The context is already tracking the entity that was fetched in the service layer,
-            // so just marking it as Modified is sufficient.
             _context.Entry(mainActivity).State = EntityState.Modified;
-            // Again, SaveChangesAsync would typically be called by a higher-level service.
-            // await _context.SaveChangesAsync();
+            return Task.CompletedTask;
         }
 
         /// <summary>

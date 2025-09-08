@@ -51,9 +51,12 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
         /// </summary>
         public async Task<int> GetCompletedActivitiesCountAsync(int userId, int lessonId)
         {
-            // This query joins UserProgress with Activities to filter by lesson.
+            // --- FIX #1: Add a null check for the navigation property ---
             return await _context.UserProgresses.CountAsync(p =>
-                p.UserId == userId && p.Activity.LessonId == lessonId && p.IsCompleted
+                p.UserId == userId &&
+                p.Activity != null && // Ensure the related Activity is not null
+                p.Activity.LessonId == lessonId && 
+                p.IsCompleted
             );
         }
 
@@ -165,11 +168,15 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
 
         public async Task<List<UserProgress>> GetDetailedProgressForUserAsync(int userId)
         {
+            // --- FIX #2: Be more explicit with Includes to help the compiler ---
+            // and ensure data integrity.
             return await _context.UserProgresses
                 .Where(p => p.UserId == userId)
-                .Include(p => p.Activity)!
-                    .ThenInclude(a => a.Lesson)!
-                        .ThenInclude(l => l.Level)
+                // We load the entire graph of related data.
+                .Include(p => p.Activity)
+                    // EF Core requires a cast to the specific entity type for ThenInclude on collections.
+                    .ThenInclude(a => (a as Activity)!.Lesson) 
+                        .ThenInclude(l => (l as Lesson)!.Level)
                 .OrderByDescending(p => p.CompletedAt)
                 .ToListAsync();
         }
