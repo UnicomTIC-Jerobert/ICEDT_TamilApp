@@ -14,19 +14,23 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<User?> GetUserByUsernameAsync(string username)
+         public async Task<User?> GetUserByUsernameAsync(string username)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => 
-                string.Equals(u.Username, username, StringComparison.OrdinalIgnoreCase)
-            );
+            // --- THE FIX IS HERE ---
+            // Convert both the database column and the input parameter to the same case.
+            // EF Core can easily translate .ToLower() into the SQL LOWER() function.
+            var normalizedUsername = username.ToLower();
+            return await _context.Users.FirstOrDefaultAsync(u => u.Username.ToLower() == normalizedUsername);
         }
 
         public async Task<bool> UserExistsAsync(string username, string email)
         {
-            // FIX: Apply the same case-insensitive comparison here.
+            // --- AND APPLY THE FIX HERE AS WELL ---
+            var normalizedUsername = username.ToLower();
+            var normalizedEmail = email.ToLower();
             return await _context.Users.AnyAsync(u =>
-                string.Equals(u.Username, username, StringComparison.OrdinalIgnoreCase) || 
-                string.Equals(u.Email, email, StringComparison.OrdinalIgnoreCase)
+                u.Username.ToLower() == normalizedUsername || 
+                u.Email.ToLower() == normalizedEmail
             );
         }
 

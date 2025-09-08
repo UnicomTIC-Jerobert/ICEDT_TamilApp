@@ -84,6 +84,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 IsSuccess = true,
                 Message = "Login successful.",
                 Token = token,
+                RefreshToken = refreshToken 
             };
         }
 

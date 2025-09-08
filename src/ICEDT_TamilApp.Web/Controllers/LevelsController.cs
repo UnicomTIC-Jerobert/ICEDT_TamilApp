@@ -9,7 +9,7 @@ namespace ICEDT_TamilApp.Web.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "admin")]
     public class LevelsController : ControllerBase
     {
         private readonly ILevelService _service;

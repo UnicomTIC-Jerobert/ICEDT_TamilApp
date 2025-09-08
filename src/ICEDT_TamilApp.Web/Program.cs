@@ -8,6 +8,10 @@ using ICEDT_TamilApp.Web.Middlewares; // Add this using statement!
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
+using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Give a name to your CORS policy
@@ -56,11 +60,31 @@ builder.Services.AddRazorPages();
 // To-do
 
 // *** NEW: Configure the Options Pattern ***
-var jwtSettings = new JwtSettings();
-builder.Configuration.Bind(JwtSettings.SectionName, jwtSettings);
+// --- JWT Configuration ---
 
-// Make the settings available via DI using IOptions<T>
-builder.Services.AddSingleton(Options.Create(jwtSettings));
+// Configure strongly-typed settings (Options Pattern)
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.SectionName));
+var jwtSettings = builder.Configuration.GetSection(JwtSettings.SectionName).Get<JwtSettings>();
+builder.Services.AddSingleton(jwtSettings!); // Use ! to assert it's not null, as it's required for the app to run
+
+if (jwtSettings == null || string.IsNullOrEmpty(jwtSettings.Secret))
+{
+    // Fail fast on startup if the secret is missing.
+    throw new InvalidOperationException("FATAL ERROR: JWT Secret is not configured in appsettings.json.");
+}
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret)),
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ClockSkew = TimeSpan.Zero
+        };
+    });
 
 // *** NEW: Configure AWS Settings and S3 Client for DI ***
 
@@ -101,10 +125,46 @@ else
 }
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo 
+    { 
+        Title = "ICEDT TamilApp API", 
+        Version = "v1" 
+    });
 
-// *** ADD THIS LINE RIGHT AFTER AddSwaggerGen ***
-builder.Services.AddSwaggerGenNewtonsoftSupport();
+    // 1. Define the Bearer token security scheme
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter a valid token. Example: \"Bearer {token}\"",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "Bearer"
+    });
+
+    // 2. Add a global security requirement to use the Bearer scheme
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            // This is the Security Scheme object we are referencing
+            new OpenApiSecurityScheme
+            {
+                // *** THIS IS THE FIX ***
+                // We create a REFERENCE to the scheme we defined above.
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer" // The ID/Name must match the one in AddSecurityDefinition
+                }
+            },
+            // The list of scopes (if any). For JWT, this is usually an empty list.
+            new string[]{}
+        }
+    });
+});
+
 
 var app = builder.Build();
 
