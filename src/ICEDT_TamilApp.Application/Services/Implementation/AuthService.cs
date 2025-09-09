@@ -48,12 +48,20 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 Role = "Student",
             };
 
+            var token = CreateToken(user);
+            var refreshToken = GenerateRefreshToken();
+
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+
             await _unitOfWork.Auth.RegisterUserAsync(user);
 
             return new AuthResponseDto
             {
                 IsSuccess = true,
                 Message = "User registered successfully.",
+                Token = token,
+                RefreshToken = refreshToken
             };
         }
 
@@ -84,7 +92,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 IsSuccess = true,
                 Message = "Login successful.",
                 Token = token,
-                RefreshToken = refreshToken 
+                RefreshToken = refreshToken
             };
         }
 
