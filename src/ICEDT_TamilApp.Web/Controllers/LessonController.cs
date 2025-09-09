@@ -9,7 +9,7 @@ namespace ICEDT_TamilApp.Web.Controllers
 {
     [ApiController]
     [Route("api")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "admin")]
     public class LessonController : ControllerBase
     {
         private readonly ILessonService _service;

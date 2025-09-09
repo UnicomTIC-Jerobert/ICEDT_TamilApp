@@ -3,11 +3,13 @@ using ICEDT_TamilApp.Application.Exceptions;
 using ICEDT_TamilApp.Application.Services.Interfaces;
 using ICEDT_TamilApp.Web.Middlewares;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ICEDT_TamilApp.Web.Controllers
 {
     [ApiController]
     [Route("api")]
+    [Authorize(Roles = "admin")]
     public class ActivitiesController : ControllerBase
     {
         private readonly IActivityService _service;
