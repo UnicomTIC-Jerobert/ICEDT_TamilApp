@@ -49,7 +49,7 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
             }
         }
 
-         public async Task<Level?> GetByIdWithLessonsAsync(int id)
+        public async Task<Level?> GetByIdWithLessonsAsync(int id)
         {
             return await _context
                 .Levels.Include(l => l.Lessons)
@@ -86,6 +86,25 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
         public async Task<bool> LevelExistsAsync(int levelId)
         {
             return await _context.Levels.AnyAsync(l => l.LevelId == levelId);
+        }
+        
+        public async Task<Level?> GetByBarcodeAsync(string barcode)
+        {
+            // Use FirstOrDefaultAsync to find the level with the matching barcode.
+            // This relies on the unique index we set up in the configuration.
+            return await _context.Levels
+                .FirstOrDefaultAsync(l => l.Barcode == barcode);
+        }
+
+        public async Task<List<Level>> GetLevelsForUserAsync(int userId)
+        {
+            // This query joins the Levels table with the UserLevelAccesses table
+            // to find all levels associated with the given userId.
+            return await _context.UserLevelAccesses
+                .Where(ula => ula.UserId == userId)
+                .Select(ula => ula.Level)
+                .OrderBy(l => l.SequenceOrder)
+                .ToListAsync();
         }
     }
 }

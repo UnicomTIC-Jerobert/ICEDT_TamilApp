@@ -15,5 +15,15 @@ namespace ICEDT_TamilApp.Domain.Interfaces
         Task<bool> SequenceOrderExistsAsync(int sequenceOrder);
         Task<bool> SlugExistsAsync(string slug);
         Task<bool> LevelExistsAsync(int levelId);
+
+        /// <summary>
+        /// Finds a level by its unique barcode string.
+        /// </summary>
+        Task<Level?> GetByBarcodeAsync(string barcode);
+
+        /// <summary>
+        /// Gets a list of all levels that a specific user has unlocked.
+        /// </summary>
+        Task<List<Level>> GetLevelsForUserAsync(int userId);
     }
 }

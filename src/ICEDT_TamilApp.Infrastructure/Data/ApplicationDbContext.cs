@@ -19,6 +19,8 @@ namespace ICEDT_TamilApp.Infrastructure.Data
         public DbSet<UserCurrentProgress> UserCurrentProgress { get; set; }
         public DbSet<UserProgress> UserProgresses { get; set; }
 
+        public DbSet<UserLevelAccess> UserLevelAccesses { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

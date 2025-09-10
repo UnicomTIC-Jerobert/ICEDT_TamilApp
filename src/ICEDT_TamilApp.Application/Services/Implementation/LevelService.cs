@@ -56,7 +56,8 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             {
                 LevelName = dto.LevelName,
                 SequenceOrder = dto.SequenceOrder,
-                Slug = dto.Slug
+                Slug = dto.Slug,
+                Barcode = dto.Barcode
             };
 
             // Add the new entity to the context via the repository.
@@ -127,7 +128,8 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 LevelName = level.LevelName,
                 Slug = level.Slug,
                 SequenceOrder = level.SequenceOrder,
-                CoverImageUrl = level.CoverImageUrl
+                CoverImageUrl = level.CoverImageUrl,
+                Barcode = level.Barcode
             };
         }
 
@@ -200,6 +202,39 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             await _unitOfWork.CompleteAsync();
 
             return MapToResponseDto(level);
+        }
+
+        public async Task<LevelResponseDto> UnlockLevelByBarcodeAsync(int userId, string barcode)
+        {
+            // 1. Find the level associated with the barcode
+            var level = await _unitOfWork.Levels.GetByBarcodeAsync(barcode);
+            if (level == null)
+            {
+                throw new NotFoundException("Invalid barcode. No matching level found.");
+            }
+
+            // 2. Check if the user already has access to prevent duplicates
+            var alreadyHasAccess = await _unitOfWork.UserLevelAccesses.HasAccessAsync(userId, level.LevelId);
+            if (alreadyHasAccess)
+            {
+                // You can either throw an exception or just return the level info gracefully.
+                // Returning the info is a better user experience.
+                return MapToResponseDto(level);
+            }
+
+            // 3. Grant access by creating a new record in the join table
+            await _unitOfWork.UserLevelAccesses.GrantAccessAsync(userId, level.LevelId);
+            await _unitOfWork.CompleteAsync();
+
+            //_logger.LogInformation("User {UserId} successfully unlocked Level {LevelId} with barcode {Barcode}", userId, level.LevelId, barcode);
+
+            return MapToResponseDto(level);
+        }
+
+        public async Task<List<LevelResponseDto>> GetUnlockedLevelsForUserAsync(int userId)
+        {
+            var unlockedLevels = await _unitOfWork.Levels.GetLevelsForUserAsync(userId); // New repo method
+            return unlockedLevels.Select(MapToResponseDto).ToList();
         }
     }
 }

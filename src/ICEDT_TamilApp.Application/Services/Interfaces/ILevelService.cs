@@ -16,5 +16,8 @@ namespace ICEDT_TamilApp.Application.Services.Interfaces
         Task<LevelResponseDto> UpdateLevelCoverImageAsync(int levelId, IFormFile file);
 
         Task<LevelResponseDto?> PartialUpdateLevelAsync(int id, JsonPatchDocument<LevelUpdateRequestDto> patchDoc);
+
+        Task<LevelResponseDto> UnlockLevelByBarcodeAsync(int userId, string barcode);
+        Task<List<LevelResponseDto>> GetUnlockedLevelsForUserAsync(int userId);
     }
 }

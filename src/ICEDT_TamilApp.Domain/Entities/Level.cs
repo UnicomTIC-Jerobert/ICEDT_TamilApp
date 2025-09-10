@@ -20,6 +20,12 @@ namespace ICEDT_TamilApp.Domain.Entities
 
         public string? CoverImageUrl { get; set; }
 
+        [Required]
+        [StringLength(100)]
+        public required string Barcode { get; set; } // The unique barcode for this book/level
+
         public ICollection<Lesson>? Lessons { get; set; }
+
+        public ICollection<UserLevelAccess> UserAccesses { get; set; } = new List<UserLevelAccess>();
     }
 }

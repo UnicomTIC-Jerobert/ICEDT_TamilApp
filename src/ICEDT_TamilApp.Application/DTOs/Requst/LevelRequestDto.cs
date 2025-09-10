@@ -19,5 +19,9 @@ namespace ICEDT_TamilApp.Application.DTOs.Request
         public int SequenceOrder { get; set; }
 
         public string? CoverImageUrl { get; set; }
+
+        [Required]
+        [StringLength(50)]
+        public required string Barcode { get; set; }
     }
 }

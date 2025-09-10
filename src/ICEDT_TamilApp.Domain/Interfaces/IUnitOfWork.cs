@@ -17,6 +17,8 @@ namespace ICEDT_TamilApp.Domain.Interfaces
 
         IProgressRepository Progress { get; }
 
+        IUserLevelAccessRepository UserLevelAccesses { get; }
+
         // Add other repositories here as you create them
         // IActivityTypeRepository ActivityTypes { get; }
         Task<int> CompleteAsync();
