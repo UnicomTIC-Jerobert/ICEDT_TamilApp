@@ -17,7 +17,6 @@ hooks:
       timeout: 300
       runas: root
     - location: scripts/set_permissions.sh
-    - location: scripts/migrate_db.sh
       runas: root
   ApplicationStart:
     - location: scripts/start_server.sh # This script will now start the systemd service

@@ -215,7 +215,6 @@ using (var scope = app.Services.CreateScope())
         logger.LogError(ex, "An error occurred during startup database initialization.");
     }
 }
-
 // =================================================================
 
 app.UseWrapResponseMiddleware();
