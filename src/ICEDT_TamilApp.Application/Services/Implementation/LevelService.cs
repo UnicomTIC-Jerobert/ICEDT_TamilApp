@@ -47,7 +47,9 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
         {
             // Perform validation using the repository.
             if (await _unitOfWork.Levels.SequenceOrderExistsAsync(dto.SequenceOrder))
-                throw new BadRequestException($"Sequence order {dto.SequenceOrder} is already in use.");
+                throw new BadRequestException(
+                    $"Sequence order {dto.SequenceOrder} is already in use."
+                );
 
             if (await _unitOfWork.Levels.SlugExistsAsync(dto.Slug))
                 throw new BadRequestException($"Slug '{dto.Slug}' is already in use.");
@@ -57,7 +59,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 LevelName = dto.LevelName,
                 SequenceOrder = dto.SequenceOrder,
                 Slug = dto.Slug,
-                Barcode = dto.Barcode
+                Barcode = dto.Barcode,
             };
 
             // Add the new entity to the context via the repository.
@@ -80,9 +82,14 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 throw new NotFoundException("Level not found.");
 
             // Check if the sequence order is being changed AND if the new one is already taken.
-            if (level.SequenceOrder != dto.SequenceOrder && await _unitOfWork.Levels.SequenceOrderExistsAsync(dto.SequenceOrder))
+            if (
+                level.SequenceOrder != dto.SequenceOrder
+                && await _unitOfWork.Levels.SequenceOrderExistsAsync(dto.SequenceOrder)
+            )
             {
-                throw new BadRequestException($"Sequence order {dto.SequenceOrder} is already in use.");
+                throw new BadRequestException(
+                    $"Sequence order {dto.SequenceOrder} is already in use."
+                );
             }
 
             // Check if the slug is being changed AND if the new one is already taken.
@@ -96,6 +103,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             level.SequenceOrder = dto.SequenceOrder;
             level.Slug = dto.Slug;
             level.CoverImageUrl = dto.CoverImageUrl;
+            level.Barcode = dto.Barcode;
 
             // The repository's UpdateAsync method just marks the entity as Modified.
             await _unitOfWork.Levels.UpdateAsync(level);
@@ -129,7 +137,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 Slug = level.Slug,
                 SequenceOrder = level.SequenceOrder,
                 CoverImageUrl = level.CoverImageUrl,
-                Barcode = level.Barcode
+                Barcode = level.Barcode,
             };
         }
 
@@ -155,7 +163,10 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             return MapToResponseDto(level);
         }
 
-        public async Task<LevelResponseDto?> PartialUpdateLevelAsync(int id, JsonPatchDocument<LevelUpdateRequestDto> patchDoc)
+        public async Task<LevelResponseDto?> PartialUpdateLevelAsync(
+            int id,
+            JsonPatchDocument<LevelUpdateRequestDto> patchDoc
+        )
         {
             var level = await _unitOfWork.Levels.GetByIdAsync(id);
             if (level == null)
@@ -170,7 +181,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 LevelName = level.LevelName,
                 Slug = level.Slug,
                 SequenceOrder = level.SequenceOrder,
-                CoverImageUrl = level.CoverImageUrl
+                CoverImageUrl = level.CoverImageUrl,
             };
 
             // 2. Apply the patch document to the DTO.
@@ -187,7 +198,10 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
 
             // 3. (Optional but recommended) Perform business rule validation on the patched DTO.
             //    For example, check if the new Slug is unique if it was changed.
-            if (level.Slug != levelToPatch.Slug && await _unitOfWork.Levels.SlugExistsAsync(levelToPatch.Slug))
+            if (
+                level.Slug != levelToPatch.Slug
+                && await _unitOfWork.Levels.SlugExistsAsync(levelToPatch.Slug)
+            )
             {
                 throw new ConflictException($"Slug '{levelToPatch.Slug}' is already in use.");
             }
@@ -214,7 +228,10 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             }
 
             // 2. Check if the user already has access to prevent duplicates
-            var alreadyHasAccess = await _unitOfWork.UserLevelAccesses.HasAccessAsync(userId, level.LevelId);
+            var alreadyHasAccess = await _unitOfWork.UserLevelAccesses.HasAccessAsync(
+                userId,
+                level.LevelId
+            );
             if (alreadyHasAccess)
             {
                 // You can either throw an exception or just return the level info gracefully.
