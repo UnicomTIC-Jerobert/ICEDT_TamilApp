@@ -9,7 +9,6 @@ namespace ICEDT_TamilApp.Web.Controllers
 {
     [ApiController]
     [Route("api/activitytypes")]
-    [Authorize(Roles = "admin")]
     public class ActivityTypeController : ControllerBase
     {
         private readonly IActivityTypeService _service;
@@ -18,6 +17,7 @@ namespace ICEDT_TamilApp.Web.Controllers
 
         // GET: /api/activitytypes/{id}
         [HttpGet("{id:int}")]
+        [Authorize(Roles = "admin,Student")]
         public async Task<IActionResult> GetById(int id)
         {
             if (id <= 0)
@@ -28,6 +28,7 @@ namespace ICEDT_TamilApp.Web.Controllers
 
         // GET: /api/activitytypes
         [HttpGet]
+        [Authorize(Roles = "admin,Student")]
         public async Task<IActionResult> GetAll()
         {
             var types = await _service.GetAllActivityTypesAsync();
@@ -36,6 +37,7 @@ namespace ICEDT_TamilApp.Web.Controllers
 
         // POST: /api/activitytypes
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Create([FromBody] ActivityTypeRequestDto dto)
         {
             var type = await _service.AddActivityTypeAsync(dto);
@@ -44,6 +46,7 @@ namespace ICEDT_TamilApp.Web.Controllers
 
         // PUT: /api/activitytypes/{id}
         [HttpPut("{id:int}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Update(int id, [FromBody] ActivityTypeRequestDto dto)
         {
             if (id <= 0)
@@ -54,6 +57,7 @@ namespace ICEDT_TamilApp.Web.Controllers
 
         // DELETE: /api/activitytypes/{id}
         [HttpDelete("{id:int}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete(int id)
         {
             if (id <= 0)

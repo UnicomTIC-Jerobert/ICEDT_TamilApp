@@ -9,7 +9,6 @@ namespace ICEDT_TamilApp.Web.Controllers
 {
     [ApiController]
     [Route("api")]
-    [Authorize(Roles = "admin")]
     public class ActivitiesController : ControllerBase
     {
         private readonly IActivityService _service;
@@ -17,6 +16,7 @@ namespace ICEDT_TamilApp.Web.Controllers
         public ActivitiesController(IActivityService service) => _service = service;
 
         [HttpGet("activities/{id:int}")]
+        [Authorize(Roles = "admin,Student")]
         public async Task<IActionResult> Get(int id)
         {
             if (id <= 0)
@@ -26,9 +26,11 @@ namespace ICEDT_TamilApp.Web.Controllers
         }
 
         [HttpGet("activities")]
+        [Authorize(Roles = "admin,Student")]
         public async Task<IActionResult> GetAll() => Ok(await _service.GetAllActivitiesAsync());
 
         [HttpGet("lessons/{lessonId:int}/activities")]
+        [Authorize(Roles = "admin,Student")]
         public async Task<IActionResult> GetActivitiesByLessonId(int lessonId)
         {
             if (lessonId <= 0)
@@ -38,6 +40,7 @@ namespace ICEDT_TamilApp.Web.Controllers
         }
 
         [HttpPost("activities")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Create([FromBody] ActivityRequestDto dto)
         {
             var activity = await _service.CreateActivityAsync(dto);
@@ -45,6 +48,7 @@ namespace ICEDT_TamilApp.Web.Controllers
         }
 
         [HttpPut("activities/{id:int}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Update(int id, [FromBody] ActivityRequestDto dto)
         {
             if (id <= 0)
@@ -54,6 +58,7 @@ namespace ICEDT_TamilApp.Web.Controllers
         }
 
         [HttpDelete("activities/{id:int}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete(int id)
         {
             if (id <= 0)

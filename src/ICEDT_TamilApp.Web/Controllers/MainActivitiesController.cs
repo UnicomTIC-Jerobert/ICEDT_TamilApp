@@ -11,7 +11,6 @@ namespace ICEDT_TamilApp.Web.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "admin")]
     public class MainActivitiesController : ControllerBase
     {
         private readonly IMainActivityService _mainActivityService;
@@ -26,6 +25,7 @@ namespace ICEDT_TamilApp.Web.Controllers
         /// </summary>
         /// <returns>A list of Main Activities.</returns>
         [HttpGet]
+        [Authorize(Roles = "admin,Student")]
         [ProducesResponseType(typeof(List<MainActivityResponseDto>), 200)]
         public async Task<IActionResult> GetAll()
         {
@@ -39,6 +39,7 @@ namespace ICEDT_TamilApp.Web.Controllers
         /// <param name="id">The ID of the Main Activity.</param>
         /// <returns>The requested Main Activity.</returns>
         [HttpGet("{id}")]
+        [Authorize(Roles = "admin,Student")]
         [ProducesResponseType(typeof(MainActivityResponseDto), 200)]
         [ProducesResponseType(404)]
         public async Task<IActionResult> GetById(int id)
@@ -59,6 +60,7 @@ namespace ICEDT_TamilApp.Web.Controllers
         /// <param name="requestDto">The data for the new Main Activity.</param>
         /// <returns>The newly created Main Activity.</returns>
         [HttpPost]
+        [Authorize(Roles = "admin")]
         [ProducesResponseType(typeof(MainActivityResponseDto), 201)]
         [ProducesResponseType(400)]
         public async Task<IActionResult> Create([FromBody] MainActivityRequestDto requestDto)
@@ -83,6 +85,7 @@ namespace ICEDT_TamilApp.Web.Controllers
         /// <param name="requestDto">The updated data.</param>
         /// <returns>No content if successful.</returns>
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
@@ -99,11 +102,12 @@ namespace ICEDT_TamilApp.Web.Controllers
         }
 
         /// <summary>
-        /// Deletes a Main Activity by its ID.
+        /// Deletes a Main Activity.
         /// </summary>
         /// <param name="id">The ID of the Main Activity to delete.</param>
         /// <returns>No content if successful.</returns>
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
         public async Task<IActionResult> Delete(int id)

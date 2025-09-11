@@ -9,7 +9,6 @@ namespace ICEDT_TamilApp.Web.Controllers
 {
     [ApiController]
     [Route("api")]
-    [Authorize(Roles = "admin")]
     public class LessonController : ControllerBase
     {
         private readonly ILessonService _service;
@@ -17,6 +16,7 @@ namespace ICEDT_TamilApp.Web.Controllers
         public LessonController(ILessonService service) => _service = service;
 
         [HttpPost("levels/{levelId:int}/lessons")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> AddLesson(int levelId, [FromBody] LessonRequestDto dto)
         {
             if (levelId <= 0)
@@ -26,6 +26,7 @@ namespace ICEDT_TamilApp.Web.Controllers
         }
 
         [HttpDelete("levels/{levelId:int}/lessons/{lessonId:int}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> RemoveLesson(int levelId, int lessonId)
         {
             if (levelId <= 0 || lessonId <= 0)
@@ -35,6 +36,7 @@ namespace ICEDT_TamilApp.Web.Controllers
         }
 
         [HttpGet("levels/{levelId:int}/lessons")]
+        [Authorize(Roles = "admin,Student")]
         public async Task<IActionResult> GetLessonsByLevelId(int levelId)
         {
             if (levelId <= 0)
@@ -44,6 +46,7 @@ namespace ICEDT_TamilApp.Web.Controllers
         }
 
         [HttpPut("lessons/{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> UpdateLesson(
             int id,
             [FromBody] LessonRequestDto updateLessonDto
@@ -56,6 +59,7 @@ namespace ICEDT_TamilApp.Web.Controllers
         }
 
         [HttpDelete("lessons/{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteLesson(int id)
         {
             var success = await _service.DeleteLessonAsync(id);
@@ -67,6 +71,7 @@ namespace ICEDT_TamilApp.Web.Controllers
         }
 
         [HttpGet("lessons/{id:int}")]
+        [Authorize(Roles = "admin,Student")]
         public async Task<IActionResult> Get(int id)
         {
             if (id <= 0)
@@ -76,6 +81,7 @@ namespace ICEDT_TamilApp.Web.Controllers
         }
 
         [HttpPost("{lessonId}/image")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> UploadLessonImage(int lessonId, [Required] IFormFile file)
         {
             var updatedLesson = await _service.UpdateLessonImageAsync(lessonId, file);
@@ -88,6 +94,7 @@ namespace ICEDT_TamilApp.Web.Controllers
         /// <param name="lessonId">The ID of the lesson.</param>
         /// <returns>A list of available main activity types for the lesson.</returns>
         [HttpGet("lessons/{lessonId}/main-activity-summary")]
+        [Authorize(Roles = "admin,Student")]
         [ProducesResponseType(typeof(List<MainActivityResponseDto>), 200)]
         [ProducesResponseType(404)]
         public async Task<IActionResult> GetMainActivitySummary(int lessonId)
