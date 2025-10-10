@@ -48,7 +48,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 Role = "Student",
             };
 
-            var token = CreateToken(user);
+            var token = CreateAccessToken(user);
             var refreshToken = GenerateRefreshToken();
 
             user.RefreshToken = refreshToken;
@@ -79,7 +79,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             }
 
             // Create JWT Token
-            var token = CreateToken(user);
+            var token = CreateAccessToken(user);
             var refreshToken = GenerateRefreshToken();
 
             user.RefreshToken = refreshToken;
