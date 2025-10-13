@@ -178,7 +178,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             {
                 Subject = new ClaimsIdentity(claims),
                 // Access tokens should have a SHORT lifetime
-                Expires = DateTime.Now.AddMinutes(15),
+                Expires = DateTime.Now.AddDays(30),
                 SigningCredentials = creds
             };
 
