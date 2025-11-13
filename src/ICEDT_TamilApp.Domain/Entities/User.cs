@@ -12,11 +12,15 @@ namespace ICEDT_TamilApp.Domain.Entities
         public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenExpiryTime { get; set; }
 
+        // Password reset OTP fields
+        public string? PasswordResetOTP { get; set; }
+        public DateTime? PasswordResetOTPExpiryTime { get; set; }
+
         public required string Role { get; set; }
 
         public virtual UserCurrentProgress? UserCurrentProgress { get; set; }
         public virtual ICollection<UserProgress>? UserProgresses { get; set; }
-        public ICollection<UserLevelAccess> LevelAccesses { get; set; } = new List<UserLevelAccess>();
-
+        public ICollection<UserLevelAccess> LevelAccesses { get; set; } =
+            new List<UserLevelAccess>();
     }
 }

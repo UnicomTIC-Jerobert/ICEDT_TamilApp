@@ -8,6 +8,7 @@ using ICEDT_TamilApp.Application.DTOs.Response;
 using ICEDT_TamilApp.Application.Services.Interfaces;
 using ICEDT_TamilApp.Domain.Entities;
 using ICEDT_TamilApp.Domain.Interfaces;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -16,14 +17,21 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
     public class AuthService : IAuthService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly JwtSettings _jwtSettings;
+        private readonly IEmailService _emailService;
+        private readonly IConfiguration _configuration;
 
-        private readonly JwtSettings _jwtSettings; // Store the settings directly
-
-        // Inject IOptions<JwtSettings>
-        public AuthService(IUnitOfWork unitOfWork, IOptions<JwtSettings> jwtOptions)
+        public AuthService(
+            IUnitOfWork unitOfWork,
+            IOptions<JwtSettings> jwtOptions,
+            IEmailService emailService,
+            IConfiguration configuration
+        )
         {
             _unitOfWork = unitOfWork;
-            _jwtSettings = jwtOptions.Value; // Get the actual settings object
+            _jwtSettings = jwtOptions.Value;
+            _emailService = emailService;
+            _configuration = configuration;
         }
 
         public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto registerDto)
@@ -61,7 +69,8 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 IsSuccess = true,
                 Message = "User registered successfully.",
                 Token = token,
-                RefreshToken = refreshToken
+                RefreshToken = refreshToken,
+                Role = user.Role,
             };
         }
 
@@ -92,7 +101,8 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 IsSuccess = true,
                 Message = "Login successful.",
                 Token = token,
-                RefreshToken = refreshToken
+                RefreshToken = refreshToken,
+                Role = user.Role,
             };
         }
 
@@ -104,7 +114,6 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 new Claim(ClaimTypes.Name, user.Username),
                 new Claim(ClaimTypes.Role, user.Role),
             };
-
 
             if (string.IsNullOrEmpty(_jwtSettings.Secret))
                 throw new Exception("JWT Secret is not configured!");
@@ -124,7 +133,6 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
 
             return tokenHandler.WriteToken(token);
         }
-
 
         public async Task<AuthResponseDto> RefreshTokenAsync(string refreshToken)
         {
@@ -148,13 +156,13 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
 
             await _unitOfWork.CompleteAsync();
 
-
             return new AuthResponseDto
             {
                 IsSuccess = true,
                 Message = "Token refreshed successfully.",
                 Token = newAccessToken,
                 RefreshToken = newRefreshToken,
+                Role = user.Role,
             };
         }
 
@@ -165,7 +173,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             {
                 new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
                 new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role, user.Role)
+                new Claim(ClaimTypes.Role, user.Role),
             };
 
             if (string.IsNullOrEmpty(_jwtSettings.Secret))
@@ -179,7 +187,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 Subject = new ClaimsIdentity(claims),
                 // Access tokens should have a SHORT lifetime
                 Expires = DateTime.Now.AddDays(30),
-                SigningCredentials = creds
+                SigningCredentials = creds,
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -193,6 +201,117 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             using var rng = RandomNumberGenerator.Create();
             rng.GetBytes(randomNumber);
             return Convert.ToBase64String(randomNumber);
+        }
+
+        public async Task<AuthResponseDto> ForgotPasswordAsync(ForgotPasswordRequestDto dto)
+        {
+            var user = await _unitOfWork.Auth.GetUserByEmailAsync(dto.Email);
+
+            if (user == null)
+            {
+                return new AuthResponseDto
+                {
+                    IsSuccess = true,
+                    Message =
+                        "If an account exists with this email, an OTP has been sent.",
+                };
+            }
+
+            // Generate a 6-digit OTP
+            string otp = GenerateOTP();
+            user.PasswordResetOTP = otp;
+            user.PasswordResetOTPExpiryTime = DateTime.UtcNow.AddMinutes(15); // OTP valid for 15 minutes
+
+            await _unitOfWork.Auth.UpdateUserAsync(user);
+
+            // Send email with OTP
+            try
+            {
+                var emailBody =
+                    $@"
+                    <html>
+                        <body style='font-family: Arial, sans-serif;'>
+                            <h2>Password Reset OTP</h2>
+                            <p>Your One-Time Password (OTP) for password reset is:</p>
+                            <p style='font-size: 24px; font-weight: bold; letter-spacing: 5px; background-color: #f0f0f0; padding: 10px; text-align: center;'>{otp}</p>
+                            <p>This OTP is valid for <strong>15 minutes</strong>.</p>
+                            <p>If you didn't request this, please ignore this email.</p>
+                        </body>
+                    </html>";
+
+                await _emailService.SendEmailAsync(user.Email, "Password Reset OTP", emailBody);
+            }
+            catch (Exception ex)
+            {
+                // Log the error but don't fail the request
+                // In production, you might want to log this properly
+                Console.WriteLine($"Error sending password reset OTP email: {ex.Message}");
+            }
+
+            return new AuthResponseDto
+            {
+                IsSuccess = true,
+                Message =
+                    "If an account exists with this email, an OTP has been sent.",
+            };
+        }
+        
+        public async Task<AuthResponseDto> VerifyOTPAsync(VerifyOTPRequestDto dto)
+        {
+            var user = await _unitOfWork.Auth.GetUserByPasswordResetOTPAsync(dto.Email, dto.OTP);
+            
+            if (user == null)
+            {
+                return new AuthResponseDto
+                {
+                    IsSuccess = false,
+                    Message = "Invalid or expired OTP."
+                };
+            }
+            
+            return new AuthResponseDto
+            {
+                IsSuccess = true,
+                Message = "OTP verified successfully. You can now reset your password."
+            };
+        }
+        
+        private string GenerateOTP()
+        {
+            // Generate a random 6-digit number
+            Random random = new Random();
+            return random.Next(100000, 999999).ToString();
+        }
+
+        public async Task<AuthResponseDto> ResetPasswordAsync(ResetPasswordRequestDto dto)
+        {
+            var user = await _unitOfWork.Auth.GetUserByPasswordResetOTPAsync(dto.Email, dto.OTP);
+
+            if (user == null || user.PasswordResetOTPExpiryTime <= DateTime.UtcNow)
+            {
+                return new AuthResponseDto
+                {
+                    IsSuccess = false,
+                    Message = "Invalid or expired OTP.",
+                };
+            }
+
+            // Hash the new password
+            string newPasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+
+            // Update user password and clear reset OTP
+            user.PasswordHash = newPasswordHash;
+            user.PasswordResetOTP = null;
+            user.PasswordResetOTPExpiryTime = null;
+
+            await _unitOfWork.Auth.UpdateUserAsync(user);
+
+            return new AuthResponseDto
+            {
+                IsSuccess = true,
+                Message =
+                    "Password has been reset successfully. You can now login with your new password.",
+            };
         }
     }
 }

@@ -1,6 +1,8 @@
+using ICEDT_TamilApp.Application.Services.Interfaces;
 using ICEDT_TamilApp.Domain.Interfaces;
 using ICEDT_TamilApp.Infrastructure.Data;
 using ICEDT_TamilApp.Infrastructure.Repositories;
+using ICEDT_TamilApp.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +32,7 @@ namespace ICEDT_TamilApp.Infrastructure
             services.AddScoped<IMainActivityRepository, MainActivityRepository>();
             services.AddScoped<IProgressRepository, ProgressRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IEmailService, SmtpEmailService>();
             return services;
         }
     }
