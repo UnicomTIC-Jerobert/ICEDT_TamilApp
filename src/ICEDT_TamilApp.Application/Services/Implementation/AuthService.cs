@@ -60,7 +60,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             var refreshToken = GenerateRefreshToken();
 
             user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpiryDays);
 
             await _unitOfWork.Auth.RegisterUserAsync(user);
 
@@ -92,7 +92,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             var refreshToken = GenerateRefreshToken();
 
             user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpiryDays);
 
             await _unitOfWork.CompleteAsync();
 
@@ -104,34 +104,6 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 RefreshToken = refreshToken,
                 Role = user.Role,
             };
-        }
-
-        private string CreateToken(User user)
-        {
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role, user.Role),
-            };
-
-            if (string.IsNullOrEmpty(_jwtSettings.Secret))
-                throw new Exception("JWT Secret is not configured!");
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddDays(_jwtSettings.ExpiryDays),
-                SigningCredentials = creds,
-            };
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-
-            return tokenHandler.WriteToken(token);
         }
 
         public async Task<AuthResponseDto> RefreshTokenAsync(string refreshToken)
@@ -152,7 +124,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
 
             // Update the user's refresh token with a new one (token rotation)
             user.RefreshToken = newRefreshToken;
-            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpiryDays);
 
             await _unitOfWork.CompleteAsync();
 
@@ -166,7 +138,6 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             };
         }
 
-        // Renamed from CreateToken to be more specific
         private string CreateAccessToken(User user)
         {
             var claims = new List<Claim>
@@ -185,8 +156,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                // Access tokens should have a SHORT lifetime
-                Expires = DateTime.Now.AddDays(30),
+                Expires = DateTime.UtcNow.AddDays(_jwtSettings.ExpiryDays),
                 SigningCredentials = creds,
             };
 
@@ -212,8 +182,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 return new AuthResponseDto
                 {
                     IsSuccess = true,
-                    Message =
-                        "If an account exists with this email, an OTP has been sent.",
+                    Message = "If an account exists with this email, an OTP has been sent.",
                 };
             }
 
@@ -251,31 +220,30 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             return new AuthResponseDto
             {
                 IsSuccess = true,
-                Message =
-                    "If an account exists with this email, an OTP has been sent.",
+                Message = "If an account exists with this email, an OTP has been sent.",
             };
         }
-        
+
         public async Task<AuthResponseDto> VerifyOTPAsync(VerifyOTPRequestDto dto)
         {
             var user = await _unitOfWork.Auth.GetUserByPasswordResetOTPAsync(dto.Email, dto.OTP);
-            
+
             if (user == null)
             {
                 return new AuthResponseDto
                 {
                     IsSuccess = false,
-                    Message = "Invalid or expired OTP."
+                    Message = "Invalid or expired OTP.",
                 };
             }
-            
+
             return new AuthResponseDto
             {
                 IsSuccess = true,
-                Message = "OTP verified successfully. You can now reset your password."
+                Message = "OTP verified successfully. You can now reset your password.",
             };
         }
-        
+
         private string GenerateOTP()
         {
             // Generate a random 6-digit number

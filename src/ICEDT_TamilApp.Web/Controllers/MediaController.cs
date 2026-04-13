@@ -1,6 +1,7 @@
 using ICEDT_TamilApp.Application.DTOs.Request;
 using ICEDT_TamilApp.Application.DTOs.Response;
 using ICEDT_TamilApp.Application.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ namespace ICEDT_TamilApp.Web.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "admin")]
     public class MediaController : ControllerBase
     {
         private readonly IMediaService _mediaService;

@@ -5,5 +5,6 @@ namespace ICEDT_TamilApp.Application.Common
         public const string SectionName = "JwtSettings"; // To link to appsettings.json
         public string Secret { get; set; } = string.Empty;
         public int ExpiryDays { get; set; }
+        public int RefreshTokenExpiryDays { get; set; }
     }
 }

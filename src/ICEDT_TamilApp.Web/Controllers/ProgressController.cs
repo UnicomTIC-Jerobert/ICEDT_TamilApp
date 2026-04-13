@@ -75,7 +75,7 @@ namespace ICEDT_TamilApp.Web.Controllers
         }
 
         [HttpGet("user/{userId}/summary")]
-        [Authorize(Roles = "Admin, Teacher")] // Allow both roles
+        [Authorize(Roles = "admin")] // Allow both roles
         public async Task<IActionResult> GetUserProgressSummary(int userId)
         {
             // This service method would return high-level progress:
@@ -85,7 +85,7 @@ namespace ICEDT_TamilApp.Web.Controllers
         }
 
         [HttpGet("user/{userId}/detailed")]
-        [Authorize(Roles = "Admin, Teacher")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> GetUserDetailedProgress(int userId)
         {
             // This service method would return the full logbook of every
