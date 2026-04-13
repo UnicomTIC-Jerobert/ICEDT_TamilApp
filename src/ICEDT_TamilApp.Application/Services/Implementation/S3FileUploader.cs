@@ -43,5 +43,22 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 throw new Exception($"Error uploading to S3: {ex.Message}", ex);
             }
         }
+
+        public async Task DeleteFileAsync(string s3Key)
+        {
+            try
+            {
+                var deleteRequest = new DeleteObjectRequest
+                {
+                    BucketName = _awsSettings.MediaBucketName,
+                    Key = s3Key
+                };
+                await _s3Client.DeleteObjectAsync(deleteRequest);
+            }
+            catch (AmazonS3Exception ex)
+            {
+                throw new Exception($"Error deleting file from S3: {ex.Message}", ex);
+            }
+        }
     }
 }

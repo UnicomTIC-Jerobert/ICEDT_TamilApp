@@ -20,6 +20,7 @@ namespace ICEDT_TamilApp.Application
             services.AddScoped<IUserService, UserService>();
 
             services.AddScoped<IFileUploader, S3FileUploader>();
+            services.AddScoped<ILessonPdfService, LessonPdfService>();
             // If you have AutoMapper or MediatR, you would register them here too.
 
             return services;

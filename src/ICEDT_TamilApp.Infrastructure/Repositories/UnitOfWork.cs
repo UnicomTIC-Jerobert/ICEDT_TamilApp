@@ -22,6 +22,8 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
         public IProgressRepository Progress { get; private set; }
 
         public IUserLevelAccessRepository UserLevelAccesses { get; private set; }
+        public ILessonPdfRepository LessonPdfs { get; private set; }
+
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
@@ -34,6 +36,7 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
             Auth = new AuthRepository(_context);
             Progress = new ProgressRepository(_context);
             UserLevelAccesses = new UserLevelAccessRepository(_context);
+            LessonPdfs = new LessonPdfRepository(_context);
         }
 
         public async Task<int> CompleteAsync()

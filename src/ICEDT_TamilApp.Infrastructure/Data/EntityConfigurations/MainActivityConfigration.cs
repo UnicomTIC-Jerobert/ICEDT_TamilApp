@@ -21,7 +21,8 @@ namespace ICEDT_TamilApp.Infrastructure.Data.EntityConfigurations
                  new MainActivity {Id=1, Name = "Video" },
                     new MainActivity {Id=2, Name = "Sounds" },
                     new MainActivity {Id=3, Name = "Learning" },
-                    new MainActivity {Id=4, Name = "Exercises" }
+                    new MainActivity {Id=4, Name = "Exercises" },
+                    new MainActivity {Id=5, Name = "PDF" }
             );
         }
     }

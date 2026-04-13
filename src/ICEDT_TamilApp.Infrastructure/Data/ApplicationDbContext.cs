@@ -21,6 +21,8 @@ namespace ICEDT_TamilApp.Infrastructure.Data
 
         public DbSet<UserLevelAccess> UserLevelAccesses { get; set; }
 
+        public DbSet<LessonPdf> LessonPdfs { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

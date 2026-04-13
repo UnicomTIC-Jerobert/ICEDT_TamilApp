@@ -33,6 +33,7 @@ namespace ICEDT_TamilApp.Infrastructure
             services.AddScoped<IProgressRepository, ProgressRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IEmailService, SmtpEmailService>();
+            services.AddScoped<ILessonPdfRepository, LessonPdfRepository>();
             return services;
         }
     }
