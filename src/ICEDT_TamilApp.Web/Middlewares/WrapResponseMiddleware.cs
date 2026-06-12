@@ -34,6 +34,14 @@ namespace ICEDT_TamilApp.Web.Middlewares
                 return;
             }
 
+            // Skip wrapping for multipart/form-data requests (file uploads)
+            if (context.Request.ContentType != null &&
+                context.Request.ContentType.StartsWith("multipart/form-data", StringComparison.OrdinalIgnoreCase))
+            {
+                await _next(context);
+                return;
+            }
+
             var originalBodyStream = context.Response.Body;
             using var newBodyStream = new MemoryStream();
             context.Response.Body = newBodyStream;
