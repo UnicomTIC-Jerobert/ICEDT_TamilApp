@@ -150,14 +150,11 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 throw new NotFoundException($"{nameof(Level)}, {levelId} not found");
             }
 
-            // 1. Construct the S3 key
             var s3Key = $"levels/{level.Slug}/cover-image/{Guid.NewGuid()}_{file.FileName}";
 
-            // 2. Upload the file using the reusable service
-            var imageUrl = await _fileUploader.UploadFileAsync(file, s3Key);
+            await _fileUploader.UploadFileAsync(file, s3Key);
 
-            // 3. Update the entity and save to the database
-            level.CoverImageUrl = imageUrl;
+            level.CoverImageUrl = $"/{s3Key}";
             await _unitOfWork.CompleteAsync();
 
             return MapToResponseDto(level);
