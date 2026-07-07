@@ -17,7 +17,7 @@ namespace ICEDT_TamilApp.Infrastructure.Services
             _logger = logger;
         }
 
-        public async Task SendEmailAsync(string toEmail, string subject, string body)
+        public async Task SendEmailAsync(string toEmail, string subject, string body, CancellationToken cancellationToken = default)
         {
             try
             {

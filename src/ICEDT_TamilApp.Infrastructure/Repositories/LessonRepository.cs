@@ -19,6 +19,13 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
             return await _context.Lessons.AsNoTracking().FirstOrDefaultAsync(l => l.LessonId == lessonId);
         }
 
+        public async Task<Lesson?> GetByIdWithLevelAsync(int lessonId)
+        {
+            return await _context.Lessons
+                .Include(l => l.Level)
+                .FirstOrDefaultAsync(l => l.LessonId == lessonId);
+        }
+
         public async Task<List<Lesson>> GetAllAsync()
         {
             // No changes needed here, this is fine.

@@ -23,7 +23,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             _fileUploader = fileUploader;
         }
 
-        public async Task<LevelResponseDto> GetLevelAsync(int id)
+        public async Task<LevelResponseDto> GetLevelAsync(int id, CancellationToken cancellationToken = default)
         {
             if (id <= 0)
                 throw new BadRequestException("Invalid Level ID.");
@@ -37,13 +37,13 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             return MapToResponseDto(level);
         }
 
-        public async Task<List<LevelResponseDto>> GetAllLevelsAsync()
+        public async Task<List<LevelResponseDto>> GetAllLevelsAsync(CancellationToken cancellationToken = default)
         {
             var levels = await _unitOfWork.Levels.GetAllAsync();
             return levels.Select(MapToResponseDto).ToList();
         }
 
-        public async Task<LevelResponseDto> CreateLevelAsync(LevelRequestDto dto)
+        public async Task<LevelResponseDto> CreateLevelAsync(LevelRequestDto dto, CancellationToken cancellationToken = default)
         {
             // Perform validation using the repository.
             if (await _unitOfWork.Levels.SequenceOrderExistsAsync(dto.SequenceOrder))
@@ -72,7 +72,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             return MapToResponseDto(level);
         }
 
-        public async Task UpdateLevelAsync(int id, LevelRequestDto dto)
+        public async Task UpdateLevelAsync(int id, LevelRequestDto dto, CancellationToken cancellationToken = default)
         {
             if (id <= 0)
                 throw new BadRequestException("Invalid Level ID.");
@@ -113,7 +113,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             await _unitOfWork.CompleteAsync();
         }
 
-        public async Task DeleteLevelAsync(int id)
+        public async Task DeleteLevelAsync(int id, CancellationToken cancellationToken = default)
         {
             var level = await _unitOfWork.Levels.GetByIdAsync(id);
             if (level == null)
@@ -142,7 +142,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
         }
 
         // Implement the new method
-        public async Task<LevelResponseDto> UpdateLevelCoverImageAsync(int levelId, IFormFile file)
+        public async Task<LevelResponseDto> UpdateLevelCoverImageAsync(int levelId, IFormFile file, CancellationToken cancellationToken = default)
         {
             var level = await _unitOfWork.Levels.GetByIdAsync(levelId);
             if (level == null)
@@ -162,7 +162,8 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
 
         public async Task<LevelResponseDto?> PartialUpdateLevelAsync(
             int id,
-            JsonPatchDocument<LevelUpdateRequestDto> patchDoc
+            JsonPatchDocument<LevelUpdateRequestDto> patchDoc,
+            CancellationToken cancellationToken = default
         )
         {
             var level = await _unitOfWork.Levels.GetByIdAsync(id);
@@ -215,7 +216,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             return MapToResponseDto(level);
         }
 
-        public async Task<LevelResponseDto> UnlockLevelByBarcodeAsync(int userId, string barcode)
+        public async Task<LevelResponseDto> UnlockLevelByBarcodeAsync(int userId, string barcode, CancellationToken cancellationToken = default)
         {
             // 1. Find the level associated with the barcode
             var level = await _unitOfWork.Levels.GetByBarcodeAsync(barcode);
@@ -245,7 +246,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             return MapToResponseDto(level);
         }
 
-        public async Task<List<LevelResponseDto>> GetUnlockedLevelsForUserAsync(int userId)
+        public async Task<List<LevelResponseDto>> GetUnlockedLevelsForUserAsync(int userId, CancellationToken cancellationToken = default)
         {
             var unlockedLevels = await _unitOfWork.Levels.GetLevelsForUserAsync(userId); // New repo method
             return unlockedLevels.Select(MapToResponseDto).ToList();

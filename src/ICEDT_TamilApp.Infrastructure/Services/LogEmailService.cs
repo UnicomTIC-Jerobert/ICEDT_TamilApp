@@ -9,7 +9,7 @@ namespace ICEDT_TamilApp.Infrastructure.Services
 
         public LogEmailService(ILogger<LogEmailService> logger) => _logger = logger;
 
-        public Task SendEmailAsync(string toEmail, string subject, string body)
+        public Task SendEmailAsync(string toEmail, string subject, string body, CancellationToken cancellationToken = default)
         {
             _logger.LogWarning("---- SENDING EMAIL (LOG ONLY) ----");
             _logger.LogInformation("To: {ToEmail}", toEmail);

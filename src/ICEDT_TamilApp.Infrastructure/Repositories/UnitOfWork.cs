@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using ICEDT_TamilApp.Domain.Interfaces;
 using ICEDT_TamilApp.Infrastructure.Data;
@@ -39,9 +40,9 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
             LessonPdfs = new LessonPdfRepository(_context);
         }
 
-        public async Task<int> CompleteAsync()
+        public async Task<int> CompleteAsync(CancellationToken cancellationToken = default)
         {
-            return await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync(cancellationToken);
         }
 
         public void Dispose()

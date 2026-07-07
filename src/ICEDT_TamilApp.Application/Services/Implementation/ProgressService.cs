@@ -21,7 +21,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             _unitOfWork = unitOfWork;
         }
 
-      public async Task<CurrentLessonResponseDto?> GetCurrentLessonForUserAsync(int userId)
+      public async Task<CurrentLessonResponseDto?> GetCurrentLessonForUserAsync(int userId, CancellationToken cancellationToken = default)
         {
             var currentProgress = await _unitOfWork.Progress.GetCurrentProgressAsync(userId);
             int lessonIdToFetch;
@@ -83,7 +83,8 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
 
         public async Task<ActivityCompletionResponseDto> CompleteActivityAsync(
             int userId,
-            ActivityCompletionRequestDto request
+            ActivityCompletionRequestDto request,
+            CancellationToken cancellationToken = default
         )
         {
             // 1. Mark the activity as complete in the database
@@ -147,7 +148,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             };
         }
 
-        public async Task<ProgressSummaryDto> GetUserProgressSummaryAsync(int userId)
+        public async Task<ProgressSummaryDto> GetUserProgressSummaryAsync(int userId, CancellationToken cancellationToken = default)
         {
             var user = await _unitOfWork.Users.GetByIdAsync(userId);
             if (user == null) throw new NotFoundException($"{nameof(User)}, {userId} not found.");
@@ -197,7 +198,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             };
         }
 
-        public async Task<List<DetailedProgressDto>> GetDetailedProgressForUserAsync(int userId)
+        public async Task<List<DetailedProgressDto>> GetDetailedProgressForUserAsync(int userId, CancellationToken cancellationToken = default)
         {
             var user = await _unitOfWork.Users.GetByIdAsync(userId);
             if (user == null) throw new NotFoundException($"{nameof(User)}, {userId} not found.");

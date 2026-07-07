@@ -20,7 +20,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<MainActivityResponseDto?> GetByIdAsync(int id)
+        public async Task<MainActivityResponseDto?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             var mainActivity = await _unitOfWork.MainActivities.GetByIdAsync(id);
             if (mainActivity == null)
@@ -29,7 +29,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             return new MainActivityResponseDto { Id = mainActivity.Id, Name = mainActivity.Name };
         }
 
-        public async Task<List<MainActivityResponseDto>> GetAllAsync()
+        public async Task<List<MainActivityResponseDto>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             var mainActivities = await _unitOfWork.MainActivities.GetAllAsync();
             return mainActivities
@@ -37,7 +37,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 .ToList();
         }
 
-        public async Task<MainActivityResponseDto> CreateAsync(MainActivityRequestDto requestDto)
+        public async Task<MainActivityResponseDto> CreateAsync(MainActivityRequestDto requestDto, CancellationToken cancellationToken = default)
         {
             var mainActivity = new MainActivity { Name = requestDto.Name };
 
@@ -47,7 +47,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             return new MainActivityResponseDto { Id = mainActivity.Id, Name = mainActivity.Name };
         }
 
-        public async Task UpdateAsync(int id, MainActivityRequestDto requestDto)
+        public async Task UpdateAsync(int id, MainActivityRequestDto requestDto, CancellationToken cancellationToken = default)
         {
             var mainActivityToUpdate = await _unitOfWork.MainActivities.GetByIdAsync(id);
 
@@ -65,7 +65,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             await _unitOfWork.CompleteAsync(); // Save changes to the database
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(int id, CancellationToken cancellationToken = default)
         {
             var mainActivityToDelete = await _unitOfWork.MainActivities.GetByIdAsync(id);
 

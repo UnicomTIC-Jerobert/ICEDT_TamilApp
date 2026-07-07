@@ -6,13 +6,9 @@ namespace ICEDT_TamilApp.Application.Services.Interfaces
 {
     public interface IProgressService
     {
-        Task<CurrentLessonResponseDto?> GetCurrentLessonForUserAsync(int userId);
-        Task<ActivityCompletionResponseDto> CompleteActivityAsync(
-            int userId,
-            ActivityCompletionRequestDto request
-        );
-
-        Task<ProgressSummaryDto> GetUserProgressSummaryAsync(int userId);
-        Task<List<DetailedProgressDto>> GetDetailedProgressForUserAsync(int userId);
+        Task<CurrentLessonResponseDto?> GetCurrentLessonForUserAsync(int userId, CancellationToken cancellationToken = default);
+        Task<ActivityCompletionResponseDto> CompleteActivityAsync(int userId, ActivityCompletionRequestDto request, CancellationToken cancellationToken = default);
+        Task<ProgressSummaryDto> GetUserProgressSummaryAsync(int userId, CancellationToken cancellationToken = default);
+        Task<List<DetailedProgressDto>> GetDetailedProgressForUserAsync(int userId, CancellationToken cancellationToken = default);
     }
 }

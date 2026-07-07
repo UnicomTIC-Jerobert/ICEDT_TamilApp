@@ -24,7 +24,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             _awsSettings = awsOptions.Value;
         }
 
-        public async Task<MediaUploadResponseDto> UploadSingleFileAsync(IFormFile file, int levelId, int lessonId, string mediaType)
+        public async Task<MediaUploadResponseDto> UploadSingleFileAsync(IFormFile file, int levelId, int lessonId, string mediaType, CancellationToken cancellationToken = default)
         {
             if (file == null || file.Length == 0)
                 throw new BadRequestException("File is empty or null.");
@@ -43,7 +43,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             };
         }
 
-        public async Task<List<MediaUploadResponseDto>> UploadMultipleFilesAsync(List<IFormFile> files, int levelId, int lessonId, string mediaType)
+        public async Task<List<MediaUploadResponseDto>> UploadMultipleFilesAsync(List<IFormFile> files, int levelId, int lessonId, string mediaType, CancellationToken cancellationToken = default)
         {
             if (files == null || !files.Any())
                 throw new BadRequestException("No files provided for upload.");
@@ -106,7 +106,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
 
         // ... (existing constructor and upload methods)
 
-        public async Task<List<MediaFileDto>> ListFilesAsync(int levelId, int lessonId, string mediaType)
+        public async Task<List<MediaFileDto>> ListFilesAsync(int levelId, int lessonId, string mediaType, CancellationToken cancellationToken = default)
         {
             // Define the folder prefix to search for in S3
             var prefix = $"levels/{levelId}/lessons/{lessonId}/{mediaType.ToLowerInvariant()}/";

@@ -7,6 +7,7 @@ namespace ICEDT_TamilApp.Domain.Interfaces
     public interface ILessonRepository
     {
         Task<Lesson?> GetByIdAsync(int lessonId);
+        Task<Lesson?> GetByIdWithLevelAsync(int lessonId);
         Task<List<Lesson>> GetAllAsync();
         Task<Lesson> CreateAsync(Lesson lesson);
         Task<bool> UpdateAsync(Lesson lesson);

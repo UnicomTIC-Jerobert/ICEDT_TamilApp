@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ICEDT_TamilApp.Domain.Interfaces
@@ -21,6 +22,6 @@ namespace ICEDT_TamilApp.Domain.Interfaces
 
         ILessonPdfRepository LessonPdfs { get; }
 
-        Task<int> CompleteAsync();
+        Task<int> CompleteAsync(CancellationToken cancellationToken = default);
     }
 }

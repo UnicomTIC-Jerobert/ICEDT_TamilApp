@@ -20,7 +20,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<ActivityTypeResponseDto> GetActivityTypeAsync(int id)
+        public async Task<ActivityTypeResponseDto> GetActivityTypeAsync(int id, CancellationToken cancellationToken = default)
         {
             var type = await _unitOfWork.ActivityTypes.GetByIdAsync(id);
             if (type == null)
@@ -28,13 +28,13 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             return MapToActivityTypeResponseDto(type);
         }
 
-        public async Task<List<ActivityTypeResponseDto>> GetAllActivityTypesAsync()
+        public async Task<List<ActivityTypeResponseDto>> GetAllActivityTypesAsync(CancellationToken cancellationToken = default)
         {
             var types = await _unitOfWork.ActivityTypes.GetAllAsync();
             return types.Select(MapToActivityTypeResponseDto).ToList();
         }
 
-        public async Task<ActivityTypeResponseDto> AddActivityTypeAsync(ActivityTypeRequestDto dto)
+        public async Task<ActivityTypeResponseDto> AddActivityTypeAsync(ActivityTypeRequestDto dto, CancellationToken cancellationToken = default)
         {
             var type = new ActivityType { Name = dto.ActivityName };
             
@@ -46,7 +46,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             return MapToActivityTypeResponseDto(type);
         }
 
-        public async Task UpdateActivityTypeAsync(int id, ActivityTypeRequestDto dto)
+        public async Task UpdateActivityTypeAsync(int id, ActivityTypeRequestDto dto, CancellationToken cancellationToken = default)
         {
             var type = await _unitOfWork.ActivityTypes.GetByIdAsync(id);
             if (type == null)
@@ -60,7 +60,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             await _unitOfWork.CompleteAsync();
         }
 
-        public async Task DeleteActivityTypeAsync(int id)
+        public async Task DeleteActivityTypeAsync(int id, CancellationToken cancellationToken = default)
         {
             var type = await _unitOfWork.ActivityTypes.GetByIdAsync(id);
             if (type == null)

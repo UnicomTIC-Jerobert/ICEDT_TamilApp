@@ -5,12 +5,11 @@ namespace ICEDT_TamilApp.Application.Services.Interfaces
 {
     public interface IActivityService
     {
-        // Activity
-        Task<ActivityResponseDto> GetActivityAsync(int id);
-        Task<List<ActivityResponseDto>> GetAllActivitiesAsync();
-        Task<List<ActivityResponseDto>> GetActivitiesByLessonIdAsync(int lessonId);
-        Task<ActivityResponseDto> CreateActivityAsync(ActivityRequestDto dto);
-        Task<ActivityResponseDto> UpdateActivityAsync(int id, ActivityRequestDto dto);
-        Task DeleteActivityAsync(int id);
+        Task<ActivityResponseDto> GetActivityAsync(int id, CancellationToken cancellationToken = default);
+        Task<List<ActivityResponseDto>> GetAllActivitiesAsync(CancellationToken cancellationToken = default);
+        Task<List<ActivityResponseDto>> GetActivitiesByLessonIdAsync(int lessonId, CancellationToken cancellationToken = default);
+        Task<ActivityResponseDto> CreateActivityAsync(ActivityRequestDto dto, CancellationToken cancellationToken = default);
+        Task<ActivityResponseDto> UpdateActivityAsync(int id, ActivityRequestDto dto, CancellationToken cancellationToken = default);
+        Task DeleteActivityAsync(int id, CancellationToken cancellationToken = default);
     }
 }

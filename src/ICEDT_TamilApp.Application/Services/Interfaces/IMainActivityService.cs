@@ -7,10 +7,10 @@ namespace ICEDT_TamilApp.Application.Services.Interfaces
 {
     public interface IMainActivityService
     {
-        Task<MainActivityResponseDto?> GetByIdAsync(int id);
-        Task<List<MainActivityResponseDto>> GetAllAsync();
-        Task<MainActivityResponseDto> CreateAsync(MainActivityRequestDto requestDto);
-        Task UpdateAsync(int id, MainActivityRequestDto requestDto);
-        Task DeleteAsync(int id);
+        Task<MainActivityResponseDto?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+        Task<List<MainActivityResponseDto>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<MainActivityResponseDto> CreateAsync(MainActivityRequestDto requestDto, CancellationToken cancellationToken = default);
+        Task UpdateAsync(int id, MainActivityRequestDto requestDto, CancellationToken cancellationToken = default);
+        Task DeleteAsync(int id, CancellationToken cancellationToken = default);
     }
 }

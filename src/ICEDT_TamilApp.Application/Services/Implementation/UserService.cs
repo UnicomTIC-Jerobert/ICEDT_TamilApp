@@ -11,13 +11,13 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
 
         public UserService(IUnitOfWork unitOfWork) => _unitOfWork = unitOfWork;
 
-        public async Task<List<UserDto>> GetAllUsersAsync()
+        public async Task<List<UserDto>> GetAllUsersAsync(CancellationToken cancellationToken = default)
         {
             var users = await _unitOfWork.Users.GetAllAsync();
             return users.Select(MapToUserDto).ToList();
         }
 
-        public async Task<UserDto> GetUserByIdAsync(int id)
+        public async Task<UserDto> GetUserByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             var user = await _unitOfWork.Users.GetByIdAsync(id);
             if (user == null)
@@ -25,7 +25,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             return MapToUserDto(user);
         }
 
-        public async Task<UserDto> CreateUserAsync(CreateUserRequestDto dto)
+        public async Task<UserDto> CreateUserAsync(CreateUserRequestDto dto, CancellationToken cancellationToken = default)
         {
             if (await _unitOfWork.Auth.UserExistsAsync(dto.Username, dto.Email))
                 throw new ConflictException("Username or Email already exists.");
@@ -43,7 +43,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             return MapToUserDto(user);
         }
 
-        public async Task<UserDto> UpdateUserAsync(int id, UpdateUserRequestDto dto)
+        public async Task<UserDto> UpdateUserAsync(int id, UpdateUserRequestDto dto, CancellationToken cancellationToken = default)
         {
             var user = await _unitOfWork.Users.GetByIdAsync(id);
             if (user == null)
@@ -58,7 +58,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             return MapToUserDto(user);
         }
 
-        public async Task DeleteUserAsync(int id)
+        public async Task DeleteUserAsync(int id, CancellationToken cancellationToken = default)
         {
             await _unitOfWork.Users.DeleteAsync(id);
             await _unitOfWork.CompleteAsync();

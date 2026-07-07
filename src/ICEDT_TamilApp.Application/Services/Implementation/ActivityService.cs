@@ -23,7 +23,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             _logger = logger;
         }
 
-        public async Task<ActivityResponseDto> GetActivityAsync(int id)
+        public async Task<ActivityResponseDto> GetActivityAsync(int id, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Fetching activity with ID: {ActivityId}", id);
             var activity = await _unitOfWork.Activities.GetByIdAsync(id);
@@ -35,14 +35,14 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             return MapToActivityResponseDto(activity);
         }
 
-        public async Task<List<ActivityResponseDto>> GetAllActivitiesAsync()
+        public async Task<List<ActivityResponseDto>> GetAllActivitiesAsync(CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Fetching all activities.");
             var activities = await _unitOfWork.Activities.GetAllAsync();
             return activities.Select(MapToActivityResponseDto).ToList();
         }
 
-        public async Task<List<ActivityResponseDto>> GetActivitiesByLessonIdAsync(int lessonId)
+        public async Task<List<ActivityResponseDto>> GetActivitiesByLessonIdAsync(int lessonId, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Fetching activities for Lesson ID: {LessonId}", lessonId);
             if (!await _unitOfWork.Lessons.ExistsAsync(lessonId)) // A more efficient check
@@ -54,7 +54,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             return activities.Select(MapToActivityResponseDto).ToList();
         }
 
-        public async Task<ActivityResponseDto> CreateActivityAsync(ActivityRequestDto dto)
+        public async Task<ActivityResponseDto> CreateActivityAsync(ActivityRequestDto dto, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Starting CreateActivityAsync for Lesson ID: {LessonId}", dto.LessonId);
 
@@ -89,7 +89,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             return MapToActivityResponseDto(activity);
         }
 
-        public async Task<ActivityResponseDto> UpdateActivityAsync(int id, ActivityRequestDto dto)
+        public async Task<ActivityResponseDto> UpdateActivityAsync(int id, ActivityRequestDto dto, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Starting UpdateActivityAsync for Activity ID: {ActivityId}", id);
             var activity = await _unitOfWork.Activities.GetByIdAsync(id);
@@ -119,7 +119,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             return MapToActivityResponseDto(activity);
         }
 
-        public async Task DeleteActivityAsync(int id)
+        public async Task DeleteActivityAsync(int id, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Attempting to delete activity with ID: {ActivityId}", id);
             var activity = await _unitOfWork.Activities.GetByIdAsync(id);

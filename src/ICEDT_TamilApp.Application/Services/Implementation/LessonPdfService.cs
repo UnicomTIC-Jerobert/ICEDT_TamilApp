@@ -23,13 +23,13 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             _fileUploader = fileUploader;
         }
 
-        public async Task<List<LessonPdfResponseDto>> GetPdfsForLessonAsync(int lessonId)
+        public async Task<List<LessonPdfResponseDto>> GetPdfsForLessonAsync(int lessonId, CancellationToken cancellationToken = default)
         {
             var pdfs = await _unitOfWork.LessonPdfs.GetAllByLessonIdAsync(lessonId);
             return pdfs.Select(MapToDto).ToList();
         }
 
-        public async Task<LessonPdfResponseDto> UploadPdfAsync(int lessonId, LessonPdfUploadRequestDto request)
+        public async Task<LessonPdfResponseDto> UploadPdfAsync(int lessonId, LessonPdfUploadRequestDto request, CancellationToken cancellationToken = default)
         {
             if (request.File == null || request.File.Length == 0)
                 throw new BadRequestException("PDF file is empty or null.");
@@ -58,7 +58,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             return MapToDto(lessonPdf);
         }
 
-        public async Task DeletePdfAsync(int lessonPdfId)
+        public async Task DeletePdfAsync(int lessonPdfId, CancellationToken cancellationToken = default)
         {
             var pdf = await _unitOfWork.LessonPdfs.GetByIdAsync(lessonPdfId);
             if (pdf == null)

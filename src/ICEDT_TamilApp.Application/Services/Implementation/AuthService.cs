@@ -34,7 +34,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             _configuration = configuration;
         }
 
-        public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto registerDto)
+        public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto registerDto, CancellationToken cancellationToken = default)
         {
             if (await _unitOfWork.Auth.UserExistsAsync(registerDto.Username, registerDto.Email))
             {
@@ -74,7 +74,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             };
         }
 
-        public async Task<AuthResponseDto> LoginAsync(LoginRequestDto loginDto)
+        public async Task<AuthResponseDto> LoginAsync(LoginRequestDto loginDto, CancellationToken cancellationToken = default)
         {
             var user = await _unitOfWork.Auth.GetUserByUsernameAsync(loginDto.Username);
 
@@ -106,7 +106,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             };
         }
 
-        public async Task<AuthResponseDto> RefreshTokenAsync(string refreshToken)
+        public async Task<AuthResponseDto> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
         {
             var user = await _unitOfWork.Auth.GetUserByRefreshTokenAsync(refreshToken); // New repository method needed
 
@@ -173,7 +173,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             return Convert.ToBase64String(randomNumber);
         }
 
-        public async Task<AuthResponseDto> ForgotPasswordAsync(ForgotPasswordRequestDto dto)
+        public async Task<AuthResponseDto> ForgotPasswordAsync(ForgotPasswordRequestDto dto, CancellationToken cancellationToken = default)
         {
             var user = await _unitOfWork.Auth.GetUserByEmailAsync(dto.Email);
 
@@ -224,7 +224,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             };
         }
 
-        public async Task<AuthResponseDto> VerifyOTPAsync(VerifyOTPRequestDto dto)
+        public async Task<AuthResponseDto> VerifyOTPAsync(VerifyOTPRequestDto dto, CancellationToken cancellationToken = default)
         {
             var user = await _unitOfWork.Auth.GetUserByPasswordResetOTPAsync(dto.Email, dto.OTP);
 
@@ -249,7 +249,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             return RandomNumberGenerator.GetInt32(100000, 999999).ToString();
         }
 
-        public async Task<AuthResponseDto> ResetPasswordAsync(ResetPasswordRequestDto dto)
+        public async Task<AuthResponseDto> ResetPasswordAsync(ResetPasswordRequestDto dto, CancellationToken cancellationToken = default)
         {
             var user = await _unitOfWork.Auth.GetUserByPasswordResetOTPAsync(dto.Email, dto.OTP);
 

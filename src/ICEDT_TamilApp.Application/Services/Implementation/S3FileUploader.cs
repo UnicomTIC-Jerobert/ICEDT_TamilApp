@@ -20,7 +20,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             _awsSettings = awsOptions.Value;
         }
 
-        public async Task<string> UploadFileAsync(IFormFile file, string s3Key)
+        public async Task<string> UploadFileAsync(IFormFile file, string s3Key, CancellationToken cancellationToken = default)
         {
             if (file == null || file.Length == 0)
                 throw new BadRequestException("File is empty or null.");
@@ -44,7 +44,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             }
         }
 
-        public async Task DeleteFileAsync(string s3Key)
+        public async Task DeleteFileAsync(string s3Key, CancellationToken cancellationToken = default)
         {
             try
             {

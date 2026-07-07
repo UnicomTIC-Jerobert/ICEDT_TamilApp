@@ -24,7 +24,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             _fileUploader = fileUploader;
         }
 
-        public async Task<LessonResponseDto> UpdateLessonAsync(int lessonId, LessonRequestDto updateDto)
+        public async Task<LessonResponseDto> UpdateLessonAsync(int lessonId, LessonRequestDto updateDto, CancellationToken cancellationToken = default)
         {
             var lessonToUpdate = await _unitOfWork.Lessons.GetByIdAsync(lessonId);
             if (lessonToUpdate == null)
@@ -58,7 +58,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             return MapToResponseDto(lessonToUpdate);
         }
 
-        public async Task<LessonResponseDto> CreateLessonToLevelAsync(int levelId, LessonRequestDto dto)
+        public async Task<LessonResponseDto> CreateLessonToLevelAsync(int levelId, LessonRequestDto dto, CancellationToken cancellationToken = default)
         {
             var level = await _unitOfWork.Levels.GetByIdAsync(levelId);
             if (level == null)
@@ -94,7 +94,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             return MapToResponseDto(newLesson);
         }
 
-        public async Task<bool> DeleteLessonAsync(int lessonId)
+        public async Task<bool> DeleteLessonAsync(int lessonId, CancellationToken cancellationToken = default)
         {
             var lesson = await _unitOfWork.Lessons.GetByIdAsync(lessonId);
             if (lesson == null)
@@ -109,7 +109,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             return true;
         }
 
-        public async Task<List<LessonResponseDto>> GetLessonsByLevelIdAsync(int levelId)
+        public async Task<List<LessonResponseDto>> GetLessonsByLevelIdAsync(int levelId, CancellationToken cancellationToken = default)
         {
             var levelExists = await _unitOfWork.Levels.LevelExistsAsync(levelId); // Assuming LevelExistsAsync is in ILevelRepository
             if (!levelExists)
@@ -121,7 +121,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             return lessonsForLevel.Select(MapToResponseDto).ToList();
         }
 
-        public async Task<LessonResponseDto?> GetLessonByIdAsync(int lessonId)
+        public async Task<LessonResponseDto?> GetLessonByIdAsync(int lessonId, CancellationToken cancellationToken = default)
         {
             var lesson = await _unitOfWork.Lessons.GetByIdAsync(lessonId);
             if (lesson == null)
@@ -133,7 +133,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
 
         // It seems RemoveLessonFromLevelAsync was just a wrapper for DeleteLessonAsync,
         // so its implementation remains simple.
-        public async Task RemoveLessonFromLevelAsync(int levelId, int lessonId)
+        public async Task RemoveLessonFromLevelAsync(int levelId, int lessonId, CancellationToken cancellationToken = default)
         {
             // The logic inside ensures the lesson exists before attempting to delete.
             await DeleteLessonAsync(lessonId);
@@ -154,16 +154,14 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             };
         }
 
-        public async Task<LessonResponseDto> UpdateLessonImageAsync(int lessonId, IFormFile file)
+        public async Task<LessonResponseDto> UpdateLessonImageAsync(int lessonId, IFormFile file, CancellationToken cancellationToken = default)
         {
-            // Important: We need the level's slug for the path, so we must include it in the query.
-            var lesson = await _unitOfWork.Lessons.GetByIdAsync(lessonId);
+            var lesson = await _unitOfWork.Lessons.GetByIdWithLevelAsync(lessonId);
             if (lesson == null)
             {
                 throw new NotFoundException($"{nameof(Lesson)}, {lessonId} not found.");
             }
 
-            // 1. Construct the S3 key using both parent and child slugs/IDs
             var s3Key = $"levels/{lesson.Level.Slug}/lessons/{lesson.Slug}/image/{Guid.NewGuid()}_{file.FileName}";
 
             // 2. Upload the file
@@ -176,7 +174,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             return MapToResponseDto(lesson);
         }
 
-        public async Task<List<MainActivityResponseDto>> GetMainActivitySummaryAsync(int lessonId)
+        public async Task<List<MainActivityResponseDto>> GetMainActivitySummaryAsync(int lessonId, CancellationToken cancellationToken = default)
         {
             // First, check if the lesson even exists to provide a clean 404 error
             if (!await _unitOfWork.Lessons.ExistsAsync(lessonId))
