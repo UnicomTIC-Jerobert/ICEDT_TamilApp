@@ -38,7 +38,6 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
         public async Task<User> RegisterUserAsync(User user)
         {
             await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
             return user;
         }
 
@@ -68,7 +67,6 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
         public async Task UpdateUserAsync(User user)
         {
             _context.Users.Update(user);
-            await _context.SaveChangesAsync();
         }
     }
 }

@@ -1,6 +1,7 @@
 using ICEDT_TamilApp.Application.DTOs.Request;
 using ICEDT_TamilApp.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -14,6 +15,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
+    [EnableRateLimiting("auth")]
     public async Task<IActionResult> Register(RegisterRequestDto registerDto)
     {
         var response = await _authService.RegisterAsync(registerDto);
@@ -25,6 +27,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
+    [EnableRateLimiting("auth")]
     public async Task<IActionResult> Login(LoginRequestDto loginDto)
     {
         var response = await _authService.LoginAsync(loginDto);
@@ -36,6 +39,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("refresh")]
+    [EnableRateLimiting("auth")]
     public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDto request)
     {
         if (request is null || string.IsNullOrEmpty(request.RefreshToken))
@@ -54,6 +58,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("forgot-password")]
+    [EnableRateLimiting("otp")]
     public async Task<IActionResult> ForgotPassword(
         [FromBody] ForgotPasswordRequestDto forgotPasswordDto
     )
@@ -66,8 +71,9 @@ public class AuthController : ControllerBase
         var response = await _authService.ForgotPasswordAsync(forgotPasswordDto);
         return Ok(response);
     }
-    
+
     [HttpPost("verify-otp")]
+    [EnableRateLimiting("otp")]
     public async Task<IActionResult> VerifyOTP(
         [FromBody] VerifyOTPRequestDto verifyOTPDto
     )
@@ -76,18 +82,19 @@ public class AuthController : ControllerBase
         {
             return BadRequest(ModelState);
         }
-        
+
         var response = await _authService.VerifyOTPAsync(verifyOTPDto);
-        
+
         if (!response.IsSuccess)
         {
             return BadRequest(response);
         }
-        
+
         return Ok(response);
     }
 
     [HttpPost("reset-password")]
+    [EnableRateLimiting("otp")]
     public async Task<IActionResult> ResetPassword(
         [FromBody] ResetPasswordRequestDto resetPasswordDto
     )

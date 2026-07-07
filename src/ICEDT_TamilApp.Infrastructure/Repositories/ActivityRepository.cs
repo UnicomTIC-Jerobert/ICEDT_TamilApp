@@ -44,13 +44,11 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
         public async Task CreateAsync(Activity activity)
         {
             _context.Activities.Add(activity);
-            await _context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(Activity activity)
         {
             _context.Activities.Update(activity);
-            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(int id)
@@ -59,7 +57,6 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
             if (activity != null)
             {
                 _context.Activities.Remove(activity);
-                await _context.SaveChangesAsync();
             }
         }
 

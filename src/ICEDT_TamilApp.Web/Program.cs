@@ -4,9 +4,11 @@ using ICEDT_TamilApp.Application;
 using ICEDT_TamilApp.Application.Common;
 using ICEDT_TamilApp.Infrastructure;
 using ICEDT_TamilApp.Infrastructure.Data;
-using ICEDT_TamilApp.Web.Middlewares; // Add this using statement!
+using ICEDT_TamilApp.Web.Middlewares;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -56,8 +58,25 @@ builder.Services.AddControllers();
 // This is for Razor Pages
 builder.Services.AddRazorPages();
 
-// ... DI registration, DbContext, JWT Auth, etc.
-// To-do
+// Rate limiting for auth endpoints
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    options.AddFixedWindowLimiter("auth", opt =>
+    {
+        opt.PermitLimit = 5;
+        opt.Window = TimeSpan.FromMinutes(1);
+        opt.QueueLimit = 0;
+    });
+
+    options.AddFixedWindowLimiter("otp", opt =>
+    {
+        opt.PermitLimit = 3;
+        opt.Window = TimeSpan.FromMinutes(5);
+        opt.QueueLimit = 0;
+    });
+});
 
 // *** NEW: Configure the Options Pattern ***
 // --- JWT Configuration ---
@@ -220,15 +239,14 @@ using (var scope = app.Services.CreateScope())
 app.UseWrapResponseMiddleware();
 
 app.UseHttpsRedirection();
-app.UseStaticFiles(); // Serves your wwwroot folder (JS, CSS)
+app.UseStaticFiles();
 
 app.UseRouting();
 
-// --- ADD THIS CORS MIDDLEWARE ---
-// It's important to place UseCors here: after UseRouting but before UseAuthorization.
 app.UseCors(MyAllowSpecificOrigins);
 
-// Auth must come after Routing but before Authorization and Endpoints
+app.UseRateLimiter();
+
 app.UseAuthentication();
 app.UseAuthorization();
 

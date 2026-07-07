@@ -30,13 +30,11 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
         public async Task CreateAsync(Level level)
         {
             _context.Levels.Add(level);
-            await _context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(Level level)
         {
             _context.Levels.Update(level);
-            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(int id)
@@ -45,7 +43,6 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
             if (level != null)
             {
                 _context.Levels.Remove(level);
-                await _context.SaveChangesAsync();
             }
         }
 

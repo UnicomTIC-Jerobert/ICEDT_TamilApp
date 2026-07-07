@@ -246,9 +246,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
 
         private string GenerateOTP()
         {
-            // Generate a random 6-digit number
-            Random random = new Random();
-            return random.Next(100000, 999999).ToString();
+            return RandomNumberGenerator.GetInt32(100000, 999999).ToString();
         }
 
         public async Task<AuthResponseDto> ResetPasswordAsync(ResetPasswordRequestDto dto)

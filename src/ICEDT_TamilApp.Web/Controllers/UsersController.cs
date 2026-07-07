@@ -22,7 +22,8 @@ public class UsersController : ControllerBase
     [ProducesResponseType(typeof(UserDto), 200)]
     public async Task<IActionResult> GetMyProfile()
     {
-        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
+            return Unauthorized();
 
         var userProfile = await _userService.GetUserByIdAsync(userId);
 
@@ -33,6 +34,7 @@ public class UsersController : ControllerBase
     // [HttpPost("change-password")] for changing password
 
     [HttpGet]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> GetAllUsers()
     {
         var users = await _userService.GetAllUsersAsync();
@@ -40,6 +42,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserRequestDto dto)
     {
         var newUser = await _userService.CreateUserAsync(dto);
@@ -47,6 +50,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserRequestDto dto)
     {
         var updatedUser = await _userService.UpdateUserAsync(id, dto);
@@ -54,14 +58,15 @@ public class UsersController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> DeleteUser(int id)
     {
         await _userService.DeleteUserAsync(id);
         return NoContent();
     }
 
-    // Endpoint for getting a single user
     [HttpGet("{id}")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> GetUserById(int id)
     {
         var user = await _userService.GetUserByIdAsync(id);

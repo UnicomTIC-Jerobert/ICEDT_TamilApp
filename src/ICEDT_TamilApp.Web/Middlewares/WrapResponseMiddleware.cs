@@ -9,6 +9,7 @@ using ICEDT_TamilApp.Application.Exceptions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,10 +18,12 @@ namespace ICEDT_TamilApp.Web.Middlewares
     public class WrapResponseMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly ILogger<WrapResponseMiddleware> _logger;
 
-        public WrapResponseMiddleware(RequestDelegate next)
+        public WrapResponseMiddleware(RequestDelegate next, ILogger<WrapResponseMiddleware> logger)
         {
             _next = next;
+            _logger = logger;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -91,23 +94,27 @@ namespace ICEDT_TamilApp.Web.Middlewares
             {
                 // If an exception occurs, reset the body and let the handler take over.
                 context.Response.Body = originalBodyStream;
-                await HandleExceptionAsync(context, ex);
+                await HandleExceptionAsync(context, ex, _logger);
             }
         }
 
-        private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
+        private static async Task HandleExceptionAsync(HttpContext context, Exception exception, ILogger logger)
         {
             (string Detail, string Title, int StatusCode) details = exception switch
             {
                 BadRequestException ex => (ex.Message, "BadRequest", StatusCodes.Status400BadRequest),
                 NotFoundException ex => (ex.Message, "NotFound", StatusCodes.Status404NotFound),
                 ValidationException ex => (ex.Message, "ValidationError", StatusCodes.Status400BadRequest),
-                ConflictException ex => (ex.Message, "Conflict", StatusCodes.Status409Conflict), // 409 is better for conflicts
+                ConflictException ex => (ex.Message, "Conflict", StatusCodes.Status409Conflict),
                 AuthenticationException ex => (ex.Message, "AuthenticationError", StatusCodes.Status401Unauthorized),
                 UnauthorizedAccessException ex => (ex.Message, "AuthorizationError", StatusCodes.Status403Forbidden),
-                // Add more specific exceptions here...
-                _ => (exception.Message, "InternalServerError", StatusCodes.Status500InternalServerError),
+                _ => ("An unexpected error occurred. Please try again later.", "InternalServerError", StatusCodes.Status500InternalServerError),
             };
+
+            if (details.StatusCode == StatusCodes.Status500InternalServerError)
+            {
+                logger.LogError(exception, "Unhandled exception on {Method} {Path}", context.Request.Method, context.Request.Path);
+            }
 
             var extensions = new Dictionary<string, object?>
             {

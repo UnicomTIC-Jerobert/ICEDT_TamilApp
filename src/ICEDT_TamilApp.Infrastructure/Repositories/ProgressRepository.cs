@@ -27,7 +27,6 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
                 LastActivityAt = DateTime.UtcNow,
             };
             await _context.UserCurrentProgress.AddAsync(initialProgress);
-            await _context.SaveChangesAsync();
         }
 
         /// <summary>
@@ -71,14 +70,12 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
 
             if (existingProgress != null)
             {
-                // User is re-doing an activity. Update the score and timestamp.
                 existingProgress.IsCompleted = true;
                 existingProgress.Score = score;
                 existingProgress.CompletedAt = DateTime.UtcNow;
             }
             else
             {
-                // First time completing this activity.
                 var newProgress = new UserProgress
                 {
                     UserId = userId,
@@ -89,8 +86,6 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
                 };
                 await _context.UserProgresses.AddAsync(newProgress);
             }
-
-            await _context.SaveChangesAsync();
         }
 
         /// <summary>
@@ -106,10 +101,7 @@ namespace ICEDT_TamilApp.Infrastructure.Repositories
             {
                 currentProgress.CurrentLessonId = newLessonId;
                 currentProgress.LastActivityAt = DateTime.UtcNow;
-                await _context.SaveChangesAsync();
             }
-            // Optional: Consider what to do if currentProgress is null.
-            // This scenario shouldn't happen if initial progress is created on registration.
         }
 
         /// <summary>
