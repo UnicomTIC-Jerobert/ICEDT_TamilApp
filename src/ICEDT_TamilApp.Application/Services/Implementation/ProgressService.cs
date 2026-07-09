@@ -93,6 +93,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 request.ActivityId,
                 request.Score
             );
+            await _unitOfWork.CompleteAsync(cancellationToken);
 
             // 2. Get the lesson this activity belongs to
             var activity = await _unitOfWork.Progress.GetActivityByIdAsync(request.ActivityId);
@@ -139,6 +140,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
 
             // 5. Unlock the next lesson for the user
             await _unitOfWork.Progress.UpdateCurrentLessonAsync(userId, nextLesson.LessonId);
+            await _unitOfWork.CompleteAsync(cancellationToken);
 
             return new ActivityCompletionResponseDto
             {

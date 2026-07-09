@@ -63,6 +63,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpiryDays);
 
             await _unitOfWork.Auth.RegisterUserAsync(user);
+            await _unitOfWork.CompleteAsync(cancellationToken);
 
             return new AuthResponseDto
             {
@@ -192,6 +193,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             user.PasswordResetOTPExpiryTime = DateTime.UtcNow.AddMinutes(15); // OTP valid for 15 minutes
 
             await _unitOfWork.Auth.UpdateUserAsync(user);
+            await _unitOfWork.CompleteAsync(cancellationToken);
 
             // Send email with OTP
             try
@@ -271,6 +273,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             user.PasswordResetOTPExpiryTime = null;
 
             await _unitOfWork.Auth.UpdateUserAsync(user);
+            await _unitOfWork.CompleteAsync(cancellationToken);
 
             return new AuthResponseDto
             {
