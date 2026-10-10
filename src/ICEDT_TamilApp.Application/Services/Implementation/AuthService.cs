@@ -203,6 +203,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                     <html>
                         <body style='font-family: Arial, sans-serif;'>
                             <h2>Password Reset OTP</h2>
+                            <p>Your Username is: <strong>{user.Username}</strong></p>
                             <p>Your One-Time Password (OTP) for password reset is:</p>
                             <p style='font-size: 24px; font-weight: bold; letter-spacing: 5px; background-color: #f0f0f0; padding: 10px; text-align: center;'>{otp}</p>
                             <p>This OTP is valid for <strong>15 minutes</strong>.</p>
