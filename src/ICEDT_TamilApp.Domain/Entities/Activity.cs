@@ -37,5 +37,7 @@ namespace ICEDT_TamilApp.Domain.Entities
 
         [ForeignKey("MainActivityId")]
         public virtual MainActivity? MainActivity { get; set; }
+
+        public bool IsHidden { get; set; } = false;
     }
 }

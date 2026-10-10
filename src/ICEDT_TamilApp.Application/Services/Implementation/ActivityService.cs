@@ -35,14 +35,18 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             return MapToActivityResponseDto(activity);
         }
 
-        public async Task<List<ActivityResponseDto>> GetAllActivitiesAsync(CancellationToken cancellationToken = default)
+        public async Task<List<ActivityResponseDto>> GetAllActivitiesAsync(bool includeHidden = false, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Fetching all activities.");
             var activities = await _unitOfWork.Activities.GetAllAsync();
+            if (!includeHidden)
+            {
+                activities = activities.Where(a => !a.IsHidden).ToList();
+            }
             return activities.Select(MapToActivityResponseDto).ToList();
         }
 
-        public async Task<List<ActivityResponseDto>> GetActivitiesByLessonIdAsync(int lessonId, CancellationToken cancellationToken = default)
+        public async Task<List<ActivityResponseDto>> GetActivitiesByLessonIdAsync(int lessonId, bool includeHidden = false, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Fetching activities for Lesson ID: {LessonId}", lessonId);
             if (!await _unitOfWork.Lessons.ExistsAsync(lessonId)) // A more efficient check
@@ -51,6 +55,10 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 throw new NotFoundException($"Lesson with ID {lessonId} not found.");
             }
             var activities = await _unitOfWork.Activities.GetByLessonIdAsync(lessonId);
+            if (!includeHidden)
+            {
+                activities = activities.Where(a => !a.IsHidden).ToList();
+            }
             return activities.Select(MapToActivityResponseDto).ToList();
         }
 
@@ -78,6 +86,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 LessonId = dto.LessonId,
                 ActivityTypeId = dto.ActivityTypeId,
                 MainActivityId = dto.MainActivityId,
+                IsHidden = dto.IsHidden,
             };
 
             await _unitOfWork.Activities.CreateAsync(activity);
@@ -109,6 +118,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
             activity.Title = dto.Title;
             activity.SequenceOrder = dto.SequenceOrder;
             activity.ContentJson = dto.ContentJson;
+            activity.IsHidden = dto.IsHidden;
 
             await _unitOfWork.Activities.UpdateAsync(activity);
 
@@ -169,6 +179,7 @@ namespace ICEDT_TamilApp.Application.Services.Implementation
                 Title = activity.Title,
                 SequenceOrder = activity.SequenceOrder,
                 ContentJson = activity.ContentJson,
+                IsHidden = activity.IsHidden,
             };
         }
     }

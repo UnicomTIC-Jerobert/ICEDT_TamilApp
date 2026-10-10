@@ -27,15 +27,15 @@ namespace ICEDT_TamilApp.Web.Controllers
 
         [HttpGet("activities")]
         [Authorize(Roles = "admin,Student")]
-        public async Task<IActionResult> GetAll() => Ok(await _service.GetAllActivitiesAsync());
+        public async Task<IActionResult> GetAll([FromQuery] bool includeHidden = false) => Ok(await _service.GetAllActivitiesAsync(includeHidden));
 
         [HttpGet("lessons/{lessonId:int}/activities")]
         [Authorize(Roles = "admin,Student")]
-        public async Task<IActionResult> GetActivitiesByLessonId(int lessonId)
+        public async Task<IActionResult> GetActivitiesByLessonId(int lessonId, [FromQuery] bool includeHidden = false)
         {
             if (lessonId <= 0)
                 throw new BadRequestException("Invalid Lesson ID.");
-            var activities = await _service.GetActivitiesByLessonIdAsync(lessonId);
+            var activities = await _service.GetActivitiesByLessonIdAsync(lessonId, includeHidden);
             return Ok(activities);
         }
 

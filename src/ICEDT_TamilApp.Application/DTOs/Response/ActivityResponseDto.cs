@@ -11,4 +11,6 @@ public class ActivityResponseDto
 
     public int MainActivityId { get; set; }
     public string? MainActivityName { get; set; }
+    
+    public bool IsHidden { get; set; }
 }

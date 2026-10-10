@@ -26,5 +26,7 @@ namespace ICEDT_TamilApp.Application.DTOs.Request
         [Required(ErrorMessage = "Main Activity ID is required.")]
         [Range(1, int.MaxValue, ErrorMessage = "Main Activity ID must be a positive number.")]
         public int MainActivityId { get; set; }
+
+        public bool IsHidden { get; set; }
     }
 }
